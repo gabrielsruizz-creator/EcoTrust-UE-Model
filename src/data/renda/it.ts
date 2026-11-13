@@ -7,8 +7,11 @@
  *   da Lei 207/2024 entre 20 000 e 40 000 €). Detrações limitadas ao imposto bruto (art. 11, n.º 4).
  * - "Somma che non concorre alla formazione del reddito" até 20 000 € de rendimento total: 7,1% / 5,3% / 4,8%
  *   do rendimento de trabalho (Lei 207/2024, art. 1.º, n.º 4; Circolare 4/E/2025 da Agenzia delle Entrate).
- * - INPS a cargo do trabalhador: 9,19% (taxa mais comum do FPLD; varia com o setor) — A CONFIRMAR na
- *   Circolare INPS 6/2026. As contribuições abatem o rendimento.
+ * - INPS a cargo do trabalhador: 9,19%, a taxa mais comum do FPLD. O INPS explica que a taxa varia com o
+ *   setor, o tamanho da empresa e a função ("Aliquote contributive"; a alíquota IVS total é de 33%), por isso
+ *   fica como estimativa com aviso. Mais 1% sobre o que passar da primeira faixa de retribuição pensionável,
+ *   € 56 224 em 2026 (Circolare INPS 6/2026, par. 5). As contribuições abatem o rendimento.
+ *   O teto de € 122 295 (par. 6) só vale para quem começou a contribuir depois de 1995 — não modelado.
  * Não incluídos ainda: addizionali regionale e comunale (variam por região e município), filhos (desde 2022
  * cobertos pelo Assegno Unico, fora do IRPEF), mecanismo para rendimentos acima de 200 000 € (Lei 199/2025),
  * trabalhadores independentes (regime forfettario/ordinario).
@@ -32,6 +35,13 @@ export const ESCALOES_IRPEF_2026: Escaloes = [
 ];
 
 const TAXA_INPS_DEPENDENTE = 9.19;
+const PRIMEIRA_FAIXA_PENSIONAVEL_2026 = 5_622_400;
+const TAXA_INPS_ADICIONAL = 1;
+
+/** Contribuição INPS do trabalhador: 9,19% + 1% sobre a parte acima de € 56 224. */
+export function contribuicaoInps(bruto: number): number {
+  return (bruto * TAXA_INPS_DEPENDENTE) / 100 + (Math.max(0, bruto - PRIMEIRA_FAIXA_PENSIONAVEL_2026) * TAXA_INPS_ADICIONAL) / 100;
+}
 
 /** Rácios da lei com 4 casas decimais (TU art. 13, n.º 8). */
 const racio = (valor: number) => Math.floor(valor * 10_000) / 10_000;
@@ -64,10 +74,10 @@ export function calcularRendaItalia(e: EntradaRenda): ResultadoRenda | SemRegras
   if (e.ano !== 2026) return { semRegras: 'ano' };
   if (e.situacao !== 'dependente') return { semRegras: 'situacao' };
   const bruto = e.brutoAnualCentavos;
-  const avisos: AvisoRenda[] = ['contribuicoes-a-confirmar', 'adicionais-locais-nao-incluidos'];
+  const avisos: AvisoRenda[] = ['contribuicoes-variam-setor', 'adicionais-locais-nao-incluidos'];
   if (bruto > 20_000_000) avisos.push('alto-rendimento-simplificado');
 
-  const contribuicoes = (bruto * TAXA_INPS_DEPENDENTE) / 100;
+  const contribuicoes = contribuicaoInps(bruto);
   const rendimento = bruto - contribuicoes;
   const lorda = impostoPorEscaloes(rendimento, ESCALOES_IRPEF_2026);
   const detracoes = detracaoTrabalho(rendimento) + ulteriorDetracao(rendimento);

@@ -17,7 +17,14 @@
  *   - acima disso (Category C): 10% do salário semanal;
  *   - teto (Category D): € 49,04/semana para nascidos até 31/12/1961 (a partir de € 490,39) e € 55,93/semana
  *     para nascidos a partir de 1/1/1962 (a partir de € 559,31).
- * - Class 2 (independentes): 15% do rendimento líquido, com teto semanal — A CONFIRMAR na tabela Class 2 do MTCA.
+ * - Class 2 (self-occupied: atividade própria, profissão, comércio), tabela MTCA 2026 conferida pelo utilizador
+ *   em 13/11/2026, sobre o rendimento líquido do ANO ANTERIOR:
+ *   - até € 910: não paga;
+ *   - SA, de € 910 a € 12 543,72: € 36,18 fixos por semana (algumas pessoas podem optar por 15%: mulheres
+ *     com atividade a tempo parcial, estudantes com menos de 24 anos e pensionistas — não modelado);
+ *   - SB: 15% do rendimento até ao teto; SC (teto): € 73,56/semana para nascidos até 31/12/1961
+ *     (a partir de € 25 500) e € 83,89/semana para nascidos a partir de 1/1/1962 (a partir de € 29 083,36).
+ *   A taxa SP (€ 31,97) é só para quem vive de rendas/investimentos e não tem atividade — não se aplica aqui.
  */
 
 import { montarResultado, type AvisoRenda, type EntradaRenda, type ResultadoRenda, type SemRegras } from '@/data/renda/tipos';
@@ -56,8 +63,18 @@ export function impostoMalta(rendimento: number, t: TabelaMalta): { imposto: num
 const SALARIO_SEMANAL_CATEGORIA_B = 22_944;
 const FIXO_SEMANAL_CATEGORIA_B = 2_294;
 const TETO_SEMANAL_CLASS1 = { ate1961: 4_904, desde1962: 5_593 };
-/** Class 2 2026 — A CONFIRMAR */
+/** Class 2 2026 (MTCA): mínimo de rendimento, valor fixo SA e tetos SC por geração. */
+const MINIMO_CLASS2 = 91_000;
+const LIMITE_SA = 1_254_372;
+const FIXO_SEMANAL_SA = 3_618;
 const TETO_SEMANAL_CLASS2 = { ate1961: 7_356, desde1962: 8_389 };
+
+/** Contribuição Class 2 de um ano, a partir do rendimento líquido anual (52 semanas). */
+export function contribuicaoClass2(liquidoAnual: number, geracao: 'ate1961' | 'desde1962'): number {
+  if (liquidoAnual < MINIMO_CLASS2) return 0;
+  if (liquidoAnual <= LIMITE_SA) return FIXO_SEMANAL_SA * 52;
+  return Math.min(Math.round((liquidoAnual * 0.15) / 52), TETO_SEMANAL_CLASS2[geracao]) * 52;
+}
 
 /** Contribuição Class 1 de um ano, a partir do salário anual (52 semanas, arredondada ao cêntimo por semana). */
 export function contribuicaoClass1(
@@ -76,7 +93,7 @@ export function contribuicaoClass1(
 export function calcularRendaMalta(e: EntradaRenda): ResultadoRenda | SemRegras {
   if (e.ano !== 2026) return { semRegras: 'ano' };
   const bruto = e.brutoAnualCentavos;
-  const avisos: AvisoRenda[] = e.situacao === 'independente' ? ['contribuicoes-a-confirmar'] : [];
+  const avisos: AvisoRenda[] = [];
 
   const filhos = Math.max(0, e.dependentes);
   let t: TabelaMalta;
@@ -93,7 +110,7 @@ export function calcularRendaMalta(e: EntradaRenda): ResultadoRenda | SemRegras 
   const contribuicoes =
     e.situacao === 'dependente'
       ? contribuicaoClass1(bruto, geracao, e.contribuicaoProporcional)
-      : Math.min((bruto * 15) / 100, TETO_SEMANAL_CLASS2[geracao] * 52);
+      : contribuicaoClass2(bruto, geracao);
 
   // Em Malta as contribuições não abatem o rendimento coletável.
   const { imposto, taxa } = impostoMalta(bruto, t);

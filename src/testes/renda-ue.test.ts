@@ -1,8 +1,8 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { calcularImpostosDaRenda, impostoPorEscaloes, temRegras, type EntradaRenda, type ResultadoRenda } from '@/data/renda';
-import { detracaoTrabalho, ESCALOES_IRPEF_2026, sommaEsente } from '@/data/renda/it';
-import { contribuicaoClass1, impostoMalta, TABELAS_MALTA_2026 } from '@/data/renda/mt';
+import { contribuicaoInps, detracaoTrabalho, ESCALOES_IRPEF_2026, sommaEsente } from '@/data/renda/it';
+import { contribuicaoClass1, contribuicaoClass2, impostoMalta, TABELAS_MALTA_2026 } from '@/data/renda/mt';
 import { abatimentoMinimoExistencia, DEDUCAO_ESPECIFICA_2026, ESCALOES_IRS_2026 } from '@/data/renda/pt';
 import type { CodigoPais } from '@/data/paises';
 
@@ -122,6 +122,20 @@ describe('Malta — income tax 2026 (ano de avaliação 2027)', () => {
     expect(contribuicaoClass1(2_000_000, 'desde1962', true)).toBe(contribuicaoClass1(2_000_000, 'desde1962'));
   });
 
+  it('Class 2 (independentes): fixo SA até € 12 543,72, 15% depois e teto por geração', () => {
+    expect(contribuicaoClass2(90_000, 'desde1962')).toBe(0);
+    expect(contribuicaoClass2(1_000_000, 'desde1962')).toBe(3_618 * 52);
+    // € 20 000 líquidos → € 57,69/semana
+    expect(contribuicaoClass2(2_000_000, 'desde1962')).toBe(5_769 * 52);
+    expect(contribuicaoClass2(4_000_000, 'desde1962')).toBe(8_389 * 52);
+    expect(contribuicaoClass2(4_000_000, 'ate1961')).toBe(7_356 * 52);
+    // a tabela fecha sem salto: no limite de SA, 15% dá os mesmos € 36,18
+    expect(Math.round((1_254_373 * 0.15) / 52)).toBe(3_618);
+    const r = calcular('MT', { brutoAnualCentavos: 2_000_000, situacao: 'independente' });
+    expect(r.contribuicoesCentavos).toBe(5_769 * 52);
+    expect(r.avisos).not.toContain('contribuicoes-a-confirmar');
+  });
+
   it('nascidos até 1961 têm teto de contribuições menor', () => {
     expect(calcular('MT', { brutoAnualCentavos: 5_000_000, anoNascimento: 1960 }).contribuicoesCentavos).toBe(4_904 * 52);
   });
@@ -150,6 +164,12 @@ describe('Itália — IRPEF 2026', () => {
     const r = calcular('IT', { brutoAnualCentavos: 800_000 });
     expect(r.impostoCentavos).toBe(0);
     expect(r.bonusCentavos).toBe(51_580);
+  });
+
+  it('INPS: mais 1% sobre o que passar de € 56 224 (Circolare 6/2026)', () => {
+    expect(contribuicaoInps(5_622_400)).toBeCloseTo(5_622_400 * 0.0919, 6);
+    expect(contribuicaoInps(7_000_000)).toBeCloseTo(7_000_000 * 0.0919 + 1_377_600 * 0.01, 6);
+    expect(calcular('IT', { brutoAnualCentavos: 3_000_000 }).avisos).toContain('contribuicoes-variam-setor');
   });
 
   it('detração do trabalho: € 1 955 até € 15 000 e zero acima de € 50 000', () => {

@@ -33,6 +33,7 @@ export type EntradaRenda = {
 /** Limitações da estimativa, para a tela explicar (o texto fica nos catálogos de tradução). */
 export type AvisoRenda =
   | 'contribuicoes-a-confirmar'
+  | 'contribuicoes-variam-setor'
   | 'regiao-usa-tabela-nacional'
   | 'despesas-gerais-presumidas'
   | 'adicionais-locais-nao-incluidos'
