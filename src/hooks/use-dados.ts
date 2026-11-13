@@ -28,14 +28,11 @@ import {
 import {
   obterHistoricoImpostosUE,
   obterImpostometroUE,
+  obterImpostosDoLancamentoUE,
   obterImpostosDosLancamentosUE,
 } from '@/services/impostometro-ue-service';
 import { obterImpostosFixos } from '@/services/impostos-renda-service';
 import { obterPerfilFiscal } from '@/services/perfil-fiscal-service';
-import { obterDeducoesIR } from '@/services/ir-service';
-import { obterAnalisePrecos } from '@/services/precos-service';
-import { obterSimulacaoReforma } from '@/services/reforma-service';
-import { obterNotaDoLancamento, obterResumoCpfNaNota } from '@/services/nota-fiscal-service';
 import { montarHistorico } from '@/services/historico-service';
 import { obterMeta, obterMetas } from '@/services/metas-service';
 import { obterOrcamentos } from '@/services/orcamento-service';
@@ -87,40 +84,10 @@ export function useImpostosFixos() {
   return useMemo(() => obterImpostosFixos(), [versao]);
 }
 
-/** Loja, link da SEFAZ e itens da nota de um lançamento (null se não veio de nota lida pelo QR Code). */
-export function useNotaDoLancamento(id: number) {
-  const versao = useVersaoDados();
-  return useMemo(() => (Number.isInteger(id) ? obterNotaDoLancamento(id) : null), [versao, id]);
-}
-
 /** Momento do último backup exportado neste aparelho (null = nunca). */
 export function useUltimoBackup() {
   const versao = useVersaoDados();
   return useMemo(() => obterUltimoBackup(), [versao]);
-}
-
-/** Despesas de saúde e educação do ano para a declaração do IR. */
-export function useDeducoesIR(ano: number) {
-  const versao = useVersaoDados();
-  return useMemo(() => obterDeducoesIR(ano), [versao, ano]);
-}
-
-/** Simulação das compras do mês na regra nova da reforma tributária. */
-export function useSimulacaoReforma(mes: string) {
-  const versao = useVersaoDados();
-  return useMemo(() => obterSimulacaoReforma(mes), [versao, mes]);
-}
-
-/** Estado das notas lidas no ano, programa de CPF na nota e quantas saíram sem CPF. */
-export function useCpfNaNota(ano: number) {
-  const versao = useVersaoDados();
-  return useMemo(() => obterResumoCpfNaNota(ano), [versao, ano]);
-}
-
-/** Inflação pessoal e onde cada produto saiu mais barato (itens das notas dos últimos 12 meses). */
-export function useAnalisePrecos() {
-  const versao = useVersaoDados();
-  return useMemo(() => obterAnalisePrecos(), [versao]);
 }
 
 /** Carga de impostos dos últimos 6 meses (minigráfico). */
@@ -266,4 +233,10 @@ export function useImpostometroUE(mes: string) {
 export function usePerfilFiscal() {
   const versao = useVersaoDados();
   return useMemo(() => obterPerfilFiscal(), [versao]);
+}
+
+/** Impostos de uma despesa pela regra europeia (país da compra). null para receitas. */
+export function useImpostosDoLancamentoUE(id: number) {
+  const versao = useVersaoDados();
+  return useMemo(() => (Number.isInteger(id) ? obterImpostosDoLancamentoUE(obterTransacao(id)) : null), [versao, id]);
 }

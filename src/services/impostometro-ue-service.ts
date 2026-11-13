@@ -336,3 +336,18 @@ export function obterHistoricoImpostosUE(mes: string, meses = 6): { mes: string;
   }
   return lista;
 }
+
+/** Impostos de uma despesa (null para receitas ou sem perfil fiscal), já arredondados. */
+export function obterImpostosDoLancamentoUE(t: Transacao | null): (ImpostoDaDespesaUE & { percentual: number }) | null {
+  const fiscal = obterPerfilFiscal();
+  if (!t || t.tipo !== 'despesa' || !fiscal) return null;
+  const perfil = perfisDasCategorias().get(t.categoriaId) ?? 'geral';
+  const imp = impostoDaDespesa(t, perfil, fiscal);
+  return {
+    ...imp,
+    ivaCentavos: Math.round(imp.ivaCentavos),
+    especiaisCentavos: Math.round(imp.especiaisCentavos),
+    totalCentavos: Math.round(imp.totalCentavos),
+    percentual: t.valorCentavos > 0 ? umaCasa((imp.totalCentavos / t.valorCentavos) * 100) : 0,
+  };
+}

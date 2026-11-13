@@ -8,9 +8,11 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTransacao } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { editarTransacao } from '@/services/transacoes-service';
 
 export default function EditarLancamentoScreen() {
+  const t = useT();
   const { id } = useLocalSearchParams<{ id: string }>();
   const transacao = useTransacao(Number(id));
 
@@ -18,8 +20,8 @@ export default function EditarLancamentoScreen() {
     return (
       <ThemedView style={styles.container}>
         <SafeAreaView style={styles.vazio}>
-          <ThemedText themeColor="textSecondary">Este lançamento não existe mais.</ThemedText>
-          <Botao texto="Voltar" onPress={() => router.back()} />
+          <ThemedText themeColor="textSecondary">{t('lanc.naoExiste')}</ThemedText>
+          <Botao texto={t('comum.voltar')} onPress={() => router.back()} />
         </SafeAreaView>
       </ThemedView>
     );
@@ -27,7 +29,7 @@ export default function EditarLancamentoScreen() {
 
   return (
     <FormularioLancamento
-      titulo="Editar lançamento"
+      titulo={t('lanc.editar')}
       inicial={transacao}
       aoSalvar={(dados) => editarTransacao(transacao.id, dados)}
     />

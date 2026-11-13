@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { openBrowserAsync } from 'expo-web-browser';
 import { useState, type ReactNode } from 'react';
 import {
   Alert,
@@ -28,7 +27,6 @@ import { useT } from '@/hooks/use-idioma';
 import { localeAtual, type Chave } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import { perfilTributarioDaCategoria } from '@/services/categorias-service';
-import type { ItemParaEstimar } from '@/services/impostometro-service';
 import { estimarImpostosDaCompra } from '@/services/impostos-consumo-ue-service';
 import { ErroValidacao } from '@/services/erros';
 import type { NovaTransacao, TipoTransacao, Transacao } from '@/types/financas';
@@ -38,17 +36,10 @@ import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
 
 type OpcaoData = 'hoje' | 'ontem' | 'outra';
 
-/** Dados que chegam já preenchidos (ex.: lidos do QR Code da nota fiscal). O usuário confere e salva. */
+/** Dados que chegam já preenchidos (ex.: atalho de categoria, ou leitura de um recibo). O utilizador confere e guarda. */
 export type SugestaoLancamento = Partial<
   Pick<Transacao, 'valorCentavos' | 'tributosCentavos' | 'data' | 'descricao' | 'categoriaId' | 'chaveNota' | 'paisConsumo' | 'regiaoConsumo'>
-> & {
-  /** Página da nota na SEFAZ (.gov.br), para conferir */
-  urlNota?: string | null;
-  /** Ex.: "NFC-e nº 12345 · SP" */
-  resumoNota?: string;
-  /** Produtos da nota: sem os tributos informados, a estimativa é feita item a item */
-  itensNota?: ItemParaEstimar[];
-};
+>;
 
 type Props = {
   titulo: string;
@@ -142,7 +133,7 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
     valorCentavos !== null && categoria !== null && data !== null && !dataNoFuturo && avisoTributos === null;
 
   let avisoData: string | null = null;
-  if (dataNoFuturo) avisoData = 'A data não pode ser no futuro.';
+  if (dataNoFuturo) avisoData = t('lanc.form.dataFutura');
 
   function trocarTipo(novo: TipoTransacao) {
     setTipo(novo);
@@ -170,10 +161,7 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
       router.back();
     } catch (erro) {
       vibrarErro();
-      Alert.alert(
-        'Não foi possível salvar',
-        erro instanceof ErroValidacao ? erro.message : 'Tente novamente.',
-      );
+      Alert.alert(t('comum.erroGuardar'), erro instanceof ErroValidacao ? erro.message : t('comum.tenteNovamente'));
     }
   }
 
@@ -188,7 +176,7 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
           <View style={styles.topo}>
             <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12}>
               <ThemedText type="smallBold" themeColor="textSecondary">
-                Cancelar
+                {t('comum.cancelar')}
               </ThemedText>
             </Pressable>
             <ThemedText type="smallBold" accessibilityRole="header">
@@ -201,47 +189,18 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
             style={styles.flex}
             contentContainerStyle={styles.conteudo}
             keyboardShouldPersistTaps="handled">
-            {sugestao?.chaveNota && (
-              <View style={[styles.aviso, { backgroundColor: theme.accentSoft }]}>
-                <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-                  Dados lidos da nota fiscal
-                </ThemedText>
-                <ThemedText type="small">
-                  {sugestao.resumoNota ? `${sugestao.resumoNota}. ` : ''}Confira o valor, a categoria e os
-                  tributos antes de salvar.
-                </ThemedText>
-                {sugestao.urlNota && (
-                  <Pressable
-                    onPress={() => openBrowserAsync(sugestao.urlNota!)}
-                    accessibilityRole="link"
-                    hitSlop={8}>
-                    <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-                      Ver a nota no site da SEFAZ
-                    </ThemedText>
-                  </Pressable>
-                )}
-              </View>
-            )}
 
-            {!inicial && !sugestao && tipo === 'despesa' && (
-              <Botao
-                texto="Ler QR Code da nota fiscal"
-                variante="secundario"
-                icone="qrcode"
-                onPress={() => router.replace('/ler-nota')}
-              />
-            )}
 
             <View style={styles.linha} accessibilityRole="radiogroup">
               <Botao
-                texto="Despesa"
+                texto={t('lanc.despesa')}
                 variante="secundario"
                 selecionado={tipo === 'despesa'}
                 onPress={() => trocarTipo('despesa')}
                 style={styles.flex}
               />
               <Botao
-                texto="Receita"
+                texto={t('lanc.receita')}
                 variante="secundario"
                 selecionado={tipo === 'receita'}
                 onPress={() => trocarTipo('receita')}
@@ -252,24 +211,24 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
             <CampoValor
               valor={valorTexto}
               aoMudar={setValorTexto}
-              rotulo={tipo === 'despesa' ? 'Valor da despesa em reais' : 'Valor da receita em reais'}
+              rotulo={tipo === 'despesa' ? t('lanc.form.valorDespesa') : t('lanc.form.valorReceita')}
               autoFocus={!base}
             />
 
-            <Secao titulo="Descrição">
+            <Secao titulo={t('lanc.descricao')}>
               <TextInput
                 style={estiloCampo}
                 value={descricao}
                 onChangeText={setDescricao}
-                placeholder={tipo === 'despesa' ? 'Ex.: Almoço' : 'Ex.: Salário de outubro'}
+                placeholder={tipo === 'despesa' ? t('lanc.form.exDespesa') : t('lanc.form.exReceita')}
                 placeholderTextColor={theme.textSecondary}
-                accessibilityLabel="Descrição (opcional)"
+                accessibilityLabel={t('lanc.form.descricaoOpcional')}
                 maxLength={120}
                 returnKeyType="done"
               />
             </Secao>
 
-            <Secao titulo="Categoria">
+            <Secao titulo={t('lanc.categoria')}>
               <View style={styles.chips} accessibilityRole="radiogroup">
                 {categorias.map((c) => {
                   const ativa = c.id === categoria?.id;
@@ -278,7 +237,7 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
                   );
                 })}
                 {!criandoCategoria && (
-                  <Chip texto="+ Nova categoria" ativo={false} aoTocar={() => setCriandoCategoria(true)} />
+                  <Chip texto={t('lanc.form.novaCategoria')} ativo={false} aoTocar={() => setCriandoCategoria(true)} />
                 )}
               </View>
               {criandoCategoria && (
@@ -293,19 +252,19 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
               )}
             </Secao>
 
-            <Secao titulo="Data">
+            <Secao titulo={t('lanc.data')}>
               <View style={styles.chips} accessibilityRole="radiogroup">
-                <Chip texto="Hoje" ativo={opcaoData === 'hoje'} aoTocar={() => setOpcaoData('hoje')} />
-                <Chip texto="Ontem" ativo={opcaoData === 'ontem'} aoTocar={() => setOpcaoData('ontem')} />
+                <Chip texto={t('lanc.form.hoje')} ativo={opcaoData === 'hoje'} aoTocar={() => setOpcaoData('hoje')} />
+                <Chip texto={t('lanc.form.ontem')} ativo={opcaoData === 'ontem'} aoTocar={() => setOpcaoData('ontem')} />
                 <Chip
-                  texto="Outra data"
+                  texto={t('lanc.form.outraData')}
                   ativo={opcaoData === 'outra'}
                   aoTocar={() => setOpcaoData('outra')}
                 />
               </View>
               {opcaoData === 'outra' && (
                 <CampoData
-                  rotulo="Data do lançamento"
+                  rotulo={t('lanc.form.dataLancamento')}
                   valor={outraData}
                   aoMudar={setOutraData}
                   max={hoje()}
@@ -354,16 +313,16 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
             {tipo === 'despesa' && (
               <View style={[styles.recorrente, { backgroundColor: theme.backgroundElement }]}>
                 <View style={styles.flex}>
-                  <ThemedText type="smallBold">Despesa recorrente</ThemedText>
+                  <ThemedText type="smallBold">{t('lanc.recorrente.titulo')}</ThemedText>
                   <ThemedText type="small" themeColor="textSecondary">
-                    Para contas que se repetem todo mês, como aluguel e assinaturas.
+                    {t('lanc.form.recorrenteAjuda')}
                   </ThemedText>
                 </View>
                 <Switch
                   value={recorrente}
                   onValueChange={setRecorrente}
                   trackColor={{ true: theme.positive }}
-                  accessibilityLabel="Despesa recorrente"
+                  accessibilityLabel={t('lanc.recorrente.titulo')}
                 />
               </View>
             )}
@@ -372,11 +331,11 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
           <View style={styles.rodape}>
             {!categoria && valorCentavos !== null && (
               <ThemedText type="small" themeColor="textSecondary" style={styles.dica}>
-                Escolha uma categoria para salvar.
+                {t('lanc.form.escolhaCategoria')}
               </ThemedText>
             )}
             <Botao
-              texto={inicial ? 'Salvar alterações' : 'Salvar'}
+              texto={inicial ? t('lanc.form.guardarAlteracoes') : t('comum.guardar')}
               disabled={!podeSalvar}
               onPress={salvar}
             />

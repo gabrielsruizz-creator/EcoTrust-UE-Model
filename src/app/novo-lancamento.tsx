@@ -1,21 +1,12 @@
 import { useLocalSearchParams } from 'expo-router';
 
 import { FormularioLancamento, type SugestaoLancamento } from '@/components/formulario-lancamento';
-import { anexarNotaAoLancamento, retirarNotaPendente, verNotaPendente } from '@/services/nota-fiscal-service';
+import { useT } from '@/hooks/use-idioma';
 import { adicionarTransacao } from '@/services/transacoes-service';
-import type { NovaTransacao } from '@/types/financas';
-import { dataValida } from '@/utils/datas';
 
 type Parametros = {
   tipo?: string;
-  /** Vindos da leitura do QR Code da nota fiscal (tela ler-nota) */
-  chave?: string;
-  resumo?: string;
-  url?: string;
-  valor?: string;
-  tributos?: string;
-  data?: string;
-  descricao?: string;
+  /** Categoria já escolhida (atalhos do Início) */
   categoria?: string;
 };
 
@@ -24,36 +15,18 @@ function inteiro(texto?: string) {
   return texto && Number.isInteger(n) && n >= 0 ? n : undefined;
 }
 
-/** Salva a despesa e, se ela veio de uma nota lida pelo QR Code, guarda a loja e os itens junto. */
-function salvar(dados: NovaTransacao) {
-  const id = adicionarTransacao(dados);
-  const nota = dados.chaveNota ? retirarNotaPendente(dados.chaveNota) : null;
-  if (nota) anexarNotaAoLancamento(id, nota);
-}
-
 export default function NovoLancamentoScreen() {
+  const t = useT();
   const p = useLocalSearchParams<Parametros>();
-  const daNota = !!p.chave && /^\d{44}$/.test(p.chave);
-  const sugestao: SugestaoLancamento | undefined = !daNota && inteiro(p.categoria) !== undefined
-    ? { categoriaId: inteiro(p.categoria) }
-    : daNota
-      ? {
-          chaveNota: p.chave,
-          resumoNota: p.resumo,
-          urlNota: p.url,
-          valorCentavos: inteiro(p.valor),
-          tributosCentavos: inteiro(p.tributos) ?? null,
-          data: p.data && dataValida(p.data) ? p.data : undefined,
-          descricao: p.descricao,
-          categoriaId: inteiro(p.categoria),
-          itensNota: verNotaPendente(p.chave ?? '')?.itens ?? [],
-        }
-      : undefined;
+  const categoriaId = inteiro(p.categoria);
+  const sugestao: SugestaoLancamento | undefined = categoriaId !== undefined ? { categoriaId } : undefined;
 
   return (
     <FormularioLancamento
-      titulo={daNota ? 'Despesa da nota fiscal' : 'Novo lançamento'}
-      aoSalvar={salvar}
+      titulo={t('lanc.novo')}
+      aoSalvar={(dados) => {
+        adicionarTransacao(dados);
+      }}
       tipoInicial={p.tipo === 'receita' ? 'receita' : 'despesa'}
       sugestao={sugestao}
     />

@@ -7,29 +7,25 @@ import { ThemedText } from '@/components/themed-text';
 import { SeriesColors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useCategorias, useTransacoes } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
+import type { Chave } from '@/i18n';
 import { visualCategoria } from '@/utils/visual';
 
 const MAX_ATALHOS = 6;
 
-const OPCOES: { icone: NomeIcone; titulo: string; texto: string; destino: Href; principal?: boolean }[] = [
+const OPCOES: { icone: NomeIcone; titulo: Chave; texto: Chave; destino: Href; principal?: boolean }[] = [
   {
     icone: 'mais',
-    titulo: 'Despesa',
-    texto: 'Uma compra, conta ou gasto',
+    titulo: 'lanc.despesa',
+    texto: 'adicionar.despesa.texto',
     destino: { pathname: '/novo-lancamento', params: { tipo: 'despesa' } },
     principal: true,
   },
   {
-    icone: 'qrcode',
-    titulo: 'Ler QR Code da nota',
-    texto: 'Preenche valor, loja, itens e impostos',
-    destino: '/ler-nota',
-  },
-  {
     icone: 'entrada',
-    titulo: 'Receita',
-    texto: 'Salário, freelance ou outro dinheiro que entrou',
+    titulo: 'lanc.receita',
+    texto: 'adicionar.receita.texto',
     destino: { pathname: '/novo-lancamento', params: { tipo: 'receita' } },
   },
 ];
@@ -37,26 +33,27 @@ const OPCOES: { icone: NomeIcone; titulo: string; texto: string; destino: Href; 
 /** Aba "+": tudo o que dá para registrar, com atalhos das categorias mais usadas. */
 export default function AdicionarScreen() {
   const theme = useTheme();
+  const t = useT();
   const esquema = useColorScheme() === 'dark' ? 'dark' : 'light';
   const categorias = useCategorias('despesa');
   const transacoes = useTransacoes();
 
   // Categorias de despesa mais usadas; sem histórico, as primeiras padrão.
   const contagem = new Map<number, number>();
-  for (const t of transacoes) if (t.tipo === 'despesa') contagem.set(t.categoriaId, (contagem.get(t.categoriaId) ?? 0) + 1);
+  for (const tr of transacoes) if (tr.tipo === 'despesa') contagem.set(tr.categoriaId, (contagem.get(tr.categoriaId) ?? 0) + 1);
   const atalhos = [...categorias]
     .sort((a, b) => (contagem.get(b.id) ?? 0) - (contagem.get(a.id) ?? 0))
     .slice(0, MAX_ATALHOS);
 
   return (
-    <Tela titulo="Adicionar" subtitulo="O que você quer registrar?">
+    <Tela titulo={t('abas.adicionar')} subtitulo={t('adicionar.subtitulo')}>
       <Cartao style={styles.lista}>
         {OPCOES.map((o, i) => (
           <Pressable
             key={o.titulo}
             onPress={() => router.push(o.destino)}
             accessibilityRole="button"
-            accessibilityLabel={`${o.titulo}. ${o.texto}`}
+            accessibilityLabel={`${t(o.titulo)}. ${t(o.texto)}`}
             style={({ pressed }) => [
               styles.opcao,
               i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.border },
@@ -67,10 +64,10 @@ export default function AdicionarScreen() {
             </View>
             <View style={styles.flex}>
               <ThemedText type="smallBold" style={styles.tituloOpcao}>
-                {o.titulo}
+                {t(o.titulo)}
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                {o.texto}
+                {t(o.texto)}
               </ThemedText>
             </View>
             <Icone nome="avancar" cor={theme.textSecondary} tamanho={16} />
@@ -79,10 +76,10 @@ export default function AdicionarScreen() {
       </Cartao>
 
       <ThemedText type="smallBold" style={styles.secao} accessibilityRole="header">
-        Despesa rápida
+        {t('adicionar.rapida')}
       </ThemedText>
       <ThemedText type="small" themeColor="textSecondary" style={styles.dica}>
-        Toque numa categoria e é só digitar o valor.
+        {t('adicionar.rapida.dica')}
       </ThemedText>
       <View style={styles.grade}>
         {atalhos.map((c) => {
@@ -94,7 +91,7 @@ export default function AdicionarScreen() {
                 router.push({ pathname: '/novo-lancamento', params: { tipo: 'despesa', categoria: String(c.id) } })
               }
               accessibilityRole="button"
-              accessibilityLabel={`Nova despesa em ${c.nome}`}
+              accessibilityLabel={t('adicionar.novaEm', { categoria: c.nome })}
               style={({ pressed }) => [styles.atalhoToque, pressed && styles.pressionado]}>
               <Cartao style={styles.atalho}>
                 <Icone nome={visual.icone} cor={SeriesColors[esquema][visual.cor]} tamanho={22} />

@@ -34,7 +34,6 @@ const RECENTES = 5;
 /** Barra única de ações; a primeira é a principal (destaque em rosa cheio). */
 const ACOES: { icone: NomeIcone; texto: string; destino: Href }[] = [
   { icone: 'mais', texto: 'Despesa', destino: { pathname: '/novo-lancamento', params: { tipo: 'despesa' } } },
-  { icone: 'qrcode', texto: 'Ler nota', destino: '/ler-nota' },
   { icone: 'entrada', texto: 'Receita', destino: { pathname: '/novo-lancamento', params: { tipo: 'receita' } } },
   { icone: 'compartilhar', texto: 'Compartilhar', destino: '/compartilhar-impostos' },
 ];
