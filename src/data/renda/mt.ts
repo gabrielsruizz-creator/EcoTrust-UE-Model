@@ -9,9 +9,14 @@
  *   tabelas não têm salto). Usamos o texto da lei e marcamos para conferir.
  * - Tabelas de pais (iv) e (v) exigem que o contribuinte ou o cônjuge seja nacional da UE/EEE (ou residente
  *   de longa duração); assumimos que sim e avisamos.
- * - Contribuições 2026 (Class 1: 10% do salário semanal, com teto; Class 2: 15% do rendimento líquido, com teto),
- *   segundo as tabelas do MTCA e do Departamento de Segurança Social, que bloqueiam acesso automático — A CONFIRMAR.
- *   O teto é maior para quem nasceu a partir de 1962.
+ * - Contribuições Class 1 (trabalhador por conta de outrem, 18 anos ou mais), tabela MTCA 2026
+ *   (mtca.gov.mt, "Class 1 Social Security Contributions — 2026"; o site bloqueia acesso automático, a tabela
+ *   foi conferida pelo utilizador em 13/11/2026):
+ *   - salário semanal até € 229,44 (Category B): € 22,94 fixos por semana (ou 10%, se o trabalhador escolher);
+ *   - acima disso (Category C): 10% do salário semanal;
+ *   - teto (Category D): € 49,04/semana para nascidos até 31/12/1961 (a partir de € 490,39) e € 55,93/semana
+ *     para nascidos a partir de 1/1/1962 (a partir de € 559,31).
+ * - Class 2 (independentes): 15% do rendimento líquido, com teto semanal — A CONFIRMAR na tabela Class 2 do MTCA.
  */
 
 import { montarResultado, type AvisoRenda, type EntradaRenda, type ResultadoRenda, type SemRegras } from '@/data/renda/tipos';
@@ -46,14 +51,27 @@ export function impostoMalta(rendimento: number, t: TabelaMalta): { imposto: num
   return { imposto: Math.max(0, (rendimento * taxa) / 100 - subtrair), taxa };
 }
 
-/** Tetos semanais de 2026 (A CONFIRMAR): nascidos até 1961 / a partir de 1962. */
+/** Class 1 2026 (MTCA): valor fixo da Category B e tetos da Category D por geração. */
+const SALARIO_SEMANAL_CATEGORIA_B = 22_944;
+const FIXO_SEMANAL_CATEGORIA_B = 2_294;
 const TETO_SEMANAL_CLASS1 = { ate1961: 4_904, desde1962: 5_593 };
+/** Class 2 2026 — A CONFIRMAR */
 const TETO_SEMANAL_CLASS2 = { ate1961: 7_356, desde1962: 8_389 };
+
+/** Contribuição Class 1 de um ano, a partir do salário anual (52 semanas, arredondada ao cêntimo por semana). */
+export function contribuicaoClass1(brutoAnual: number, geracao: 'ate1961' | 'desde1962'): number {
+  const semanal = brutoAnual / 52;
+  const porSemana =
+    semanal <= SALARIO_SEMANAL_CATEGORIA_B
+      ? FIXO_SEMANAL_CATEGORIA_B
+      : Math.min(Math.round(semanal * 0.1), TETO_SEMANAL_CLASS1[geracao]);
+  return brutoAnual > 0 ? porSemana * 52 : 0;
+}
 
 export function calcularRendaMalta(e: EntradaRenda): ResultadoRenda | SemRegras {
   if (e.ano !== 2026) return { semRegras: 'ano' };
   const bruto = e.brutoAnualCentavos;
-  const avisos: AvisoRenda[] = ['contribuicoes-a-confirmar'];
+  const avisos: AvisoRenda[] = e.situacao === 'independente' ? ['contribuicoes-a-confirmar'] : [];
 
   const filhos = Math.max(0, e.dependentes);
   let t: TabelaMalta;
@@ -69,7 +87,7 @@ export function calcularRendaMalta(e: EntradaRenda): ResultadoRenda | SemRegras 
   const geracao = e.anoNascimento != null && e.anoNascimento <= 1961 ? 'ate1961' : 'desde1962';
   const contribuicoes =
     e.situacao === 'dependente'
-      ? Math.min((bruto * 10) / 100, TETO_SEMANAL_CLASS1[geracao] * 52)
+      ? contribuicaoClass1(bruto, geracao)
       : Math.min((bruto * 15) / 100, TETO_SEMANAL_CLASS2[geracao] * 52);
 
   // Em Malta as contribuições não abatem o rendimento coletável.

@@ -2,7 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 
 import { calcularImpostosDaRenda, impostoPorEscaloes, temRegras, type EntradaRenda, type ResultadoRenda } from '@/data/renda';
 import { detracaoTrabalho, ESCALOES_IRPEF_2026, sommaEsente } from '@/data/renda/it';
-import { impostoMalta, TABELAS_MALTA_2026 } from '@/data/renda/mt';
+import { contribuicaoClass1, impostoMalta, TABELAS_MALTA_2026 } from '@/data/renda/mt';
 import { abatimentoMinimoExistencia, DEDUCAO_ESPECIFICA_2026, ESCALOES_IRS_2026 } from '@/data/renda/pt';
 import type { CodigoPais } from '@/data/paises';
 
@@ -105,6 +105,13 @@ describe('Malta — income tax 2026 (ano de avaliação 2027)', () => {
         expect([nome, limite, Math.round(salto)]).toEqual([nome, limite, esperado]);
       }
     }
+  });
+
+  it('Class 1: salário baixo paga € 22,94 fixos por semana; no meio, 10%', () => {
+    expect(contribuicaoClass1(1_000_000, 'desde1962')).toBe(2_294 * 52);
+    // € 20 000/ano = € 384,62/semana → € 38,46
+    expect(contribuicaoClass1(2_000_000, 'desde1962')).toBe(3_846 * 52);
+    expect(calcular('MT', { brutoAnualCentavos: 2_000_000 }).avisos).not.toContain('contribuicoes-a-confirmar');
   });
 
   it('nascidos até 1961 têm teto de contribuições menor', () => {
