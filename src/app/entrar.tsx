@@ -7,12 +7,14 @@ import { TelaAcesso } from '@/components/tela-acesso';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useConta } from '@/hooks/use-sessao';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { apagarContaEDados, entrar, entrarComBiometria } from '@/services/conta-service';
 import { ErroValidacao } from '@/services/erros';
 import { primeiroNome } from '@/services/perfil-financeiro-service';
 
 export default function EntrarScreen() {
+  const t = useT();
   const theme = useTheme();
   const conta = useConta();
   const [senha, setSenha] = useState('');
@@ -35,41 +37,41 @@ export default function EntrarScreen() {
     try {
       await entrar(conta.email, senha);
     } catch (e) {
-      setErro(e instanceof ErroValidacao ? e.message : 'Não foi possível entrar. Tente novamente.');
+      setErro(e instanceof ErroValidacao ? e.message : t('acesso.erroEntrar'));
       setEntrando(false);
     }
   }
 
   function esqueciSenha() {
     Alert.alert(
-      'Esqueceu a senha?',
-      'Sua conta fica só neste celular, então não dá para recuperar a senha por e-mail. Se não lembrar, a única opção é apagar a conta e os dados deste aparelho e começar de novo.',
+      t('acesso.esqueceu'),
+      t('acesso.esqueceu.texto'),
       [
-        { text: 'Vou tentar lembrar', style: 'cancel' },
-        { text: 'Apagar conta e dados', style: 'destructive', onPress: confirmarApagar },
+        { text: t('acesso.tentarLembrar'), style: 'cancel' },
+        { text: t('pf.apagar'), style: 'destructive', onPress: confirmarApagar },
       ],
     );
   }
 
   function confirmarApagar() {
-    Alert.alert('Tem certeza?', 'Todos os seus lançamentos, orçamentos e metas serão apagados. Isso não pode ser desfeito.', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Apagar tudo', style: 'destructive', onPress: () => apagarContaEDados() },
+    Alert.alert(t('acesso.temCerteza'), t('acesso.apagar.texto'), [
+      { text: t('comum.cancelar'), style: 'cancel' },
+      { text: t('pf.apagarTudo'), style: 'destructive', onPress: () => apagarContaEDados() },
     ]);
   }
 
   const nome = conta ? primeiroNome(conta.nome) : '';
 
   return (
-    <TelaAcesso titulo={nome ? `Olá de novo, ${nome}!` : 'Entrar'} subtitulo={conta?.email ?? ''}>
+    <TelaAcesso titulo={nome ? t('acesso.olaDeNovo', { nome }) : t('acesso.entrar')} subtitulo={conta?.email ?? ''}>
       <CampoSenha
-        rotulo="Senha"
+        rotulo={t('acesso.senha')}
         value={senha}
-        onChangeText={(t) => {
-          setSenha(t);
+        onChangeText={(texto) => {
+          setSenha(texto);
           setErro(null);
         }}
-        placeholder="Sua senha"
+        placeholder={t('acesso.suaSenha')}
         autoComplete="current-password"
         textContentType="password"
         onSubmitEditing={entrarComSenha}
@@ -83,18 +85,18 @@ export default function EntrarScreen() {
       )}
 
       {entrando ? (
-        <ActivityIndicator color={theme.accent} accessibilityLabel="Entrando" />
+        <ActivityIndicator color={theme.accent} accessibilityLabel={t('acesso.entrando')} />
       ) : (
-        <Botao texto="Entrar" disabled={!senha} onPress={entrarComSenha} />
+        <Botao texto={t('acesso.entrar')} disabled={!senha} onPress={entrarComSenha} />
       )}
 
       {conta?.biometria && (
-        <Botao texto="Entrar com biometria" variante="secundario" onPress={() => entrarComBiometria()} />
+        <Botao texto={t('acesso.entrarBio')} variante="secundario" onPress={() => entrarComBiometria()} />
       )}
 
       <Pressable onPress={esqueciSenha} accessibilityRole="button" style={styles.link} hitSlop={8}>
         <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-          Esqueci minha senha
+          {t('acesso.esqueci')}
         </ThemedText>
       </Pressable>
     </TelaAcesso>

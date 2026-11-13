@@ -6,11 +6,13 @@ import { Botao } from '@/components/tela';
 import { TelaAcesso } from '@/components/tela-acesso';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { biometriaDisponivel, criarConta, definirBiometria } from '@/services/conta-service';
 import { ErroValidacao } from '@/services/erros';
 
 export default function CadastroScreen() {
+  const t = useT();
   const theme = useTheme();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -24,9 +26,9 @@ export default function CadastroScreen() {
 
   async function oferecerBiometria() {
     if (!(await biometriaDisponivel())) return;
-    Alert.alert('Entrar com biometria?', 'Use sua digital ou Face ID para abrir o EcoTrust mais rápido.', [
-      { text: 'Agora não', style: 'cancel' },
-      { text: 'Ativar', onPress: () => definirBiometria(true) },
+    Alert.alert(t('acesso.bio.titulo'), t('acesso.bio.texto'), [
+      { text: t('acesso.agoraNao'), style: 'cancel' },
+      { text: t('plus.ativar'), onPress: () => definirBiometria(true) },
     ]);
   }
 
@@ -39,22 +41,22 @@ export default function CadastroScreen() {
       // A conta já está aberta: o app segue sozinho para o perfil financeiro.
       oferecerBiometria();
     } catch (e) {
-      setErro(e instanceof ErroValidacao ? e.message : 'Não foi possível criar a conta. Tente novamente.');
+      setErro(e instanceof ErroValidacao ? e.message : t('acesso.erroCriar'));
       setSalvando(false);
     }
   }
 
   return (
     <TelaAcesso
-      titulo="Crie sua conta"
-      subtitulo="Leva menos de um minuto. Depois, o EcoTrust conhece sua vida financeira.">
+      titulo={t('acesso.criar.titulo')}
+      subtitulo={t('acesso.criar.subtitulo')}>
       <TextInput
         style={estiloCampo}
         value={nome}
         onChangeText={setNome}
-        placeholder="Seu nome"
+        placeholder={t('acesso.nome')}
         placeholderTextColor={theme.textSecondary}
-        accessibilityLabel="Seu nome"
+        accessibilityLabel={t('acesso.nome')}
         autoCapitalize="words"
         autoComplete="name"
         textContentType="name"
@@ -64,9 +66,9 @@ export default function CadastroScreen() {
         style={estiloCampo}
         value={email}
         onChangeText={setEmail}
-        placeholder="E-mail"
+        placeholder={t('acesso.email')}
         placeholderTextColor={theme.textSecondary}
-        accessibilityLabel="E-mail"
+        accessibilityLabel={t('acesso.email')}
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
@@ -74,18 +76,18 @@ export default function CadastroScreen() {
         textContentType="emailAddress"
       />
       <CampoSenha
-        rotulo="Senha"
+        rotulo={t('acesso.senha')}
         value={senha}
         onChangeText={setSenha}
-        placeholder="Senha (8+ caracteres, letras e números)"
+        placeholder={t('acesso.senha.regra')}
         autoComplete="new-password"
         textContentType="newPassword"
       />
       <CampoSenha
-        rotulo="Confirmar senha"
+        rotulo={t('acesso.confirmar')}
         value={confirmacao}
         onChangeText={setConfirmacao}
-        placeholder="Confirme a senha"
+        placeholder={t('acesso.confirmar.ph')}
         autoComplete="new-password"
         textContentType="newPassword"
         onSubmitEditing={cadastrar}
@@ -98,14 +100,13 @@ export default function CadastroScreen() {
       )}
 
       {salvando ? (
-        <ActivityIndicator color={theme.accent} accessibilityLabel="Criando conta" />
+        <ActivityIndicator color={theme.accent} accessibilityLabel={t('acesso.criando')} />
       ) : (
-        <Botao texto="Criar conta" disabled={!preenchido} onPress={cadastrar} />
+        <Botao texto={t('acesso.criar')} disabled={!preenchido} onPress={cadastrar} />
       )}
 
       <ThemedText type="small" themeColor="textSecondary" style={styles.aviso}>
-        Sua conta e seus dados ficam guardados só neste celular, com a senha protegida. Nada é enviado
-        para a internet.
+        {t('acesso.local')}
       </ThemedText>
     </TelaAcesso>
   );

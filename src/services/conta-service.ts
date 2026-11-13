@@ -13,6 +13,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 
 import { apagarConta, gravarConta, lerConta } from '@/data/conta-storage';
 import { apagarTodosOsDados } from '@/data/database';
+import { t } from '@/i18n';
 import { ErroValidacao } from '@/services/erros';
 
 const ITERACOES = 2000;
@@ -66,14 +67,14 @@ export type DadosCadastro = { nome: string; email: string; senha: string; confir
 export function validarCadastro(dados: DadosCadastro) {
   const nome = dados.nome.trim().replace(/\s+/g, ' ');
   const email = dados.email.trim().toLowerCase();
-  if (nome.length < 2) throw new ErroValidacao('Digite seu nome.');
-  if (nome.length > 40) throw new ErroValidacao('Use no máximo 40 letras no nome.');
-  if (!EMAIL_VALIDO.test(email)) throw new ErroValidacao('Digite um e-mail válido.');
-  if (dados.senha.length < 8) throw new ErroValidacao('A senha precisa ter pelo menos 8 caracteres.');
+  if (nome.length < 2) throw new ErroValidacao(t('conta.e.nome'));
+  if (nome.length > 40) throw new ErroValidacao(t('val.nomeMax', { max: 40 }));
+  if (!EMAIL_VALIDO.test(email)) throw new ErroValidacao(t('conta.e.email'));
+  if (dados.senha.length < 8) throw new ErroValidacao(t('conta.e.senhaCurta'));
   if (!/[a-zA-Z]/.test(dados.senha) || !/\d/.test(dados.senha)) {
-    throw new ErroValidacao('Use letras e números na senha.');
+    throw new ErroValidacao(t('conta.e.senhaMista'));
   }
-  if (dados.senha !== dados.confirmacao) throw new ErroValidacao('As senhas não são iguais.');
+  if (dados.senha !== dados.confirmacao) throw new ErroValidacao(t('conta.e.diferentes'));
   return { nome, email, senha: dados.senha };
 }
 
@@ -89,7 +90,7 @@ export function obterConta(): ContaPublica | null {
 
 /** Cria a conta deste aparelho e já entra nela. */
 export async function criarConta(dados: DadosCadastro) {
-  if (lerConta()) throw new ErroValidacao('Já existe uma conta neste aparelho.');
+  if (lerConta()) throw new ErroValidacao(t('conta.e.jaExiste'));
   const { nome, email, senha } = validarCadastro(dados);
   const sal = paraHex(Crypto.getRandomBytes(16));
   const hash = await calcularHash(senha, sal, ITERACOES);
@@ -107,9 +108,9 @@ export function segundosBloqueado(agora = Date.now()) {
 
 export async function entrar(email: string, senha: string) {
   const espera = segundosBloqueado();
-  if (espera > 0) throw new ErroValidacao(`Muitas tentativas. Tente de novo em ${espera} segundos.`);
+  if (espera > 0) throw new ErroValidacao(t('conta.e.espera', { n: espera }));
   const conta = lerConta();
-  if (!conta) throw new ErroValidacao('Nenhuma conta neste aparelho. Crie uma conta.');
+  if (!conta) throw new ErroValidacao(t('conta.e.semConta'));
 
   const hash = await calcularHash(senha, conta.sal, conta.iteracoes);
   if (email.trim().toLowerCase() !== conta.email || hash !== conta.hash) {
@@ -117,9 +118,9 @@ export async function entrar(email: string, senha: string) {
     if (tentativasErradas >= MAX_TENTATIVAS) {
       tentativasErradas = 0;
       bloqueadoAte = Date.now() + ESPERA_BLOQUEIO_MS;
-      throw new ErroValidacao('Muitas tentativas erradas. Aguarde 30 segundos.');
+      throw new ErroValidacao(t('conta.e.bloqueio'));
     }
-    throw new ErroValidacao('E-mail ou senha incorretos.');
+    throw new ErroValidacao(t('conta.e.incorretos'));
   }
   tentativasErradas = 0;
   atualizarSessao({ logado: true });
@@ -155,8 +156,8 @@ export async function definirBiometria(ativar: boolean) {
   if (!conta) return false;
   if (ativar) {
     const resultado = await LocalAuthentication.authenticateAsync({
-      promptMessage: 'Confirme para ativar a entrada por biometria',
-      cancelLabel: 'Cancelar',
+      promptMessage: t('acesso.bio.ativar'),
+      cancelLabel: t('comum.cancelar'),
     });
     if (!resultado.success) return false;
   }
@@ -170,8 +171,8 @@ export async function entrarComBiometria() {
   const conta = lerConta();
   if (!conta?.biometria) return false;
   const resultado = await LocalAuthentication.authenticateAsync({
-    promptMessage: 'Entrar no EcoTrust',
-    cancelLabel: 'Usar senha',
+    promptMessage: t('acesso.bio.prompt'),
+    cancelLabel: t('acesso.bio.usarSenha'),
   });
   if (resultado.success) atualizarSessao({ logado: true });
   return resultado.success;
