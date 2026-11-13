@@ -27,6 +27,7 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { SeriesColors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import {
   LIMITE_ATENCAO,
@@ -68,6 +69,7 @@ function useCoresSeries() {
 }
 
 export function GraficoOrcamento({ itens, selecionadoId, aoSelecionar, impostosPorCategoria }: Props) {
+  const t = useT();
   const theme = useTheme();
   const { cor } = useCoresSeries();
   const corSituacao = useCorSituacao();
@@ -115,17 +117,16 @@ export function GraficoOrcamento({ itens, selecionadoId, aoSelecionar, impostosP
 
   const resumoAcessivel =
     fatias.length === 0
-      ? 'Gráfico de rosca vazio: ainda não há gastos nas categorias com orçamento.'
-      : `Gráfico de rosca do gasto por categoria: ${fatias
-          .map((f) => `${f.nome} ${Math.round(f.fracao * 100)}%`)
-          .join(', ')}.${comImpostos ? ` Anel interno: ${formatarCentavos(totalImpostos)} em impostos.` : ''}`;
+      ? t('orc.graf.vazio')
+      : t('orc.graf.resumo', { lista: fatias.map((f) => `${f.nome} ${Math.round(f.fracao * 100)}%`).join(', ') }) +
+        (comImpostos ? t('orc.graf.anel', { valor: formatarCentavos(totalImpostos) }) : '');
 
   return (
     <View style={styles.container}>
       <Pressable
         onPress={aoTocarNoGrafico}
         accessibilityLabel={resumoAcessivel}
-        accessibilityHint="Use a lista abaixo para escolher uma categoria"
+        accessibilityHint={t('orc.graf.dica')}
         style={styles.grafico}>
         <Svg width={TAMANHO} height={TAMANHO}>
           {fatias.length === 0 ? (
@@ -178,7 +179,7 @@ export function GraficoOrcamento({ itens, selecionadoId, aoSelecionar, impostosP
               <View style={styles.linhaCentro}>
                 <IconeSituacao situacao={selecionado.situacao} cor={corSituacao(selecionado.situacao)} />
                 <ThemedText type="small" themeColor="textSecondary">
-                  {Math.floor(selecionado.percentual)}% do limite
+                  {t('orc.graf.doLimite', { pct: Math.floor(selecionado.percentual) })}
                 </ThemedText>
               </View>
               {comImpostos && (
@@ -189,14 +190,14 @@ export function GraficoOrcamento({ itens, selecionadoId, aoSelecionar, impostosP
                   adjustsFontSizeToFit
                   minimumFontScale={0.7}
                   style={styles.textoCentro}>
-                  {formatarCentavos(imposto(selecionado.categoriaId))} de impostos
+                  {t('orc.graf.deImpostos', { valor: formatarCentavos(imposto(selecionado.categoriaId)) })}
                 </ThemedText>
               )}
             </>
           ) : (
             <>
               <ThemedText type="small" themeColor="textSecondary" style={styles.textoCentro}>
-                Gasto no mês
+                {t('orc.graf.gastoMes')}
               </ThemedText>
               <ThemedText style={styles.valorCentro} numberOfLines={1} adjustsFontSizeToFit>
                 {formatarCentavos(totalGasto)}
@@ -279,13 +280,13 @@ export function GraficoOrcamento({ itens, selecionadoId, aoSelecionar, impostosP
         <View style={styles.linhaCentro}>
           <View style={[styles.amostraImposto, { backgroundColor: theme.text }]} />
           <ThemedText type="small" themeColor="textSecondary" style={styles.flex}>
-            Anel interno: a parte de cada gasto que foi imposto ({Math.round((totalImpostos / totalGasto) * 100)}% do total)
+            {t('orc.graf.anelLegenda', { pct: Math.round((totalImpostos / totalGasto) * 100) })}
           </ThemedText>
         </View>
       )}
       <View style={styles.legendaSituacao}>
         <EtiquetaSituacao situacao="dentro" />
-        <EtiquetaSituacao situacao="atencao" texto={`Atenção (${LIMITE_ATENCAO}%+)`} />
+        <EtiquetaSituacao situacao="atencao" texto={t('orc.sit.atencaoPct', { pct: LIMITE_ATENCAO })} />
         <EtiquetaSituacao situacao="ultrapassou" />
       </View>
     </View>

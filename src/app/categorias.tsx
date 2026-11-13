@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useCategorias } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import {
   alterarNomeCategoria,
@@ -19,12 +20,12 @@ import { ErroValidacao } from '@/services/erros';
 import type { Categoria, TipoTransacao } from '@/types/financas';
 
 export default function CategoriasScreen() {
+  const t = useT();
   const [tipo, setTipo] = useState<TipoTransacao>('despesa');
   const [criando, setCriando] = useState(false);
   const categorias = useCategorias(tipo);
   const minhas = categorias.filter((c) => !c.padrao);
   const padrao = categorias.filter((c) => c.padrao);
-  const nomeTipo = tipo === 'despesa' ? 'despesa' : 'receita';
 
   function trocarTipo(novo: TipoTransacao) {
     setTipo(novo);
@@ -32,19 +33,19 @@ export default function CategoriasScreen() {
   }
 
   return (
-    <TelaSecundaria titulo="Categorias">
+    <TelaSecundaria titulo={t('catg.titulo')}>
       <View style={styles.chips} accessibilityRole="radiogroup">
-        <Chip texto="Despesas" ativo={tipo === 'despesa'} aoTocar={() => trocarTipo('despesa')} />
-        <Chip texto="Receitas" ativo={tipo === 'receita'} aoTocar={() => trocarTipo('receita')} />
+        <Chip texto={t('transacoes.despesas')} ativo={tipo === 'despesa'} aoTocar={() => trocarTipo('despesa')} />
+        <Chip texto={t('transacoes.receitas')} ativo={tipo === 'receita'} aoTocar={() => trocarTipo('receita')} />
       </View>
 
       <ThemedText type="smallBold" accessibilityRole="header">
-        Suas categorias
+        {t('catg.suas')}
       </ThemedText>
       <Cartao>
         {minhas.length === 0 && !criando && (
           <ThemedText type="small" themeColor="textSecondary">
-            Você ainda não criou categorias de {nomeTipo}.
+            {tipo === 'despesa' ? t('catg.vazioDespesa') : t('catg.vazioReceita')}
           </ThemedText>
         )}
         {minhas.map((c) => (
@@ -57,12 +58,12 @@ export default function CategoriasScreen() {
             aoCancelar={() => setCriando(false)}
           />
         ) : (
-          <Botao texto="+ Nova categoria" variante="secundario" onPress={() => setCriando(true)} />
+          <Botao texto={t('catg.nova')} variante="secundario" onPress={() => setCriando(true)} />
         )}
       </Cartao>
 
       <ThemedText type="smallBold" accessibilityRole="header">
-        Padrão do EcoTrust
+        {t('catg.padrao')}
       </ThemedText>
       <View style={styles.chips}>
         {padrao.map((c) => (
@@ -72,14 +73,14 @@ export default function CategoriasScreen() {
         ))}
       </View>
       <ThemedText type="small" themeColor="textSecondary">
-        As categorias padrão não podem ser alteradas. Uma categoria sua só pode ser excluída se
-        não tiver lançamentos.
+        {t('catg.regras')}
       </ThemedText>
     </TelaSecundaria>
   );
 }
 
 function LinhaCategoria({ categoria }: { categoria: Categoria }) {
+  const t = useT();
   const theme = useTheme();
   const [editando, setEditando] = useState(false);
   const [nome, setNome] = useState(categoria.nome);
@@ -91,23 +92,23 @@ function LinhaCategoria({ categoria }: { categoria: Categoria }) {
       setEditando(false);
       setErro(null);
     } catch (e) {
-      setErro(e instanceof ErroValidacao ? e.message : 'Não foi possível renomear.');
+      setErro(e instanceof ErroValidacao ? e.message : t('catg.erroRenomear'));
     }
   }
 
   function confirmarExclusao() {
-    Alert.alert('Excluir categoria', `Excluir "${categoria.nome}"?`, [
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert(t('catg.eliminar.titulo'), t('catg.eliminar.texto', { nome: categoria.nome }), [
+      { text: t('comum.cancelar'), style: 'cancel' },
       {
-        text: 'Excluir',
+        text: t('comum.eliminar'),
         style: 'destructive',
         onPress: () => {
           try {
             excluirCategoria(categoria.id);
           } catch (e) {
             Alert.alert(
-              'Não foi possível excluir',
-              e instanceof ErroValidacao ? e.message : 'Tente novamente.',
+              t('catg.erroEliminar'),
+              e instanceof ErroValidacao ? e.message : t('comum.tenteNovamente'),
             );
           }
         },
@@ -121,11 +122,11 @@ function LinhaCategoria({ categoria }: { categoria: Categoria }) {
         <TextInput
           style={[styles.campo, { color: theme.text, backgroundColor: theme.background }]}
           value={nome}
-          onChangeText={(t) => {
-            setNome(t);
+          onChangeText={(texto) => {
+            setNome(texto);
             setErro(null);
           }}
-          accessibilityLabel={`Novo nome para ${categoria.nome}`}
+          accessibilityLabel={t('catg.novoNome', { nome: categoria.nome })}
           maxLength={MAX_NOME_CATEGORIA}
           autoFocus
           returnKeyType="done"
@@ -138,7 +139,7 @@ function LinhaCategoria({ categoria }: { categoria: Categoria }) {
         )}
         <View style={styles.botoes}>
           <Botao
-            texto="Cancelar"
+            texto={t('comum.cancelar')}
             variante="secundario"
             style={styles.flex}
             onPress={() => {
@@ -147,7 +148,7 @@ function LinhaCategoria({ categoria }: { categoria: Categoria }) {
               setEditando(false);
             }}
           />
-          <Botao texto="Salvar" style={styles.flex} disabled={!nome.trim()} onPress={salvar} />
+          <Botao texto={t('comum.guardar')} style={styles.flex} disabled={!nome.trim()} onPress={salvar} />
         </View>
       </View>
     );
@@ -156,10 +157,10 @@ function LinhaCategoria({ categoria }: { categoria: Categoria }) {
   return (
     <View style={styles.linha}>
       <ThemedText style={styles.flex}>{categoria.nome}</ThemedText>
-      <AcaoTexto texto="Renomear" rotulo={`Renomear ${categoria.nome}`} aoTocar={() => setEditando(true)} />
+      <AcaoTexto texto={t('catg.renomear')} rotulo={t('catg.renomearDe', { nome: categoria.nome })} aoTocar={() => setEditando(true)} />
       <AcaoTexto
-        texto="Excluir"
-        rotulo={`Excluir ${categoria.nome}`}
+        texto={t('comum.eliminar')}
+        rotulo={t('catg.eliminarDe', { nome: categoria.nome })}
         cor={theme.negative}
         aoTocar={confirmarExclusao}
       />

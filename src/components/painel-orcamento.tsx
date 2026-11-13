@@ -9,6 +9,8 @@ import { Botao, Cartao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useImpostometroUE, useOrcamentos } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
+import { t as traduzirAgora } from '@/i18n';
 import type { StatusOrcamento } from '@/services/orcamento-service';
 import { mesAtual, nomeDoMes } from '@/utils/datas';
 import { formatarCentavos } from '@/utils/moeda';
@@ -23,6 +25,7 @@ function abrirEdicao(categoria?: number | 'geral') {
 
 /** Conteúdo do Orçamento, mostrado dentro da aba Planejar. */
 export function PainelOrcamento() {
+  const t = useT();
   const mes = mesAtual();
   const orcamentos = useOrcamentos(mes);
   const impostometro = useImpostometroUE(mes);
@@ -40,44 +43,41 @@ export function PainelOrcamento() {
       {/* Orçamento geral do mês */}
       <Cartao>
         <ThemedText type="small" themeColor="textSecondary">
-          Orçamento mensal
+          {t('orc.mensal')}
         </ThemedText>
         {orcamentos.geral ? (
           <ResumoGeral status={orcamentos.geral} />
         ) : (
           <>
             <ThemedText type="small">
-              Defina quanto você quer gastar por mês, no total. O EcoTrust avisa quando estiver
-              chegando perto do limite.
+              {t('orc.definaGeral')}
             </ThemedText>
             {orcamentos.sugestaoGeralCentavos !== null && orcamentos.sugestaoGeralCentavos > 0 && (
               <ThemedText type="small" themeColor="textSecondary">
-                Sugestão pelo seu perfil (renda menos a meta de economia):{' '}
-                {formatarCentavos(orcamentos.sugestaoGeralCentavos)}
+                {t('orc.sugestaoPerfil', { valor: formatarCentavos(orcamentos.sugestaoGeralCentavos) })}
               </ThemedText>
             )}
-            <Botao texto="Definir orçamento mensal" onPress={() => abrirEdicao('geral')} />
+            <Botao texto={t('orc.definir')} onPress={() => abrirEdicao('geral')} />
           </>
         )}
       </Cartao>
 
       {/* Gráfico interativo por categoria */}
       <ThemedText type="smallBold" accessibilityRole="header">
-        Por categoria
+        {t('orc.porCategoria')}
       </ThemedText>
       {orcamentos.categorias.length === 0 ? (
         <Cartao>
           <ThemedText type="small" themeColor="textSecondary">
-            Defina limites para as categorias em que você mais gasta, como Alimentação ou Lazer.
+            {t('orc.definaCategorias')}
           </ThemedText>
-          <Botao texto="+ Orçamento por categoria" onPress={() => abrirEdicao()} />
+          <Botao texto={t('orc.maisCategoria')} onPress={() => abrirEdicao()} />
         </Cartao>
       ) : (
         <>
           <Cartao>
             <ThemedText type="small" themeColor="textSecondary">
-              Como seu gasto se divide entre as categorias com orçamento. Toque numa fatia ou na
-              lista para ver os detalhes.
+              {t('orc.comoDivide')}
             </ThemedText>
             <GraficoOrcamento
               itens={orcamentos.categorias}
@@ -95,7 +95,7 @@ export function PainelOrcamento() {
           )}
 
           <Botao
-            texto="+ Orçamento por categoria"
+            texto={t('orc.maisCategoria')}
             variante="secundario"
             onPress={() => abrirEdicao()}
           />
@@ -103,47 +103,49 @@ export function PainelOrcamento() {
       )}
 
       <ThemedText type="small" themeColor="textSecondary">
-        Os limites valem para todos os meses, até você mudar.
+        {t('orc.valemTodos')}
       </ThemedText>
     </>
   );
 }
 
 function ResumoGeral({ status }: { status: StatusOrcamento }) {
+  const t = useT();
   const cor = useCorSituacao()(status.situacao);
   return (
     <>
       <View style={styles.linhaValores}>
         <ThemedText style={styles.valorGrande}>{formatarCentavos(status.gastoCentavos)}</ThemedText>
-        <ThemedText themeColor="textSecondary">de {formatarCentavos(status.limiteCentavos)}</ThemedText>
+        <ThemedText themeColor="textSecondary">{t('orc.deLimite', { valor: formatarCentavos(status.limiteCentavos) })}</ThemedText>
       </View>
       <BarraProgresso
         percentual={status.percentual}
         cor={cor}
         altura={10}
-        rotuloAcessivel="Orçamento mensal usado"
+        rotuloAcessivel={t('orc.mensalUsado')}
       />
       <View style={styles.linhaValores}>
         <EtiquetaSituacao situacao={status.situacao} />
         <ThemedText type="small" themeColor="textSecondary">
-          {Math.floor(status.percentual)}% usado
+          {t('orc.usado', { pct: Math.floor(status.percentual) })}
         </ThemedText>
       </View>
       <ThemedText type="small">{status.mensagem ?? textoRestante(status)}</ThemedText>
-      <Botao texto="Alterar orçamento mensal" variante="secundario" onPress={() => abrirEdicao('geral')} />
+      <Botao texto={t('orc.alterar')} variante="secundario" onPress={() => abrirEdicao('geral')} />
     </>
   );
 }
 
 function textoRestante(status: StatusOrcamento) {
-  if (status.restanteCentavos <= 0) return 'Você chegou ao limite.';
-  const base = `Restam ${formatarCentavos(status.restanteCentavos)}`;
+  if (status.restanteCentavos <= 0) return traduzirAgora('orc.chegou');
+  const valor = formatarCentavos(status.restanteCentavos);
   return status.porDiaCentavos !== null
-    ? `${base}, cerca de ${formatarCentavos(status.porDiaCentavos)} por dia até o fim do mês.`
-    : `${base}.`;
+    ? traduzirAgora('orc.restamDia', { valor, dia: formatarCentavos(status.porDiaCentavos) })
+    : traduzirAgora('orc.restam', { valor });
 }
 
 function DetalheCategoria({ status, impostosCentavos }: { status: StatusOrcamento; impostosCentavos: number }) {
+  const t = useT();
   const cor = useCorSituacao()(status.situacao);
   return (
     <Cartao>
@@ -156,19 +158,21 @@ function DetalheCategoria({ status, impostosCentavos }: { status: StatusOrcament
       <View style={styles.linhaValores}>
         <ThemedText style={styles.valorMedio}>{formatarCentavos(status.gastoCentavos)}</ThemedText>
         <ThemedText themeColor="textSecondary">
-          de {formatarCentavos(status.limiteCentavos)} · {Math.floor(status.percentual)}%
+          {t('orc.dePct', { valor: formatarCentavos(status.limiteCentavos), pct: Math.floor(status.percentual) })}
         </ThemedText>
       </View>
       <BarraProgresso
         percentual={status.percentual}
         cor={cor}
-        rotuloAcessivel={`Orçamento de ${status.nome} usado`}
+        rotuloAcessivel={t('orc.categoriaUsado', { nome: status.nome })}
       />
       <ThemedText type="small">{status.mensagem ?? textoRestante(status)}</ThemedText>
       {impostosCentavos > 0 && status.gastoCentavos > 0 && (
         <ThemedText type="small" themeColor="textSecondary">
-          Desse gasto, cerca de {formatarCentavos(impostosCentavos)} (
-          {Math.round((impostosCentavos / status.gastoCentavos) * 100)}%) foram impostos.
+          {t('orc.impostosDoGasto', {
+            valor: formatarCentavos(impostosCentavos),
+            pct: Math.round((impostosCentavos / status.gastoCentavos) * 100),
+          })}
         </ThemedText>
       )}
       {status.mensagem && status.situacao === 'atencao' && (
@@ -177,7 +181,7 @@ function DetalheCategoria({ status, impostosCentavos }: { status: StatusOrcament
         </ThemedText>
       )}
       <Botao
-        texto="Editar limite"
+        texto={t('orc.editarLimite')}
         variante="secundario"
         onPress={() => status.categoriaId !== null && abrirEdicao(status.categoriaId)}
       />

@@ -3,7 +3,7 @@
  * Todos os campos pessoais são opcionais: a pessoa preenche o que quiser.
  */
 
-import { t } from '@/i18n';
+import { localeAtual, t } from '@/i18n';
 import { obterPerfilPessoal, salvarPerfilPessoal } from '@/repositories/perfil-pessoal-repository';
 import { obterSituacaoFinanceira, salvarSituacaoFinanceira } from '@/repositories/situacao-repository';
 import { ErroValidacao } from '@/services/erros';
@@ -131,7 +131,7 @@ export function iniciais(nome: string) {
   if (partes.length === 0) return '?';
   const primeira = partes[0][0];
   const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
-  return (primeira + ultima).toLocaleUpperCase('pt-BR');
+  return (primeira + ultima).toLocaleUpperCase(localeAtual());
 }
 
 /** Quantos dos 5 dados pessoais foram preenchidos (o avatar não conta). */

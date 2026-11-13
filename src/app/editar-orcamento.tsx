@@ -18,6 +18,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useCategorias, useDashboard, useOrcamentos } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { ErroValidacao } from '@/services/erros';
 import {
   definirOrcamento,
@@ -34,6 +35,7 @@ import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
  * ou ausente (novo orçamento por categoria: o usuário escolhe a categoria).
  */
 export default function EditarOrcamentoScreen() {
+  const t = useT();
   const { categoria: parametro } = useLocalSearchParams<{ categoria?: string }>();
   const geral = parametro === 'geral';
   const idFixo = parametro && !geral ? Number(parametro) : null;
@@ -64,19 +66,19 @@ export default function EditarOrcamentoScreen() {
   const sugestao = useMemo(() => {
     if (geral) {
       return orcamentos.sugestaoGeralCentavos
-        ? { valor: orcamentos.sugestaoGeralCentavos, texto: 'Sua renda menos a meta de economia' }
+        ? { valor: orcamentos.sugestaoGeralCentavos, texto: t('orc.sugestaoGeral') }
         : null;
     }
     if (categoriaId === null) return null;
     const media = sugerirLimiteCategoria(categoriaId, mes);
-    return media ? { valor: media, texto: 'Média dos seus gastos nos últimos 3 meses' } : null;
-  }, [geral, categoriaId, mes, orcamentos.sugestaoGeralCentavos]);
+    return media ? { valor: media, texto: t('orc.sugestaoMedia') } : null;
+  }, [geral, categoriaId, mes, orcamentos.sugestaoGeralCentavos, t]);
 
   const titulo = geral
-    ? 'Orçamento mensal'
+    ? t('orc.mensal')
     : idFixo !== null
-      ? `Orçamento de ${nomeCategoria ?? 'categoria'}`
-      : 'Novo orçamento';
+      ? t('orc.de', { nome: nomeCategoria ?? t('orc.categoria') })
+      : t('orc.novo');
   const podeSalvar = valor !== null && (geral || categoriaId !== null);
 
   function salvar() {
@@ -88,17 +90,17 @@ export default function EditarOrcamentoScreen() {
     } catch (erro) {
       vibrarErro();
       Alert.alert(
-        'Não foi possível salvar',
-        erro instanceof ErroValidacao ? erro.message : 'Tente novamente.',
+        t('comum.erroGuardar'),
+        erro instanceof ErroValidacao ? erro.message : t('comum.tenteNovamente'),
       );
     }
   }
 
   function confirmarRemocao() {
-    Alert.alert('Remover orçamento', 'O limite deixa de existir, mas seus lançamentos continuam.', [
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert(t('orc.remover'), t('orc.remover.texto'), [
+      { text: t('comum.cancelar'), style: 'cancel' },
       {
-        text: 'Remover',
+        text: t('orc.removerBotao'),
         style: 'destructive',
         onPress: () => {
           excluirOrcamento(categoriaId);
@@ -129,10 +131,10 @@ export default function EditarOrcamentoScreen() {
           <ScrollView contentContainerStyle={styles.conteudo} keyboardShouldPersistTaps="handled">
             {!geral && idFixo === null && (
               <View style={styles.secao}>
-                <ThemedText type="smallBold">Categoria</ThemedText>
+                <ThemedText type="smallBold">{t('orc.categoria')}</ThemedText>
                 {disponiveis.length === 0 ? (
                   <ThemedText type="small" themeColor="textSecondary">
-                    Todas as categorias de despesa já têm orçamento.
+                    {t('orc.todasTem')}
                   </ThemedText>
                 ) : (
                   <View style={styles.chips} accessibilityRole="radiogroup">
@@ -151,17 +153,17 @@ export default function EditarOrcamentoScreen() {
 
             <View style={styles.secao}>
               <ThemedText type="smallBold">
-                {geral ? 'Quanto você quer gastar por mês, no total?' : 'Limite por mês'}
+                {geral ? t('orc.quantoTotal') : t('orc.limiteMes')}
               </ThemedText>
               <CampoValor
                 valor={valorTexto}
                 aoMudar={setValorTexto}
-                rotulo={geral ? 'Limite do orçamento mensal em reais' : 'Limite da categoria em reais'}
+                rotulo={geral ? t('orc.limiteGeral.rotulo') : t('orc.limiteCategoria.rotulo')}
                 autoFocus={limiteAtual === null && (geral || idFixo !== null)}
               />
               {gastoNoMes !== null && (
                 <ThemedText type="small" themeColor="textSecondary">
-                  Gasto neste mês até agora: {formatarCentavos(gastoNoMes)}
+                  {t('orc.gastoAteAgora', { valor: formatarCentavos(gastoNoMes) })}
                 </ThemedText>
               )}
             </View>
@@ -173,7 +175,7 @@ export default function EditarOrcamentoScreen() {
                 </ThemedText>
                 <View style={styles.chips}>
                   <Chip
-                    texto={`Usar ${formatarCentavos(sugestao.valor)}`}
+                    texto={t('orc.usar', { valor: formatarCentavos(sugestao.valor) })}
                     ativo={valor === sugestao.valor}
                     aoTocar={() => setValorTexto(centavosParaTexto(sugestao.valor))}
                   />
@@ -183,9 +185,9 @@ export default function EditarOrcamentoScreen() {
           </ScrollView>
 
           <View style={styles.rodape}>
-            <Botao texto="Salvar" disabled={!podeSalvar} onPress={salvar} />
+            <Botao texto={t('comum.guardar')} disabled={!podeSalvar} onPress={salvar} />
             {limiteAtual !== null && (
-              <Botao texto="Remover orçamento" variante="perigo" onPress={confirmarRemocao} />
+              <Botao texto={t('orc.remover')} variante="perigo" onPress={confirmarRemocao} />
             )}
           </View>
         </KeyboardAvoidingView>

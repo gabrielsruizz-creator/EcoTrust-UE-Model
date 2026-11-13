@@ -45,36 +45,36 @@ export function obterTransacao(id: number): Transacao | null {
 /** Valida e normaliza os dados de um lançamento (usado ao criar e ao editar). */
 function validarTransacao(dados: NovaTransacao, idAtual?: number): NovaTransacao {
   if (!Number.isInteger(dados.valorCentavos) || dados.valorCentavos <= 0) {
-    throw new ErroValidacao('Informe um valor maior que zero.');
+    throw new ErroValidacao(t('tx.e.maiorZero'));
   }
   if (dados.valorCentavos > MAX_VALOR_CENTAVOS) {
-    throw new ErroValidacao('Esse valor parece alto demais. Confira o número digitado.');
+    throw new ErroValidacao(t('tx.e.alto'));
   }
   if (!dataValida(dados.data) || dados.data < DATA_MINIMA) {
-    throw new ErroValidacao('Data inválida.');
+    throw new ErroValidacao(t('tx.e.data'));
   }
   if (dados.data > hoje()) {
-    throw new ErroValidacao('A data não pode ser no futuro. Registre o lançamento quando ele acontecer.');
+    throw new ErroValidacao(t('tx.e.futuro'));
   }
 
   const categoria = buscarCategoria(dados.categoriaId);
   if (!categoria || categoria.tipo !== dados.tipo) {
-    throw new ErroValidacao('Escolha uma categoria válida.');
+    throw new ErroValidacao(t('tx.e.categoria'));
   }
   // Zero não conta como valor informado: o Impostômetro estima pelos produtos ou pela categoria.
   const tributos = dados.tipo === 'despesa' && dados.tributosCentavos ? dados.tributosCentavos : null;
   if (tributos !== null && (!Number.isInteger(tributos) || tributos < 0)) {
-    throw new ErroValidacao('Valor dos tributos inválido.');
+    throw new ErroValidacao(t('tx.e.tributos'));
   }
   if (tributos !== null && tributos >= dados.valorCentavos) {
-    throw new ErroValidacao('Os tributos da nota precisam ser menores que o valor da compra.');
+    throw new ErroValidacao(t('tx.e.tributosMaior'));
   }
   const chaveNota = dados.tipo === 'despesa' && dados.chaveNota && /^\d{44}$/.test(dados.chaveNota) ? dados.chaveNota : null;
   if (chaveNota) {
     const existente = buscarTransacaoPorChaveNota(chaveNota);
     if (existente && existente.id !== idAtual) {
       throw new ErroValidacao(
-        `Esta nota já foi registrada em ${formatarData(existente.data)} (${existente.descricao || existente.categoriaNome}).`,
+        t('tx.e.notaRepetida', { data: formatarData(existente.data), descricao: existente.descricao || existente.categoriaNome }),
       );
     }
   }
@@ -109,7 +109,7 @@ export function editarTransacao(id: number, dados: NovaTransacao) {
   const validos = validarTransacao(dados, id);
   const atualizou = atualizarTransacao(id, validos);
   if (!atualizou) {
-    throw new ErroValidacao('Este lançamento não existe mais.');
+    throw new ErroValidacao(t('tx.e.naoExiste'));
   }
   // O país só muda quando o formulário o enviou (assim, editar não apaga um país vindo do GPS ou do recibo).
   if (dados.paisConsumo !== undefined) {

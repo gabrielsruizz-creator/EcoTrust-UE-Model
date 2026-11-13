@@ -3,6 +3,7 @@
  * `calcularOrcamentos` é puro; `obterOrcamentos` busca os dados no banco.
  */
 
+import { localeAtual, t } from '@/i18n';
 import { buscarCategoria, listarCategorias } from '@/repositories/categorias-repository';
 import {
   listarOrcamentos,
@@ -67,12 +68,15 @@ function montarStatus(
   const restante = limiteCentavos - gastoCentavos;
   const situacao: SituacaoOrcamento =
     gastoCentavos > limiteCentavos ? 'ultrapassou' : percentual >= LIMITE_ATENCAO ? 'atencao' : 'dentro';
-  const doQue =
-    categoriaId === null ? 'seu orçamento mensal' : `seu orçamento de ${nome.toLocaleLowerCase('pt-BR')}`;
-
+  const geral = categoriaId === null;
   let mensagem: string | null = null;
-  if (situacao === 'ultrapassou') mensagem = `Você ultrapassou ${doQue} em ${formatarCentavos(-restante)}.`;
-  else if (situacao === 'atencao') mensagem = `Você já utilizou ${Math.floor(percentual)}% do ${doQue}.`;
+  if (situacao === 'ultrapassou') {
+    const valor = formatarCentavos(-restante);
+    mensagem = geral ? t('orc.passou.geral', { valor }) : t('orc.passou.categoria', { nome, valor });
+  } else if (situacao === 'atencao') {
+    const pct = Math.floor(percentual);
+    mensagem = geral ? t('orc.atencao.geral', { pct }) : t('orc.atencao.categoria', { nome, pct });
+  }
 
   return {
     categoriaId,
@@ -113,7 +117,7 @@ export function calcularOrcamentos({
 
   for (const o of orcamentos) {
     if (o.categoriaId === null) {
-      geral = montarStatus(null, 'Orçamento mensal', o.limiteCentavos, resumo.despesasCentavos, dias);
+      geral = montarStatus(null, t('orc.mensal'), o.limiteCentavos, resumo.despesasCentavos, dias);
       continue;
     }
     const categoria = categorias.find((c) => c.id === o.categoriaId);
@@ -123,7 +127,7 @@ export function calcularOrcamentos({
     );
   }
 
-  porCategoria.sort((a, b) => b.percentual - a.percentual || a.nome.localeCompare(b.nome, 'pt-BR'));
+  porCategoria.sort((a, b) => b.percentual - a.percentual || a.nome.localeCompare(b.nome, localeAtual()));
 
   const renda = perfil?.rendaMensalCentavos ?? 0;
   return {
@@ -187,7 +191,7 @@ export function montarFatias(categorias: StatusOrcamento[]): FatiaOrcamento[] {
     inicio += fracao;
   }
   if (outras > 0) {
-    fatias.push({ categoriaId: null, nome: 'Outras', valorCentavos: outras, fracao: outras / total, inicio, indiceCor: null });
+    fatias.push({ categoriaId: null, nome: t('orc.outras'), valorCentavos: outras, fracao: outras / total, inicio, indiceCor: null });
   }
   return fatias;
 }
@@ -222,15 +226,15 @@ export function sugerirLimiteCategoria(categoriaId: number, mes: string): number
 
 export function definirOrcamento(categoriaId: number | null, limiteCentavos: number) {
   if (!Number.isInteger(limiteCentavos) || limiteCentavos <= 0) {
-    throw new ErroValidacao('Informe um limite maior que zero.');
+    throw new ErroValidacao(t('orc.e.maiorZero'));
   }
   if (limiteCentavos > MAX_LIMITE_CENTAVOS) {
-    throw new ErroValidacao('Esse limite parece alto demais. Confira o número digitado.');
+    throw new ErroValidacao(t('orc.e.alto'));
   }
   if (categoriaId !== null) {
     const categoria = buscarCategoria(categoriaId);
     if (!categoria || categoria.tipo !== 'despesa') {
-      throw new ErroValidacao('Escolha uma categoria de despesa.');
+      throw new ErroValidacao(t('orc.e.categoria'));
     }
   }
   salvarOrcamento(categoriaId, limiteCentavos);

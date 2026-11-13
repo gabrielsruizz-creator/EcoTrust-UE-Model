@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { t } from '@/i18n';
 import type { SituacaoOrcamento } from '@/services/orcamento-service';
 
 export const ICONE_SITUACAO: Record<SituacaoOrcamento, string> = {
@@ -12,9 +13,15 @@ export const ICONE_SITUACAO: Record<SituacaoOrcamento, string> = {
 };
 
 export const ROTULO_SITUACAO: Record<SituacaoOrcamento, string> = {
-  dentro: 'Dentro',
-  atencao: 'Atenção',
-  ultrapassou: 'Ultrapassou',
+  get dentro() {
+    return t('orc.sit.dentro');
+  },
+  get atencao() {
+    return t('orc.sit.atencao');
+  },
+  get ultrapassou() {
+    return t('orc.sit.ultrapassou');
+  },
 };
 
 export function useCorSituacao() {

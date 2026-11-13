@@ -3,6 +3,7 @@
  */
 
 import { perfilPorNome, perfilTributarioValido, type PerfilTributarioId } from '@/data/perfis-consumo';
+import { localeAtual, t } from '@/i18n';
 import {
   buscarCategoria,
   contarTransacoesDaCategoria,
@@ -24,29 +25,29 @@ export function obterCategorias(tipo?: TipoTransacao): Categoria[] {
 /** Tira espaços extras e deixa a primeira letra maiúscula: "  pets  da casa " → "Pets da casa". */
 export function normalizarNomeCategoria(nome: string) {
   const limpo = nome.trim().replace(/\s+/g, ' ');
-  return limpo.charAt(0).toLocaleUpperCase('pt-BR') + limpo.slice(1);
+  return limpo.charAt(0).toLocaleUpperCase(localeAtual()) + limpo.slice(1);
 }
 
 function mesmoNome(a: string, b: string) {
-  return a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }) === 0;
+  return a.localeCompare(b, localeAtual(), { sensitivity: 'base' }) === 0;
 }
 
 function validarNome(nome: string, tipo: TipoTransacao, ignorarId?: number) {
   const normalizado = normalizarNomeCategoria(nome);
-  if (!normalizado) throw new ErroValidacao('Digite o nome da categoria.');
+  if (!normalizado) throw new ErroValidacao(t('catg.e.nome'));
   if (normalizado.length > MAX_NOME_CATEGORIA) {
-    throw new ErroValidacao(`Use no máximo ${MAX_NOME_CATEGORIA} letras no nome da categoria.`);
+    throw new ErroValidacao(t('catg.e.max', { max: MAX_NOME_CATEGORIA }));
   }
   const existente = listarCategorias(tipo).find((c) => c.id !== ignorarId && mesmoNome(c.nome, normalizado));
   if (existente) {
-    throw new ErroValidacao(`Você já tem a categoria "${existente.nome}".`);
+    throw new ErroValidacao(t('catg.e.existe', { nome: existente.nome }));
   }
   return normalizado;
 }
 
 function buscarCategoriaDoUsuario(id: number) {
   const categoria = buscarCategoria(id);
-  if (!categoria) throw new ErroValidacao('Esta categoria não existe mais.');
+  if (!categoria) throw new ErroValidacao(t('catg.e.naoExiste'));
   if (categoria.padrao) throw new ErroValidacao('As categorias padrão do EcoTrust não podem ser alteradas.');
   return categoria;
 }
@@ -80,8 +81,8 @@ export function sugerirCategoriaPorLoja(nomeLoja: string): number | null {
 /** Muda o tipo de consumo de uma categoria de despesa (vale também para as padrão). */
 export function alterarPerfilTributario(id: number, perfil: PerfilTributarioId) {
   const categoria = buscarCategoria(id);
-  if (!categoria || categoria.tipo !== 'despesa') throw new ErroValidacao('Esta categoria não existe mais.');
-  if (!perfilTributarioValido(perfil)) throw new ErroValidacao('Escolha um tipo de consumo válido.');
+  if (!categoria || categoria.tipo !== 'despesa') throw new ErroValidacao(t('catg.e.naoExiste'));
+  if (!perfilTributarioValido(perfil)) throw new ErroValidacao(t('catg.e.perfil'));
   definirPerfilTributario(id, perfil);
 }
 
@@ -90,9 +91,7 @@ export function excluirCategoria(id: number) {
   buscarCategoriaDoUsuario(id);
   const quantidade = contarTransacoesDaCategoria(id);
   if (quantidade > 0) {
-    throw new ErroValidacao(
-      `Esta categoria tem ${quantidade} ${quantidade === 1 ? 'lançamento' : 'lançamentos'}. Mude a categoria deles antes de excluí-la.`,
-    );
+    throw new ErroValidacao(t('catg.e.temMovimentos', { lancamentos: t('bk.lancamentos', { n: quantidade }) }));
   }
   removerCategoria(id);
 }
