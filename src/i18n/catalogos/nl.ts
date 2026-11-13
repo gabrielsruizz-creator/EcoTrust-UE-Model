@@ -57,4 +57,11 @@ export const nl: Catalogo = {
   'fiscal.erro.rendimento': 'Ongeldig jaarinkomen. Controleer het bedrag.',
   'fiscal.erro.dependentes': 'Ongeldig aantal personen ten laste.',
   'fiscal.erro.combustivel': 'Ongeldig brandstoftype.',
+
+  // Datas
+  'datas.agora': 'zojuist',
+  'datas.haMinutos': { one: '{n} min geleden', other: '{n} min geleden' },
+  'datas.haHoras': { one: '{n} u geleden', other: '{n} u geleden' },
+  'datas.ontem': 'gisteren',
+  'datas.haDias': { one: '{n} dag geleden', other: '{n} dagen geleden' },
 };

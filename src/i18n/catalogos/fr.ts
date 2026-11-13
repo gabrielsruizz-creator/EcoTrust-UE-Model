@@ -58,4 +58,11 @@ export const fr: Catalogo = {
   'fiscal.erro.rendimento': 'Revenu annuel non valide. Vérifiez le montant.',
   'fiscal.erro.dependentes': 'Nombre de personnes à charge non valide.',
   'fiscal.erro.combustivel': 'Type de carburant non valide.',
+
+  // Datas
+  'datas.agora': "à l'instant",
+  'datas.haMinutos': { one: 'il y a {n} min', other: 'il y a {n} min' },
+  'datas.haHoras': { one: 'il y a {n} h', other: 'il y a {n} h' },
+  'datas.ontem': 'hier',
+  'datas.haDias': { one: 'il y a {n} jour', other: 'il y a {n} jours' },
 };

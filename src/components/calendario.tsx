@@ -13,7 +13,10 @@ import { Botao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useIdioma } from '@/hooks/use-idioma';
+import { localeAtual } from '@/i18n';
 import {
+  diasDaSemana,
   formatarDataPorExtenso,
   hoje,
   montarGradeDoMes,
@@ -22,16 +25,10 @@ import {
 } from '@/utils/datas';
 import { vibrarSelecao } from '@/utils/vibracao';
 
-const DIAS_SEMANA = [
-  { curto: 'D', nome: 'domingo' },
-  { curto: 'S', nome: 'segunda' },
-  { curto: 'T', nome: 'terça' },
-  { curto: 'Q', nome: 'quarta' },
-  { curto: 'Q', nome: 'quinta' },
-  { curto: 'S', nome: 'sexta' },
-  { curto: 'S', nome: 'sábado' },
-];
-const MESES_CURTOS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+/** Meses abreviados no idioma atual ("jan.", "Jan", "janv."...). */
+function mesesCurtos() {
+  return Array.from({ length: 12 }, (_, i) => new Date(2024, i, 1).toLocaleDateString(localeAtual(), { month: 'short' }));
+}
 const ANOS_POR_PAGINA = 12;
 
 type Visao = 'dias' | 'meses' | 'anos';
@@ -58,6 +55,8 @@ function limitarMes(mes: string, min?: string, max?: string) {
 
 export function Calendario({ valor, aoEscolher, min, max, marcados, mesInicial, visaoInicial = 'dias' }: PropsCalendario) {
   const theme = useTheme();
+  // Renderiza de novo quando o idioma muda (nomes dos dias e meses).
+  useIdioma();
   const dataHoje = hoje();
   const [mes, setMes] = useState(() => limitarMes(valor?.slice(0, 7) ?? mesInicial ?? dataHoje.slice(0, 7), min, max));
   const [visao, setVisao] = useState<Visao>(visaoInicial);
@@ -147,7 +146,7 @@ export function Calendario({ valor, aoEscolher, min, max, marcados, mesInicial, 
       {visao === 'dias' && (
         <>
           <View style={styles.semana} importantForAccessibility="no-hide-descendants">
-            {DIAS_SEMANA.map((d) => (
+            {diasDaSemana().map((d) => (
               <ThemedText key={d.nome} type="small" themeColor="textSecondary" style={styles.diaSemana}>
                 {d.curto}
               </ThemedText>
@@ -203,7 +202,7 @@ export function Calendario({ valor, aoEscolher, min, max, marcados, mesInicial, 
 
       {visao === 'meses' && (
         <View style={styles.grade}>
-          {MESES_CURTOS.map((nome, i) => {
+          {mesesCurtos().map((nome, i) => {
             const valorMes = `${ano}-${String(i + 1).padStart(2, '0')}`;
             const fora = (mesMin !== undefined && valorMes < mesMin) || (mesMax !== undefined && valorMes > mesMax);
             const atual = valor?.slice(0, 7) === valorMes;
@@ -408,7 +407,7 @@ export function CampoData({
         ]}>
         <ThemedText style={styles.icone}>📅</ThemedText>
         <ThemedText style={styles.flex} themeColor={valor ? 'text' : 'textSecondary'}>
-          {texto.charAt(0).toLocaleUpperCase('pt-BR') + texto.slice(1)}
+          {texto.charAt(0).toLocaleUpperCase(localeAtual()) + texto.slice(1)}
         </ThemedText>
         <ThemedText type="small" style={{ color: theme.accentText }}>
           {valor ? 'Alterar' : 'Escolher'}

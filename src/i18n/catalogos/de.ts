@@ -58,4 +58,11 @@ export const de: Catalogo = {
   'fiscal.erro.rendimento': 'Ungültiges Jahreseinkommen. Bitte prüfe den Betrag.',
   'fiscal.erro.dependentes': 'Ungültige Anzahl unterhaltsberechtigter Personen.',
   'fiscal.erro.combustivel': 'Ungültige Kraftstoffart.',
+
+  // Datas
+  'datas.agora': 'gerade eben',
+  'datas.haMinutos': { one: 'vor {n} Min.', other: 'vor {n} Min.' },
+  'datas.haHoras': { one: 'vor {n} Std.', other: 'vor {n} Std.' },
+  'datas.ontem': 'gestern',
+  'datas.haDias': { one: 'vor {n} Tag', other: 'vor {n} Tagen' },
 };

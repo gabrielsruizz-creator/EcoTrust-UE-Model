@@ -1,4 +1,9 @@
-/** Datas no formato "AAAA-MM-DD" e meses "AAAA-MM", sempre no fuso do celular. */
+/**
+ * Datas no formato "AAAA-MM-DD" e meses "AAAA-MM", sempre no fuso do telemóvel.
+ * Os textos para a tela seguem o idioma escolhido (localeAtual) e a semana começa à segunda-feira (norma europeia).
+ */
+
+import { localeAtual, t } from '@/i18n';
 
 function doisDigitos(n: number) {
   return String(n).padStart(2, '0');
@@ -53,22 +58,22 @@ export function somarMesesNaData(data: string, quantidade: number) {
   return paraDataLocal(new Date(ano, mes - 1 + quantidade, Math.min(dia, ultimoDia)));
 }
 
-/** "2026-10" → "outubro de 2026" */
+/** "2026-10" → "outubro de 2026" / "October 2026" / "Oktober 2026" */
 export function nomeDoMes(mes: string) {
   const [ano, m] = mes.split('-').map(Number);
-  return new Date(ano, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  return new Date(ano, m - 1, 1).toLocaleDateString(localeAtual(), { month: 'long', year: 'numeric' });
 }
 
-/** "2026-10-06" → "06/10/2026" */
+/** "2026-10-06" → "06/10/2026" (pt-PT, en, fr, es, it), "06.10.2026" (de, pl), "06-10-2026" (nl) */
 export function formatarData(data: string) {
-  const [ano, mes, dia] = data.split('-');
-  return `${dia}/${mes}/${ano}`;
+  const [ano, mes, dia] = data.split('-').map(Number);
+  return new Date(ano, mes - 1, dia).toLocaleDateString(localeAtual(), { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 /** "2026-10-06" → "terça-feira, 6 de outubro de 2026" */
 export function formatarDataPorExtenso(data: string) {
   const [ano, mes, dia] = data.split('-').map(Number);
-  return new Date(ano, mes - 1, dia).toLocaleDateString('pt-BR', {
+  return new Date(ano, mes - 1, dia).toLocaleDateString(localeAtual(), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -84,9 +89,9 @@ export function mascararData(texto: string) {
   return `${digitos.slice(0, 2)}/${digitos.slice(2, 4)}/${digitos.slice(4)}`;
 }
 
-/** "06/10/2026" → "2026-10-06". Retorna null se a data estiver incompleta ou não existir. */
+/** "06/10/2026" (ou com "." ou "-") → "2026-10-06". Retorna null se a data estiver incompleta ou não existir. */
 export function lerDataDigitada(texto: string): string | null {
-  const partes = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(texto.trim());
+  const partes = /^(\d{2})[/.-](\d{2})[/.-](\d{4})$/.exec(texto.trim());
   if (!partes) return null;
   const data = `${partes[3]}-${partes[2]}-${partes[1]}`;
   return dataValida(data) ? data : null;
@@ -95,28 +100,29 @@ export function lerDataDigitada(texto: string): string | null {
 /** "6 de out." (data AAAA-MM-DD) */
 export function formatarDataCurta(data: string) {
   const [ano, mes, dia] = data.split('-').map(Number);
-  return new Date(ano, mes - 1, dia).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
+  return new Date(ano, mes - 1, dia).toLocaleDateString(localeAtual(), { day: 'numeric', month: 'short' });
 }
 
 /** Tempo desde um momento (ISO): "agora", "há 5 min", "há 3 h", "ontem", "há 4 dias" ou a data. */
 export function tempoRelativo(momento: string, agora = new Date()) {
   const minutos = Math.floor((agora.getTime() - new Date(momento).getTime()) / 60_000);
-  if (minutos < 1) return 'agora';
-  if (minutos < 60) return `há ${minutos} min`;
-  if (minutos < 24 * 60) return `há ${Math.floor(minutos / 60)} h`;
+  if (minutos < 1) return t('datas.agora');
+  if (minutos < 60) return t('datas.haMinutos', { n: minutos });
+  if (minutos < 24 * 60) return t('datas.haHoras', { n: Math.floor(minutos / 60) });
   const dias = diasEntre(paraDataLocal(new Date(momento)), paraDataLocal(agora));
-  if (dias === 1) return 'ontem';
-  if (dias < 30) return `há ${dias} dias`;
+  if (dias === 1) return t('datas.ontem');
+  if (dias < 30) return t('datas.haDias', { n: dias });
   return formatarData(paraDataLocal(new Date(momento)));
 }
 
 /**
- * Grade do calendário de um mês (AAAA-MM), em semanas de domingo a sábado.
+ * Grade do calendário de um mês (AAAA-MM), em semanas de segunda a domingo (norma europeia ISO 8601).
  * Os dias de fora do mês ficam como null.
  */
 export function montarGradeDoMes(mes: string): (string | null)[][] {
   const [ano, m] = mes.split('-').map(Number);
-  const primeiroDiaSemana = new Date(ano, m - 1, 1).getDay();
+  // getDay(): 0 = domingo. Com a semana a começar à segunda, o domingo é a 7.ª coluna.
+  const primeiroDiaSemana = (new Date(ano, m - 1, 1).getDay() + 6) % 7;
   const diasNoMes = new Date(ano, m, 0).getDate();
   const celulas: (string | null)[] = [
     ...Array<null>(primeiroDiaSemana).fill(null),
@@ -131,7 +137,19 @@ export function montarGradeDoMes(mes: string): (string | null)[][] {
 /** "outubro de 2026" → "Outubro de 2026" (para títulos). */
 export function nomeDoMesTitulo(mes: string) {
   const nome = nomeDoMes(mes);
-  return nome.charAt(0).toLocaleUpperCase('pt-BR') + nome.slice(1);
+  return nome.charAt(0).toLocaleUpperCase(localeAtual()) + nome.slice(1);
+}
+
+/** Dias da semana de segunda a domingo no idioma atual: inicial e nome completo. */
+export function diasDaSemana(): { curto: string; nome: string }[] {
+  // 1/1/2024 foi uma segunda-feira.
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(2024, 0, 1 + i);
+    return {
+      curto: d.toLocaleDateString(localeAtual(), { weekday: 'narrow' }),
+      nome: d.toLocaleDateString(localeAtual(), { weekday: 'long' }),
+    };
+  });
 }
 
 /** Idade completa em anos numa data (AAAA-MM-DD), considerando se já fez aniversário. */

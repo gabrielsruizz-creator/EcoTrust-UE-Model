@@ -65,4 +65,11 @@ export const ptPT = {
   'fiscal.erro.rendimento': 'Rendimento anual inválido. Verifique o valor.',
   'fiscal.erro.dependentes': 'Número de dependentes inválido.',
   'fiscal.erro.combustivel': 'Tipo de combustível inválido.',
+
+  // Datas
+  'datas.agora': 'agora',
+  'datas.haMinutos': { one: 'há {n} min', other: 'há {n} min' },
+  'datas.haHoras': { one: 'há {n} h', other: 'há {n} h' },
+  'datas.ontem': 'ontem',
+  'datas.haDias': { one: 'há {n} dia', other: 'há {n} dias' },
 } as const;

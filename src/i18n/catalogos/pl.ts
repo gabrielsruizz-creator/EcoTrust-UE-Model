@@ -57,4 +57,11 @@ export const pl: Catalogo = {
   'fiscal.erro.rendimento': 'Nieprawidłowy dochód roczny. Sprawdź kwotę.',
   'fiscal.erro.dependentes': 'Nieprawidłowa liczba osób na utrzymaniu.',
   'fiscal.erro.combustivel': 'Nieprawidłowy rodzaj paliwa.',
+
+  // Datas
+  'datas.agora': 'przed chwilą',
+  'datas.haMinutos': { one: '{n} min temu', few: '{n} min temu', many: '{n} min temu', other: '{n} min temu' },
+  'datas.haHoras': { one: '{n} godz. temu', few: '{n} godz. temu', many: '{n} godz. temu', other: '{n} godz. temu' },
+  'datas.ontem': 'wczoraj',
+  'datas.haDias': { one: '{n} dzień temu', few: '{n} dni temu', many: '{n} dni temu', other: '{n} dnia temu' },
 };

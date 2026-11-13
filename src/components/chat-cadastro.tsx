@@ -33,7 +33,7 @@ import {
   type PassoChat,
   type RespostasChat,
 } from '@/services/onboarding-chat-service';
-import { centavosParaTexto } from '@/utils/moeda';
+import { centavosParaTexto, exemploValorVazio, simboloMoeda } from '@/utils/moeda';
 
 type Troca = { passo: PassoChat; textoUsuario: string; reacao: string | null; antes: RespostasChat };
 
@@ -241,14 +241,14 @@ function EntradaResposta({ passo, aoEnviar }: { passo: PassoChat; aoEnviar: (r: 
       <View style={styles.linhaEntrada}>
         {ehValor && (
           <ThemedText type="smallBold" themeColor="textSecondary">
-            R$
+            {simboloMoeda()}
           </ThemedText>
         )}
         <TextInput
           style={[styles.campo, { color: theme.text, backgroundColor: theme.backgroundElement }]}
           value={texto}
           onChangeText={setTexto}
-          placeholder={ehValor ? '0,00' : entrada.placeholder}
+          placeholder={ehValor ? exemploValorVazio() : entrada.placeholder}
           placeholderTextColor={theme.textSecondary}
           keyboardType={ehValor ? 'decimal-pad' : 'default'}
           autoCapitalize={ehValor ? 'none' : 'sentences'}

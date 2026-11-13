@@ -2,30 +2,33 @@ import { StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useIdioma } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
+import { exemploValorVazio, simboloMoeda } from '@/utils/moeda';
 
 type Props = {
   valor: string;
   aoMudar: (texto: string) => void;
-  /** Lido pelo leitor de tela, ex.: "Valor da despesa em reais" */
+  /** Lido pelo leitor de ecrã, ex.: "Valor da despesa" */
   rotulo: string;
   autoFocus?: boolean;
   aoConfirmar?: () => void;
 };
 
-/** Campo de valor em reais com número grande, usado em formulários de dinheiro. */
+/** Campo de valor (na moeda principal) com número grande, usado em formulários de dinheiro. */
 export function CampoValor({ valor, aoMudar, rotulo, autoFocus, aoConfirmar }: Props) {
   const theme = useTheme();
+  useIdioma();
   return (
     <View style={[styles.campo, { backgroundColor: theme.backgroundElement }]}>
       <ThemedText style={styles.prefixo} themeColor="textSecondary">
-        R$
+        {simboloMoeda()}
       </ThemedText>
       <TextInput
         style={[styles.input, { color: theme.text }]}
         value={valor}
         onChangeText={aoMudar}
-        placeholder="0,00"
+        placeholder={exemploValorVazio()}
         placeholderTextColor={theme.textSecondary}
         keyboardType="decimal-pad"
         accessibilityLabel={rotulo}

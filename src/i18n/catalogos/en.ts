@@ -56,4 +56,11 @@ export const en: Catalogo = {
   'fiscal.erro.rendimento': 'Invalid annual income. Please check the amount.',
   'fiscal.erro.dependentes': 'Invalid number of dependants.',
   'fiscal.erro.combustivel': 'Invalid fuel type.',
+
+  // Datas
+  'datas.agora': 'just now',
+  'datas.haMinutos': { one: '{n} min ago', other: '{n} min ago' },
+  'datas.haHoras': { one: '{n} h ago', other: '{n} h ago' },
+  'datas.ontem': 'yesterday',
+  'datas.haDias': { one: '{n} day ago', other: '{n} days ago' },
 };
