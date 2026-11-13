@@ -516,6 +516,35 @@ function v15DeducoesCpfEClassificacao(db: SQLiteDatabase) {
   `);
 }
 
+/**
+ * Edição europeia — país da compra e perfil fiscal:
+ * - transacoes.pais_consumo / regiao_consumo: onde a compra aconteceu (ISO 3166-1 / 3166-2). NULL = no país
+ *   (e região) de residência. É o país de consumo que define o IVA, não o de residência;
+ * - transacoes.origem_pais: como o país foi identificado (manual, gps, recibo, loja). NULL = não identificado;
+ * - perfil_fiscal: residência fiscal, situação profissional e dados para estimar o imposto sobre o rendimento.
+ */
+function v16PaisDaCompraEPerfilFiscal(db: SQLiteDatabase) {
+  db.execSync(`
+    ALTER TABLE transacoes ADD COLUMN pais_consumo TEXT;
+    ALTER TABLE transacoes ADD COLUMN regiao_consumo TEXT;
+    ALTER TABLE transacoes ADD COLUMN origem_pais TEXT;
+
+    CREATE TABLE perfil_fiscal (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      pais_residencia TEXT NOT NULL,
+      regiao_residencia TEXT,
+      situacao TEXT NOT NULL CHECK (situacao IN ('dependente', 'independente')),
+      bruto_anual_centavos INTEGER CHECK (bruto_anual_centavos >= 0),
+      dependentes INTEGER NOT NULL DEFAULT 0 CHECK (dependentes >= 0),
+      dependentes_ate_3_anos INTEGER NOT NULL DEFAULT 0 CHECK (dependentes_ate_3_anos >= 0),
+      declaracao_conjunta INTEGER NOT NULL DEFAULT 0,
+      contribuicao_proporcional INTEGER NOT NULL DEFAULT 0,
+      combustivel TEXT NOT NULL DEFAULT 'gasolina' CHECK (combustivel IN ('gasolina', 'gasoleo')),
+      atualizado_em TEXT NOT NULL
+    );
+  `);
+}
+
 const MIGRACOES: Migracao[] = [
   v1CriarTabelas,
   v2ImportarDadosAntigos,
@@ -532,6 +561,7 @@ const MIGRACOES: Migracao[] = [
   v13ImpostosFixosENotas,
   v14ItensDaNota,
   v15DeducoesCpfEClassificacao,
+  v16PaisDaCompraEPerfilFiscal,
 ];
 
 export function executarMigracoes(db: SQLiteDatabase) {

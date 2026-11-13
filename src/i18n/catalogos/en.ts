@@ -48,4 +48,12 @@ export const en: Catalogo = {
   'notif.diario.texto': "Logged today's spending yet? It takes less than a minute.",
   'notif.pagamento.titulo': 'Payday',
   'notif.pagamento.texto': 'How about setting money aside for your goals first? Pay yourself first!',
+
+  // Perfil fiscal
+  'fiscal.erro.pais': 'Invalid country of residence.',
+  'fiscal.erro.regiao': 'Invalid region for this country.',
+  'fiscal.erro.situacao': 'Invalid employment status.',
+  'fiscal.erro.rendimento': 'Invalid annual income. Please check the amount.',
+  'fiscal.erro.dependentes': 'Invalid number of dependants.',
+  'fiscal.erro.combustivel': 'Invalid fuel type.',
 };

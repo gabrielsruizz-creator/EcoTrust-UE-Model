@@ -6,7 +6,7 @@
 
 import { jest } from '@jest/globals';
 
-import type { Categoria, ImpostosFixos, NotaSalva, PerfilFinanceiro, Transacao } from '@/types/financas';
+import type { Categoria, ImpostosFixos, NotaSalva, PerfilFinanceiro, PerfilFiscal, Transacao } from '@/types/financas';
 
 export const banco: {
   categorias: Categoria[];
@@ -15,7 +15,16 @@ export const banco: {
   fixos: ImpostosFixos | null;
   perfil: Pick<PerfilFinanceiro, 'rendaMensalCentavos'> | null;
   classificacoes: Map<string, string>;
-} = { categorias: [], transacoes: [], notas: new Map(), fixos: null, perfil: null, classificacoes: new Map() };
+  perfilFiscal: PerfilFiscal | null;
+} = {
+  categorias: [],
+  transacoes: [],
+  notas: new Map(),
+  fixos: null,
+  perfil: null,
+  classificacoes: new Map(),
+  perfilFiscal: null,
+};
 
 export function limparBanco() {
   banco.categorias = [];
@@ -24,6 +33,7 @@ export function limparBanco() {
   banco.fixos = null;
   banco.perfil = null;
   banco.classificacoes = new Map();
+  banco.perfilFiscal = null;
   jest.requireActual<typeof import('@/data/database')>('@/data/database').notificarMudanca();
 }
 
@@ -59,6 +69,10 @@ export const transacoesRepository = {
     banco.transacoes.filter((t) => (!filtro.mes || t.data.startsWith(filtro.mes)) && (!filtro.tipo || t.tipo === filtro.tipo)),
   buscarTransacao: (id: number) => banco.transacoes.find((t) => t.id === id) ?? null,
   buscarTransacaoPorChaveNota: (chave: string) => banco.transacoes.find((t) => t.chaveNota === chave) ?? null,
+  definirPaisDaCompra: (id: number, pais: string | null, regiao: string | null, origem: Transacao['origemPais']) => {
+    const t = banco.transacoes.find((x) => x.id === id);
+    if (t) Object.assign(t, { paisConsumo: pais, regiaoConsumo: pais ? regiao : null, origemPais: pais ? origem : null });
+  },
 };
 
 export const notasRepository = {
@@ -96,4 +110,11 @@ export const classificacaoRepository = {
 
 export const perfilFinanceiroService = {
   obterPerfil: () => banco.perfil,
+};
+
+export const perfilFiscalRepository = {
+  buscarPerfilFiscal: () => banco.perfilFiscal,
+  gravarPerfilFiscal: (p: PerfilFiscal) => {
+    banco.perfilFiscal = p;
+  },
 };

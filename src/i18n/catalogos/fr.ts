@@ -50,4 +50,12 @@ export const fr: Catalogo = {
   'notif.diario.texto': "Avez-vous noté vos dépenses du jour ? Cela prend moins d'une minute.",
   'notif.pagamento.titulo': 'Jour de paie',
   'notif.pagamento.texto': "Et si vous mettiez d'abord de côté pour vos objectifs ? Payez-vous en premier !",
+
+  // Perfil fiscal
+  'fiscal.erro.pais': 'Pays de résidence non valide.',
+  'fiscal.erro.regiao': 'Région non valide pour ce pays.',
+  'fiscal.erro.situacao': 'Situation professionnelle non valide.',
+  'fiscal.erro.rendimento': 'Revenu annuel non valide. Vérifiez le montant.',
+  'fiscal.erro.dependentes': 'Nombre de personnes à charge non valide.',
+  'fiscal.erro.combustivel': 'Type de carburant non valide.',
 };

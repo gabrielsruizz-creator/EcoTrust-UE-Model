@@ -1,5 +1,5 @@
 import { getBanco, notificarMudanca } from '@/data/database';
-import type { FiltroTransacoes, NovaTransacao, TipoTransacao, Transacao } from '@/types/financas';
+import type { FiltroTransacoes, NovaTransacao, OrigemPais, TipoTransacao, Transacao } from '@/types/financas';
 
 type LinhaTransacao = {
   id: number;
@@ -14,11 +14,15 @@ type LinhaTransacao = {
   chave_nota: string | null;
   dedutivel_ir: number | null;
   criado_em: string;
+  pais_consumo: string | null;
+  regiao_consumo: string | null;
+  origem_pais: string | null;
 };
 
 const SELECT_TRANSACAO = `
   SELECT t.id, t.tipo, t.valor_centavos, t.descricao, t.categoria_id, c.nome AS categoria_nome,
-         t.data, t.recorrente, t.tributos_centavos, t.chave_nota, t.dedutivel_ir, t.criado_em
+         t.data, t.recorrente, t.tributos_centavos, t.chave_nota, t.dedutivel_ir, t.criado_em,
+         t.pais_consumo, t.regiao_consumo, t.origem_pais
   FROM transacoes t
   JOIN categorias c ON c.id = t.categoria_id`;
 
@@ -36,6 +40,9 @@ function paraTransacao(l: LinhaTransacao): Transacao {
     chaveNota: l.chave_nota,
     dedutivelIr: l.dedutivel_ir === null ? null : l.dedutivel_ir === 1,
     criadoEm: l.criado_em,
+    paisConsumo: l.pais_consumo,
+    regiaoConsumo: l.regiao_consumo,
+    origemPais: l.origem_pais as OrigemPais | null,
   };
 }
 
@@ -108,8 +115,9 @@ export function buscarTransacaoPorChaveNota(chave: string): Transacao | null {
 
 export function criarTransacao(nova: NovaTransacao): number {
   const resultado = getBanco().runSync(
-    `INSERT INTO transacoes (tipo, valor_centavos, descricao, categoria_id, data, recorrente, tributos_centavos, chave_nota, criado_em)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO transacoes (tipo, valor_centavos, descricao, categoria_id, data, recorrente, tributos_centavos, chave_nota,
+                             pais_consumo, regiao_consumo, origem_pais, criado_em)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     nova.tipo,
     nova.valorCentavos,
     nova.descricao,
@@ -118,6 +126,9 @@ export function criarTransacao(nova: NovaTransacao): number {
     nova.recorrente ? 1 : 0,
     nova.tributosCentavos,
     nova.chaveNota,
+    nova.paisConsumo ?? null,
+    nova.regiaoConsumo ?? null,
+    nova.origemPais ?? null,
     new Date().toISOString(),
   );
   notificarMudanca();
@@ -154,6 +165,21 @@ export function listarTransacoesEntre(inicio: string, fim: string, tipo: TipoTra
       tipo,
     )
     .map(paraTransacao);
+}
+
+/**
+ * Define onde a compra aconteceu. Fica fora de `atualizarTransacao` para editar um lançamento não apagar
+ * o país identificado (por GPS ou recibo) quando o formulário não mexe nele.
+ */
+export function definirPaisDaCompra(id: number, pais: string | null, regiao: string | null, origem: OrigemPais | null) {
+  getBanco().runSync(
+    'UPDATE transacoes SET pais_consumo = ?, regiao_consumo = ?, origem_pais = ? WHERE id = ?',
+    pais,
+    pais ? regiao : null,
+    pais ? origem : null,
+    id,
+  );
+  notificarMudanca();
 }
 
 /** Marca (ou desmarca, ou volta ao automático com null) uma despesa como dedutível no IR. */

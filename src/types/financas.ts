@@ -35,7 +35,15 @@ export type Transacao = {
   dedutivelIr?: boolean | null;
   /** Momento em que foi registrado (ISO), quando disponível */
   criadoEm?: string;
+  /** País onde a compra aconteceu (ISO 3166-1). null/ausente = país de residência */
+  paisConsumo?: string | null;
+  /** Região com IVA próprio (ISO 3166-2, ex.: 'PT-30' Madeira) */
+  regiaoConsumo?: string | null;
+  /** Como o país da compra foi identificado */
+  origemPais?: OrigemPais | null;
 };
+
+export type OrigemPais = 'manual' | 'gps' | 'recibo' | 'loja';
 
 export type NovaTransacao = Omit<Transacao, 'id' | 'categoriaNome' | 'criadoEm'>;
 
@@ -216,4 +224,26 @@ export type NotaSalva = {
   itens: ItemNota[];
   /** A nota saiu com o CPF do consumidor? null = a página não disse */
   cpfNaNota?: boolean | null;
+};
+
+export type SituacaoProfissional = 'dependente' | 'independente';
+
+export type TipoCombustivel = 'gasolina' | 'gasoleo';
+
+/**
+ * Perfil fiscal da edição europeia. A residência fiscal define o imposto sobre o rendimento; o IVA de cada
+ * compra segue o país onde ela aconteceu. Idioma e moeda são independentes disto.
+ */
+export type PerfilFiscal = {
+  paisResidencia: string;
+  regiaoResidencia: string | null;
+  situacao: SituacaoProfissional;
+  /** Rendimento bruto anual do trabalho (null = não informado) */
+  brutoAnualCentavos: number | null;
+  dependentes: number;
+  dependentesAte3Anos: number;
+  declaracaoConjunta: boolean;
+  /** Malta, Category B: pagar 10% em vez do valor fixo */
+  contribuicaoProporcional: boolean;
+  combustivel: TipoCombustivel;
 };

@@ -49,4 +49,12 @@ export const pl: Catalogo = {
   'notif.diario.texto': 'Czy dzisiejsze wydatki są już zapisane? To zajmie mniej niż minutę.',
   'notif.pagamento.titulo': 'Dzień wypłaty',
   'notif.pagamento.texto': 'Może najpierw odłożysz pieniądze na swoje cele? Najpierw zapłać sobie!',
+
+  // Perfil fiscal
+  'fiscal.erro.pais': 'Nieprawidłowy kraj zamieszkania.',
+  'fiscal.erro.regiao': 'Nieprawidłowy region dla tego kraju.',
+  'fiscal.erro.situacao': 'Nieprawidłowa sytuacja zawodowa.',
+  'fiscal.erro.rendimento': 'Nieprawidłowy dochód roczny. Sprawdź kwotę.',
+  'fiscal.erro.dependentes': 'Nieprawidłowa liczba osób na utrzymaniu.',
+  'fiscal.erro.combustivel': 'Nieprawidłowy rodzaj paliwa.',
 };

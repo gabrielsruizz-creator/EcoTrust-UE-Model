@@ -50,4 +50,12 @@ export const it: Catalogo = {
   'notif.diario.texto': 'Hai già registrato le spese di oggi? Ci vuole meno di un minuto.',
   'notif.pagamento.titulo': 'Giorno di paga',
   'notif.pagamento.texto': 'Che ne dici di mettere da parte prima i soldi per i tuoi obiettivi? Paga prima te stesso!',
+
+  // Perfil fiscal
+  'fiscal.erro.pais': 'Paese di residenza non valido.',
+  'fiscal.erro.regiao': 'Regione non valida per questo paese.',
+  'fiscal.erro.situacao': 'Situazione lavorativa non valida.',
+  'fiscal.erro.rendimento': "Reddito annuo non valido. Controlla l'importo.",
+  'fiscal.erro.dependentes': 'Numero di familiari a carico non valido.',
+  'fiscal.erro.combustivel': 'Tipo di carburante non valido.',
 };

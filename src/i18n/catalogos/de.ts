@@ -50,4 +50,12 @@ export const de: Catalogo = {
   'notif.diario.texto': 'Schon die heutigen Ausgaben eingetragen? Dauert keine Minute.',
   'notif.pagamento.titulo': 'Zahltag',
   'notif.pagamento.texto': 'Wie wäre es, zuerst Geld für deine Ziele zurückzulegen? Bezahl dich selbst zuerst!',
+
+  // Perfil fiscal
+  'fiscal.erro.pais': 'Ungültiges Wohnsitzland.',
+  'fiscal.erro.regiao': 'Ungültige Region für dieses Land.',
+  'fiscal.erro.situacao': 'Ungültiger Erwerbsstatus.',
+  'fiscal.erro.rendimento': 'Ungültiges Jahreseinkommen. Bitte prüfe den Betrag.',
+  'fiscal.erro.dependentes': 'Ungültige Anzahl unterhaltsberechtigter Personen.',
+  'fiscal.erro.combustivel': 'Ungültige Kraftstoffart.',
 };

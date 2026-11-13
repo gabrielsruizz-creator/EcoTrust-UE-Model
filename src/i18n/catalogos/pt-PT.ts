@@ -57,4 +57,12 @@ export const ptPT = {
   'notif.diario.texto': 'Já registou as despesas de hoje? Demora menos de um minuto.',
   'notif.pagamento.titulo': 'Dia de pagamento',
   'notif.pagamento.texto': 'Que tal pôr primeiro de parte o valor das suas metas? Pague-se a si primeiro!',
+
+  // Perfil fiscal
+  'fiscal.erro.pais': 'País de residência inválido.',
+  'fiscal.erro.regiao': 'Região inválida para este país.',
+  'fiscal.erro.situacao': 'Situação profissional inválida.',
+  'fiscal.erro.rendimento': 'Rendimento anual inválido. Verifique o valor.',
+  'fiscal.erro.dependentes': 'Número de dependentes inválido.',
+  'fiscal.erro.combustivel': 'Tipo de combustível inválido.',
 } as const;

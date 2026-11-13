@@ -27,7 +27,9 @@ import {
   obterImpostosDoLancamento,
   obterImpostosDosLancamentos,
 } from '@/services/impostometro-service';
+import { obterImpostometroUE } from '@/services/impostometro-ue-service';
 import { obterImpostosFixos } from '@/services/impostos-renda-service';
+import { obterPerfilFiscal } from '@/services/perfil-fiscal-service';
 import { obterDeducoesIR } from '@/services/ir-service';
 import { obterAnalisePrecos } from '@/services/precos-service';
 import { obterSimulacaoReforma } from '@/services/reforma-service';
@@ -250,4 +252,16 @@ export function usePerfilFinanceiro() {
 export function usePerfilInvestidor() {
   const versao = useVersaoDados();
   return useMemo(() => obterPerfil(), [versao]);
+}
+
+/** Impostômetro da edição europeia (país de cada compra + residência fiscal). */
+export function useImpostometroUE(mes: string) {
+  const versao = useVersaoDados();
+  return useMemo(() => obterImpostometroUE(mes), [versao, mes]);
+}
+
+/** Residência fiscal e dados para o imposto sobre o rendimento (null antes de configurar). */
+export function usePerfilFiscal() {
+  const versao = useVersaoDados();
+  return useMemo(() => obterPerfilFiscal(), [versao]);
 }

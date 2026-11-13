@@ -49,4 +49,12 @@ export const nl: Catalogo = {
   'notif.diario.texto': 'Al je uitgaven van vandaag genoteerd? Het kost minder dan een minuut.',
   'notif.pagamento.titulo': 'Betaaldag',
   'notif.pagamento.texto': 'Zet je eerst geld opzij voor je doelen? Betaal jezelf eerst!',
+
+  // Perfil fiscal
+  'fiscal.erro.pais': 'Ongeldig woonland.',
+  'fiscal.erro.regiao': 'Ongeldige regio voor dit land.',
+  'fiscal.erro.situacao': 'Ongeldige arbeidssituatie.',
+  'fiscal.erro.rendimento': 'Ongeldig jaarinkomen. Controleer het bedrag.',
+  'fiscal.erro.dependentes': 'Ongeldig aantal personen ten laste.',
+  'fiscal.erro.combustivel': 'Ongeldig brandstoftype.',
 };
