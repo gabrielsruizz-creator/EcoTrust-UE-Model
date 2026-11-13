@@ -308,4 +308,23 @@ export const de: Catalogo = {
   'partilhar.mostrarValores': 'Beträge im Bild zeigen',
   'partilhar.mostrarValores.ajuda': 'Ausschalten, um nur Prozente zu zeigen.',
   'patrimonio.erro.valor': 'Ungültiger Betrag. Bitte prüfe die Zahl.',
+
+  // Categorias padrão
+  'categoria.supermercado': 'Lebensmittel',
+  'categoria.alimentacao': 'Essen',
+  'categoria.transporte': 'Verkehr',
+  'categoria.combustivel': 'Tanken',
+  'categoria.moradia': 'Wohnen',
+  'categoria.contas': 'Nebenkosten',
+  'categoria.telecom': 'Handy und Internet',
+  'categoria.saude': 'Gesundheit',
+  'categoria.educacao': 'Bildung',
+  'categoria.lazer': 'Freizeit',
+  'categoria.compras': 'Shopping',
+  'categoria.assinaturas': 'Abos',
+  'categoria.viagens': 'Reisen',
+  'categoria.outros': 'Sonstiges',
+  'categoria.salario': 'Gehalt',
+  'categoria.freelance': 'Freiberuflich',
+  'categoria.investimentos': 'Kapitalerträge',
 };

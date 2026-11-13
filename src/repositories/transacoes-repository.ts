@@ -1,4 +1,5 @@
 import { getBanco, notificarMudanca } from '@/data/database';
+import { nomeDaCategoria } from '@/i18n/categorias';
 import type { FiltroTransacoes, NovaTransacao, OrigemPais, TipoTransacao, Transacao } from '@/types/financas';
 
 type LinhaTransacao = {
@@ -8,6 +9,7 @@ type LinhaTransacao = {
   descricao: string;
   categoria_id: number;
   categoria_nome: string;
+  categoria_chave: string | null;
   data: string;
   recorrente: number;
   tributos_centavos: number | null;
@@ -20,7 +22,7 @@ type LinhaTransacao = {
 };
 
 const SELECT_TRANSACAO = `
-  SELECT t.id, t.tipo, t.valor_centavos, t.descricao, t.categoria_id, c.nome AS categoria_nome,
+  SELECT t.id, t.tipo, t.valor_centavos, t.descricao, t.categoria_id, c.nome AS categoria_nome, c.chave AS categoria_chave,
          t.data, t.recorrente, t.tributos_centavos, t.chave_nota, t.dedutivel_ir, t.criado_em,
          t.pais_consumo, t.regiao_consumo, t.origem_pais
   FROM transacoes t
@@ -33,7 +35,7 @@ function paraTransacao(l: LinhaTransacao): Transacao {
     valorCentavos: l.valor_centavos,
     descricao: l.descricao,
     categoriaId: l.categoria_id,
-    categoriaNome: l.categoria_nome,
+    categoriaNome: nomeDaCategoria(l.categoria_nome, l.categoria_chave),
     data: l.data,
     recorrente: l.recorrente === 1,
     tributosCentavos: l.tributos_centavos,

@@ -1,5 +1,6 @@
 import { perfilTributarioValido, type PerfilTributarioId } from '@/data/perfis-consumo';
 import { getBanco, notificarMudanca } from '@/data/database';
+import { nomeDaCategoria } from '@/i18n/categorias';
 import type { Categoria, TipoTransacao } from '@/types/financas';
 
 type LinhaCategoria = {
@@ -8,22 +9,24 @@ type LinhaCategoria = {
   tipo: TipoTransacao;
   padrao: number;
   perfil_tributario: string | null;
+  chave: string | null;
 };
 
 function paraCategoria(linha: LinhaCategoria): Categoria {
   return {
     id: linha.id,
-    nome: linha.nome,
+    nome: nomeDaCategoria(linha.nome, linha.chave),
+    chave: linha.chave,
     tipo: linha.tipo,
     padrao: linha.padrao === 1,
     perfilTributario: perfilTributarioValido(linha.perfil_tributario) ? linha.perfil_tributario : null,
   };
 }
 
-const COLUNAS = 'id, nome, tipo, padrao, perfil_tributario';
+const COLUNAS = 'id, nome, tipo, padrao, perfil_tributario, chave';
 
 /** "Outros" (padrão) sempre por último, para as categorias criadas pelo usuário aparecerem antes dele. */
-const ORDEM = `CASE WHEN padrao = 1 AND nome = 'Outros' THEN 1 ELSE 0 END, ordem, nome`;
+const ORDEM = `CASE WHEN padrao = 1 AND chave = 'outros' THEN 1 ELSE 0 END, ordem, nome`;
 
 export function listarCategorias(tipo?: TipoTransacao): Categoria[] {
   const linhas = tipo

@@ -4,13 +4,15 @@
  */
 
 import type { NomeIcone } from '@/components/icone';
+import { chaveDaCategoriaPorNome } from '@/i18n/categorias';
 
-const POR_NOME: Record<string, { icone: NomeIcone; cor: number }> = {
+/** Por chave da categoria padrão (src/i18n/categorias.ts). */
+const POR_CHAVE: Record<string, { icone: NomeIcone; cor: number }> = {
   supermercado: { icone: 'supermercado', cor: 2 },
   alimentacao: { icone: 'alimentacao', cor: 7 },
   combustivel: { icone: 'combustivel', cor: 3 },
-  'contas da casa': { icone: 'contas', cor: 3 },
-  'telefone e internet': { icone: 'telefone', cor: 4 },
+  contas: { icone: 'contas', cor: 3 },
+  telecom: { icone: 'telefone', cor: 4 },
   transporte: { icone: 'transporte', cor: 0 },
   moradia: { icone: 'moradia', cor: 2 },
   saude: { icone: 'saude', cor: 4 },
@@ -30,12 +32,14 @@ export function normalizar(texto: string) {
   return texto
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
-    .toLocaleLowerCase('pt-BR')
+    .toLowerCase()
     .trim();
 }
 
+/** Ícone e cor de uma categoria. As padrão são reconhecidas pelo nome em qualquer idioma. */
 export function visualCategoria(nome: string, id: number): { icone: NomeIcone; cor: number } {
-  return POR_NOME[normalizar(nome)] ?? { icone: 'etiqueta', cor: Math.abs(id) % 8 };
+  const chave = chaveDaCategoriaPorNome(nome);
+  return (chave && POR_CHAVE[chave]) || { icone: 'etiqueta', cor: Math.abs(id) % 8 };
 }
 
 const METAS: [RegExp, NomeIcone][] = [

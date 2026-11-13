@@ -308,4 +308,23 @@ export const es: Catalogo = {
   'partilhar.mostrarValores': 'Mostrar importes en la imagen',
   'partilhar.mostrarValores.ajuda': 'Desactívalo para mostrar solo porcentajes.',
   'patrimonio.erro.valor': 'Importe no válido. Revisa el número.',
+
+  // Categorias padrão
+  'categoria.supermercado': 'Supermercado',
+  'categoria.alimentacao': 'Alimentación',
+  'categoria.transporte': 'Transporte',
+  'categoria.combustivel': 'Combustible',
+  'categoria.moradia': 'Vivienda',
+  'categoria.contas': 'Facturas',
+  'categoria.telecom': 'Móvil e internet',
+  'categoria.saude': 'Salud',
+  'categoria.educacao': 'Educación',
+  'categoria.lazer': 'Ocio',
+  'categoria.compras': 'Compras',
+  'categoria.assinaturas': 'Suscripciones',
+  'categoria.viagens': 'Viajes',
+  'categoria.outros': 'Otros',
+  'categoria.salario': 'Nómina',
+  'categoria.freelance': 'Trabajo autónomo',
+  'categoria.investimentos': 'Inversiones',
 };

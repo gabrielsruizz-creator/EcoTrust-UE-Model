@@ -307,4 +307,23 @@ export const pl: Catalogo = {
   'partilhar.mostrarValores': 'Pokaż kwoty na obrazie',
   'partilhar.mostrarValores.ajuda': 'Wyłącz, aby pokazać tylko procenty.',
   'patrimonio.erro.valor': 'Nieprawidłowa kwota. Sprawdź liczbę.',
+
+  // Categorias padrão
+  'categoria.supermercado': 'Zakupy spożywcze',
+  'categoria.alimentacao': 'Jedzenie',
+  'categoria.transporte': 'Transport',
+  'categoria.combustivel': 'Paliwo',
+  'categoria.moradia': 'Mieszkanie',
+  'categoria.contas': 'Rachunki',
+  'categoria.telecom': 'Telefon i internet',
+  'categoria.saude': 'Zdrowie',
+  'categoria.educacao': 'Edukacja',
+  'categoria.lazer': 'Rozrywka',
+  'categoria.compras': 'Zakupy',
+  'categoria.assinaturas': 'Subskrypcje',
+  'categoria.viagens': 'Podróże',
+  'categoria.outros': 'Inne',
+  'categoria.salario': 'Wynagrodzenie',
+  'categoria.freelance': 'Zlecenia',
+  'categoria.investimentos': 'Inwestycje',
 };

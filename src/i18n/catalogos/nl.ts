@@ -307,4 +307,23 @@ export const nl: Catalogo = {
   'partilhar.mostrarValores': 'Bedragen in de afbeelding tonen',
   'partilhar.mostrarValores.ajuda': 'Zet uit om alleen percentages te tonen.',
   'patrimonio.erro.valor': 'Ongeldig bedrag. Controleer het getal.',
+
+  // Categorias padrão
+  'categoria.supermercado': 'Boodschappen',
+  'categoria.alimentacao': 'Eten',
+  'categoria.transporte': 'Vervoer',
+  'categoria.combustivel': 'Brandstof',
+  'categoria.moradia': 'Wonen',
+  'categoria.contas': 'Vaste lasten',
+  'categoria.telecom': 'Telefoon en internet',
+  'categoria.saude': 'Gezondheid',
+  'categoria.educacao': 'Onderwijs',
+  'categoria.lazer': 'Vrije tijd',
+  'categoria.compras': 'Winkelen',
+  'categoria.assinaturas': 'Abonnementen',
+  'categoria.viagens': 'Reizen',
+  'categoria.outros': 'Overig',
+  'categoria.salario': 'Salaris',
+  'categoria.freelance': 'Freelance',
+  'categoria.investimentos': 'Beleggingen',
 };

@@ -545,6 +545,40 @@ function v16PaisDaCompraEPerfilFiscal(db: SQLiteDatabase) {
   `);
 }
 
+/**
+ * Edição europeia — nomes das categorias padrão no idioma escolhido:
+ * categorias.chave guarda um identificador estável das categorias criadas pelo app (v1/v12, gravadas em
+ * português do Brasil). A tela mostra o nome traduzido pela chave; as categorias do utilizador ficam sem chave
+ * e mantêm o nome que ele escreveu. Lista fixa aqui (e não importada) para a migração nunca mudar.
+ */
+const CHAVES_V17: [tipo: 'despesa' | 'receita', nome: string, chave: string][] = [
+  ['despesa', 'Supermercado', 'supermercado'],
+  ['despesa', 'Alimentação', 'alimentacao'],
+  ['despesa', 'Transporte', 'transporte'],
+  ['despesa', 'Combustível', 'combustivel'],
+  ['despesa', 'Moradia', 'moradia'],
+  ['despesa', 'Contas da casa', 'contas'],
+  ['despesa', 'Telefone e internet', 'telecom'],
+  ['despesa', 'Saúde', 'saude'],
+  ['despesa', 'Educação', 'educacao'],
+  ['despesa', 'Lazer', 'lazer'],
+  ['despesa', 'Compras', 'compras'],
+  ['despesa', 'Assinaturas', 'assinaturas'],
+  ['despesa', 'Viagens', 'viagens'],
+  ['despesa', 'Outros', 'outros'],
+  ['receita', 'Salário', 'salario'],
+  ['receita', 'Freelance', 'freelance'],
+  ['receita', 'Investimentos', 'investimentos'],
+  ['receita', 'Outros', 'outros'],
+];
+
+function v17ChaveDasCategorias(db: SQLiteDatabase) {
+  db.execSync('ALTER TABLE categorias ADD COLUMN chave TEXT');
+  for (const [tipo, nome, chave] of CHAVES_V17) {
+    db.runSync('UPDATE categorias SET chave = ? WHERE padrao = 1 AND tipo = ? AND nome = ?', chave, tipo, nome);
+  }
+}
+
 const MIGRACOES: Migracao[] = [
   v1CriarTabelas,
   v2ImportarDadosAntigos,
@@ -562,6 +596,7 @@ const MIGRACOES: Migracao[] = [
   v14ItensDaNota,
   v15DeducoesCpfEClassificacao,
   v16PaisDaCompraEPerfilFiscal,
+  v17ChaveDasCategorias,
 ];
 
 export function executarMigracoes(db: SQLiteDatabase) {

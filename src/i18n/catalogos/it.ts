@@ -308,4 +308,23 @@ export const it: Catalogo = {
   'partilhar.mostrarValores': "Mostra gli importi nell'immagine",
   'partilhar.mostrarValores.ajuda': 'Disattiva per mostrare solo le percentuali.',
   'patrimonio.erro.valor': 'Importo non valido. Controlla il numero.',
+
+  // Categorias padrão
+  'categoria.supermercado': 'Spesa',
+  'categoria.alimentacao': 'Alimentazione',
+  'categoria.transporte': 'Trasporti',
+  'categoria.combustivel': 'Carburante',
+  'categoria.moradia': 'Casa',
+  'categoria.contas': 'Bollette',
+  'categoria.telecom': 'Telefono e internet',
+  'categoria.saude': 'Salute',
+  'categoria.educacao': 'Istruzione',
+  'categoria.lazer': 'Tempo libero',
+  'categoria.compras': 'Acquisti',
+  'categoria.assinaturas': 'Abbonamenti',
+  'categoria.viagens': 'Viaggi',
+  'categoria.outros': 'Altro',
+  'categoria.salario': 'Stipendio',
+  'categoria.freelance': 'Lavoro autonomo',
+  'categoria.investimentos': 'Investimenti',
 };

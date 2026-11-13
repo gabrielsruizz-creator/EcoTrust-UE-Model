@@ -308,4 +308,23 @@ export const fr: Catalogo = {
   'partilhar.mostrarValores': "Afficher les montants sur l'image",
   'partilhar.mostrarValores.ajuda': "Désactivez pour n'afficher que des pourcentages.",
   'patrimonio.erro.valor': 'Montant non valide. Vérifiez le chiffre.',
+
+  // Categorias padrão
+  'categoria.supermercado': 'Courses',
+  'categoria.alimentacao': 'Alimentation',
+  'categoria.transporte': 'Transports',
+  'categoria.combustivel': 'Carburant',
+  'categoria.moradia': 'Logement',
+  'categoria.contas': 'Factures',
+  'categoria.telecom': 'Téléphone et internet',
+  'categoria.saude': 'Santé',
+  'categoria.educacao': 'Éducation',
+  'categoria.lazer': 'Loisirs',
+  'categoria.compras': 'Achats',
+  'categoria.assinaturas': 'Abonnements',
+  'categoria.viagens': 'Voyages',
+  'categoria.outros': 'Autres',
+  'categoria.salario': 'Salaire',
+  'categoria.freelance': 'Travail indépendant',
+  'categoria.investimentos': 'Placements',
 };

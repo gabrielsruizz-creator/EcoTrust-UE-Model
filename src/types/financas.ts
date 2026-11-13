@@ -16,6 +16,8 @@ export type Categoria = {
   padrao: boolean;
   /** Tipo de consumo para estimar os impostos (null = palpite pelo nome da categoria) */
   perfilTributario: PerfilTributarioId | null;
+  /** Categoria padrão do app: identificador estável, e o nome vem traduzido (null nas do utilizador) */
+  chave?: string | null;
 };
 
 export type Transacao = {

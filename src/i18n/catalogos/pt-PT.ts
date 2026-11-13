@@ -315,4 +315,23 @@ export const ptPT = {
   'partilhar.mostrarValores': 'Mostrar valores na imagem',
   'partilhar.mostrarValores.ajuda': 'Desligue para mostrar só percentagens.',
   'patrimonio.erro.valor': 'Valor inválido. Verifique o número.',
+
+  // Categorias padrão
+  'categoria.supermercado': 'Supermercado',
+  'categoria.alimentacao': 'Alimentação',
+  'categoria.transporte': 'Transportes',
+  'categoria.combustivel': 'Combustível',
+  'categoria.moradia': 'Habitação',
+  'categoria.contas': 'Contas da casa',
+  'categoria.telecom': 'Telemóvel e internet',
+  'categoria.saude': 'Saúde',
+  'categoria.educacao': 'Educação',
+  'categoria.lazer': 'Lazer',
+  'categoria.compras': 'Compras',
+  'categoria.assinaturas': 'Subscrições',
+  'categoria.viagens': 'Viagens',
+  'categoria.outros': 'Outros',
+  'categoria.salario': 'Salário',
+  'categoria.freelance': 'Trabalho independente',
+  'categoria.investimentos': 'Investimentos',
 } as const;

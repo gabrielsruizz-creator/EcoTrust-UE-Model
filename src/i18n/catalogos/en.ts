@@ -306,4 +306,23 @@ export const en: Catalogo = {
   'partilhar.mostrarValores': 'Show amounts in the image',
   'partilhar.mostrarValores.ajuda': 'Turn off to show percentages only.',
   'patrimonio.erro.valor': 'Invalid amount. Please check the number.',
+
+  // Categorias padrão
+  'categoria.supermercado': 'Groceries',
+  'categoria.alimentacao': 'Food',
+  'categoria.transporte': 'Transport',
+  'categoria.combustivel': 'Fuel',
+  'categoria.moradia': 'Housing',
+  'categoria.contas': 'Bills',
+  'categoria.telecom': 'Phone and internet',
+  'categoria.saude': 'Health',
+  'categoria.educacao': 'Education',
+  'categoria.lazer': 'Leisure',
+  'categoria.compras': 'Shopping',
+  'categoria.assinaturas': 'Subscriptions',
+  'categoria.viagens': 'Travel',
+  'categoria.outros': 'Other',
+  'categoria.salario': 'Salary',
+  'categoria.freelance': 'Freelance',
+  'categoria.investimentos': 'Investments',
 };
