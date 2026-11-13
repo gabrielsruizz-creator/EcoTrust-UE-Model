@@ -114,6 +114,14 @@ describe('Malta — income tax 2026 (ano de avaliação 2027)', () => {
     expect(calcular('MT', { brutoAnualCentavos: 2_000_000 }).avisos).not.toContain('contribuicoes-a-confirmar');
   });
 
+  it('Category B: quem escolhe pagar 10% (benefícios pro-rata) paga 10% em vez do fixo', () => {
+    // € 10 000/ano = € 192,31/semana → € 19,23 em vez de € 22,94
+    expect(contribuicaoClass1(1_000_000, 'desde1962', true)).toBe(1_923 * 52);
+    expect(calcular('MT', { brutoAnualCentavos: 1_000_000, contribuicaoProporcional: true }).contribuicoesCentavos).toBe(1_923 * 52);
+    // acima da Category B a escolha não muda nada
+    expect(contribuicaoClass1(2_000_000, 'desde1962', true)).toBe(contribuicaoClass1(2_000_000, 'desde1962'));
+  });
+
   it('nascidos até 1961 têm teto de contribuições menor', () => {
     expect(calcular('MT', { brutoAnualCentavos: 5_000_000, anoNascimento: 1960 }).contribuicoesCentavos).toBe(4_904 * 52);
   });

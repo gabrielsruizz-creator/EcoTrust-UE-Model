@@ -12,7 +12,8 @@
  * - Contribuições Class 1 (trabalhador por conta de outrem, 18 anos ou mais), tabela MTCA 2026
  *   (mtca.gov.mt, "Class 1 Social Security Contributions — 2026"; o site bloqueia acesso automático, a tabela
  *   foi conferida pelo utilizador em 13/11/2026):
- *   - salário semanal até € 229,44 (Category B): € 22,94 fixos por semana (ou 10%, se o trabalhador escolher);
+ *   - salário semanal até € 229,44 (Category B): € 22,94 fixos por semana; se o trabalhador escolher, 10% do
+ *     salário semanal, o que dá direito a benefícios contributivos proporcionais (pro-rata);
  *   - acima disso (Category C): 10% do salário semanal;
  *   - teto (Category D): € 49,04/semana para nascidos até 31/12/1961 (a partir de € 490,39) e € 55,93/semana
  *     para nascidos a partir de 1/1/1962 (a partir de € 559,31).
@@ -59,10 +60,14 @@ const TETO_SEMANAL_CLASS1 = { ate1961: 4_904, desde1962: 5_593 };
 const TETO_SEMANAL_CLASS2 = { ate1961: 7_356, desde1962: 8_389 };
 
 /** Contribuição Class 1 de um ano, a partir do salário anual (52 semanas, arredondada ao cêntimo por semana). */
-export function contribuicaoClass1(brutoAnual: number, geracao: 'ate1961' | 'desde1962'): number {
+export function contribuicaoClass1(
+  brutoAnual: number,
+  geracao: 'ate1961' | 'desde1962',
+  proporcional = false,
+): number {
   const semanal = brutoAnual / 52;
   const porSemana =
-    semanal <= SALARIO_SEMANAL_CATEGORIA_B
+    semanal <= SALARIO_SEMANAL_CATEGORIA_B && !proporcional
       ? FIXO_SEMANAL_CATEGORIA_B
       : Math.min(Math.round(semanal * 0.1), TETO_SEMANAL_CLASS1[geracao]);
   return brutoAnual > 0 ? porSemana * 52 : 0;
@@ -87,7 +92,7 @@ export function calcularRendaMalta(e: EntradaRenda): ResultadoRenda | SemRegras 
   const geracao = e.anoNascimento != null && e.anoNascimento <= 1961 ? 'ate1961' : 'desde1962';
   const contribuicoes =
     e.situacao === 'dependente'
-      ? contribuicaoClass1(bruto, geracao)
+      ? contribuicaoClass1(bruto, geracao, e.contribuicaoProporcional)
       : Math.min((bruto * 15) / 100, TETO_SEMANAL_CLASS2[geracao] * 52);
 
   // Em Malta as contribuições não abatem o rendimento coletável.

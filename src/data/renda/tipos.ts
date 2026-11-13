@@ -21,6 +21,11 @@ export type EntradaRenda = {
   regiao?: string | null;
   /** Ano de nascimento (Malta: o teto das contribuições depende da geração) */
   anoNascimento?: number | null;
+  /**
+   * Malta, salário semanal até € 229,44 (Category B): o trabalhador pode pagar 10% do salário em vez do valor
+   * fixo, com direito a benefícios contributivos proporcionais (pro-rata). Padrão: valor fixo.
+   */
+  contribuicaoProporcional?: boolean;
   /** Portugal: despesas gerais familiares com NIF no ano (null = supõe que atingiu o limite da dedução) */
   despesasGeraisCentavos?: number | null;
 };
