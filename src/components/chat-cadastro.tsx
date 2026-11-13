@@ -24,6 +24,7 @@ import { Botao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { ErroValidacao } from '@/services/erros';
 import {
@@ -47,6 +48,7 @@ type Props = {
 };
 
 export function ChatCadastro({ nomeConta, modo = 'cadastro' }: Props) {
+  const t = useT();
   const theme = useTheme();
   const [respostas, setRespostas] = useState<RespostasChat>({});
   const [historico, setHistorico] = useState<Troca[]>([]);
@@ -78,7 +80,7 @@ export function ChatCadastro({ nomeConta, modo = 'cadastro' }: Props) {
       setRespostas(resultado.respostas);
     } catch (e) {
       if (e instanceof ErroValidacao) setErro(e.message);
-      else Alert.alert('Algo deu errado', 'Não foi possível salvar suas respostas. Tente novamente.');
+      else Alert.alert(t('chat.ui.erro'), t('chat.ui.erro.texto'));
     }
   }
 
@@ -101,21 +103,21 @@ export function ChatCadastro({ nomeConta, modo = 'cadastro' }: Props) {
             <View>
               <ThemedText type="smallBold">EcoTrust</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                {modo === 'atualizar' ? 'Atualizando seu perfil' : 'Conhecendo você'}
+                {modo === 'atualizar' ? t('chat.ui.atualizando') : t('chat.ui.conhecendo')}
               </ThemedText>
             </View>
           </View>
           {modo === 'atualizar' && historico.length === 0 && (
             <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={10}>
               <ThemedText type="smallBold" themeColor="textSecondary">
-                Cancelar
+                {t('comum.cancelar')}
               </ThemedText>
             </Pressable>
           )}
           {historico.length > 0 && (
-            <Pressable onPress={desfazer} accessibilityRole="button" accessibilityLabel="Desfazer a última resposta" hitSlop={10}>
+            <Pressable onPress={desfazer} accessibilityRole="button" accessibilityLabel={t('chat.ui.desfazer.rotulo')} hitSlop={10}>
               <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-                Desfazer
+                {t('chat.ui.desfazer')}
               </ThemedText>
             </Pressable>
           )}
@@ -169,6 +171,7 @@ export function ChatCadastro({ nomeConta, modo = 'cadastro' }: Props) {
 }
 
 function Balao({ autor, texto }: { autor: 'ecotrust' | 'usuario'; texto: string }) {
+  const t = useT();
   const theme = useTheme();
   const usuario = autor === 'usuario';
   return (
@@ -180,7 +183,7 @@ function Balao({ autor, texto }: { autor: 'ecotrust' | 'usuario'; texto: string 
           : [styles.balaoEcoTrust, { backgroundColor: theme.backgroundElement }],
       ]}
       accessible
-      accessibilityLabel={`${usuario ? 'Você' : 'EcoTrust'}: ${texto}`}>
+      accessibilityLabel={t(usuario ? 'chat.ui.voce' : 'chat.ui.ecotrust', { texto })}>
       <ThemedText style={usuario && { color: theme.onAccent }}>{texto}</ThemedText>
     </View>
   );
@@ -188,6 +191,7 @@ function Balao({ autor, texto }: { autor: 'ecotrust' | 'usuario'; texto: string 
 
 /** O jeito de responder muda conforme a pergunta: texto, valor, uma opção ou várias. */
 function EntradaResposta({ passo, aoEnviar }: { passo: PassoChat; aoEnviar: (r: string | string[]) => void }) {
+  const t = useT();
   const theme = useTheme();
   const [texto, setTexto] = useState('');
   const [marcadas, setMarcadas] = useState<string[]>([]);
@@ -218,7 +222,7 @@ function EntradaResposta({ passo, aoEnviar }: { passo: PassoChat; aoEnviar: (r: 
             <Chip key={o.valor} texto={o.rotulo} ativo={marcadas.includes(o.valor)} aoTocar={() => alternar(o.valor)} />
           ))}
         </View>
-        <Botao texto="Continuar" disabled={marcadas.length === 0} onPress={() => aoEnviar(marcadas)} />
+        <Botao texto={t('comum.continuar')} disabled={marcadas.length === 0} onPress={() => aoEnviar(marcadas)} />
       </View>
     );
   }
@@ -252,7 +256,7 @@ function EntradaResposta({ passo, aoEnviar }: { passo: PassoChat; aoEnviar: (r: 
           placeholderTextColor={theme.textSecondary}
           keyboardType={ehValor ? 'decimal-pad' : 'default'}
           autoCapitalize={ehValor ? 'none' : 'sentences'}
-          accessibilityLabel={ehValor ? 'Valor em reais' : entrada.placeholder}
+          accessibilityLabel={ehValor ? t('chat.ui.valorEm', { moeda: simboloMoeda() }) : entrada.placeholder}
           returnKeyType="send"
           onSubmitEditing={() => texto.trim() && aoEnviar(texto)}
           autoFocus
@@ -261,10 +265,10 @@ function EntradaResposta({ passo, aoEnviar }: { passo: PassoChat; aoEnviar: (r: 
           onPress={() => aoEnviar(texto)}
           disabled={!texto.trim()}
           accessibilityRole="button"
-          accessibilityLabel="Enviar resposta"
+          accessibilityLabel={t('chat.ui.enviar.rotulo')}
           style={[styles.enviar, { backgroundColor: theme.accent }, !texto.trim() && styles.apagado]}>
           <ThemedText type="smallBold" style={{ color: theme.onAccent }}>
-            Enviar
+            {t('chat.ui.enviar')}
           </ThemedText>
         </Pressable>
       </View>

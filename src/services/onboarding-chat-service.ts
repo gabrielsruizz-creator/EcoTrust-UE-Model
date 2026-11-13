@@ -7,6 +7,7 @@
  * Tudo é puro (sem banco) até `concluirChat`, que salva o resultado.
  */
 
+import { localeAtual, t } from '@/i18n';
 import { salvarSituacaoFinanceira } from '@/repositories/situacao-repository';
 import { ErroValidacao } from '@/services/erros';
 import { adicionarMeta, obterMetas } from '@/services/metas-service';
@@ -28,10 +29,12 @@ import type {
   SituacaoReserva,
 } from '@/types/financas';
 import { hoje, nomeDoMes, somarMesesNaData } from '@/utils/datas';
-import { formatarCentavos, lerValorEmCentavos } from '@/utils/moeda';
+import { centavosParaTexto, formatarCentavos, lerValorEmCentavos } from '@/utils/moeda';
 
 export type MetaDesejada = {
   nome: string;
+  /** Id da sugestão escolhida (ex.: 'reserva'); ausente quando a pessoa escreveu o nome. */
+  sonho?: string;
   valorCentavos?: number;
   /** null = sem prazo; undefined = ainda não respondeu */
   prazoMeses?: number | null;
@@ -49,6 +52,7 @@ export type RespostasChat = {
   reservaValorCentavos?: number;
   investe?: SituacaoInvestimentos;
   objetivo?: ObjetivoFinanceiro;
+  /** Ids das sugestões escolhidas (ver SONHOS). */
   sonhos?: string[];
   outraMeta?: string;
   metas?: MetaDesejada[];
@@ -68,50 +72,35 @@ export type PassoChat = { id: string; mensagens: string[]; entrada: Entrada };
 
 export type ResultadoResposta = { respostas: RespostasChat; textoUsuario: string; reacao: string | null };
 
-const OPCOES_DIVIDAS: Opcao[] = [
-  { valor: 'nao', rotulo: 'Não tenho dívidas' },
-  { valor: 'controlada', rotulo: 'Tenho, mas está sob controle' },
-  { valor: 'pesando', rotulo: 'Tenho, e está pesando' },
-];
-const OPCOES_RESERVA: Opcao[] = [
-  { valor: 'nao', rotulo: 'Não tenho' },
-  { valor: 'parcial', rotulo: 'Tenho um pouco' },
-  { valor: 'completa', rotulo: 'Tenho 6 meses ou mais' },
-];
-const OPCOES_INVESTE: Opcao[] = [
-  { valor: 'nao', rotulo: 'Ainda não' },
-  { valor: 'poupanca', rotulo: 'Só na poupança' },
-  { valor: 'outros', rotulo: 'Sim, em outros investimentos' },
-];
-const OPCOES_PRAZO: Opcao[] = [
-  { valor: '6', rotulo: 'Em 6 meses' },
-  { valor: '12', rotulo: 'Em 1 ano' },
-  { valor: '24', rotulo: 'Em 2 anos' },
-  { valor: '60', rotulo: 'Em 5 anos' },
-  { valor: 'sem', rotulo: 'Sem prazo' },
-];
+function opcoes(prefixo: string, valores: string[]): Opcao[] {
+  return valores.map((valor) => ({ valor, rotulo: t(`${prefixo}.${valor}` as never) }));
+}
+const opcoesDividas = () => opcoes('chat.div', ['nao', 'controlada', 'pesando']);
+const opcoesReserva = () => opcoes('chat.res', ['nao', 'parcial', 'completa']);
+const opcoesInveste = () => opcoes('chat.inv', ['nao', 'poupanca', 'outros']);
+const opcoesPrazo = () => opcoes('chat.prazo', ['6', '12', '24', '60', 'sem']);
 
-const RESERVA = 'Reserva de emergência';
-const OUTRA = 'Outra';
-const NENHUMA = 'Nenhuma por enquanto';
+const RESERVA = 'reserva';
+const OUTRA = 'outra';
+const NENHUMA = 'nenhuma';
 
 function rotuloDe(opcoes: Opcao[], valor: string) {
   return opcoes.find((o) => o.valor === valor)?.rotulo ?? valor;
 }
 
 function opcoesSonhos(r: RespostasChat): Opcao[] {
-  const nomes = [
+  const ids = [
     ...(r.reserva !== 'completa' ? [RESERVA] : []),
-    ...(r.dividas && r.dividas !== 'nao' ? ['Quitar dívidas'] : []),
-    'Viagem',
-    'Comprar um carro',
-    'Casa própria',
-    'Estudos',
-    'Aposentadoria',
+    ...(r.dividas && r.dividas !== 'nao' ? ['dividas'] : []),
+    'viagem',
+    'carro',
+    'casa',
+    'estudos',
+    'reforma',
     OUTRA,
     NENHUMA,
   ];
-  return nomes.map((n) => ({ valor: n, rotulo: n }));
+  return opcoes('chat.sonho', ids);
 }
 
 /** Quanto guardar por mês para cumprir todas as metas com prazo. */
@@ -128,16 +117,19 @@ function sobra(r: RespostasChat) {
 
 function linhasResumo(r: RespostasChat) {
   const linhas = [
-    `Renda: ${formatarCentavos(r.rendaCentavos ?? 0)} (${rotuloFonteRenda(r.fonte ?? 'outra')})`,
-    `Contas fixas: ${formatarCentavos(r.fixasCentavos ?? 0)}`,
-    `Dívidas: ${rotuloDe(OPCOES_DIVIDAS, r.dividas ?? 'nao')}`,
-    `Reserva: ${rotuloDe(OPCOES_RESERVA, r.reserva ?? 'nao')}`,
-    `Objetivo: ${rotuloObjetivo(r.objetivo ?? 'controlar')}`,
-    `Guardar por mês: ${formatarCentavos(r.metaEconomiaCentavos ?? 0)}`,
+    t('chat.res.renda', { valor: formatarCentavos(r.rendaCentavos ?? 0), fonte: rotuloFonteRenda(r.fonte ?? 'outra') }),
+    t('chat.res.fixas', { valor: formatarCentavos(r.fixasCentavos ?? 0) }),
+    t('chat.res.dividas', { valor: rotuloDe(opcoesDividas(), r.dividas ?? 'nao') }),
+    t('chat.res.reserva', { valor: rotuloDe(opcoesReserva(), r.reserva ?? 'nao') }),
+    t('chat.res.objetivo', { valor: rotuloObjetivo(r.objetivo ?? 'controlar') }),
+    t('chat.res.guardar', { valor: formatarCentavos(r.metaEconomiaCentavos ?? 0) }),
   ];
   for (const m of r.metas ?? []) {
+    const valor = formatarCentavos(m.valorCentavos ?? 0);
     linhas.push(
-      `Meta: ${m.nome}, ${formatarCentavos(m.valorCentavos ?? 0)}${m.prazoMeses ? ` em ${m.prazoMeses} meses` : ''}`,
+      m.prazoMeses
+        ? t('chat.res.metaPrazo', { nome: m.nome, valor, meses: t('chat.meses', { n: m.prazoMeses }) })
+        : t('chat.res.meta', { nome: m.nome, valor }),
     );
   }
   return linhas.map((l) => `• ${l}`).join('\n');
@@ -150,13 +142,13 @@ export function passoAtual(r: RespostasChat, nomeConta?: string): PassoChat | nu
     return {
       id: 'nome',
       mensagens: [
-        'Oi! Eu sou o EcoTrust, seu assistente financeiro.',
-        'Vou te fazer algumas perguntas rápidas para entender sua vida financeira. Leva uns 2 minutos.',
-        'Como você prefere que eu te chame?',
+        t('chat.ola1'),
+        t('chat.ola2'),
+        t('chat.ola3'),
       ],
       entrada: {
         tipo: 'texto',
-        placeholder: 'Seu nome',
+        placeholder: t('acesso.nome'),
         sugestoes: sugerido ? [{ valor: sugerido, rotulo: sugerido }] : undefined,
       },
     };
@@ -165,8 +157,8 @@ export function passoAtual(r: RespostasChat, nomeConta?: string): PassoChat | nu
     return {
       id: 'renda',
       mensagens: [
-        `Prazer, ${r.nome}!`,
-        'Quanto você recebe por mês, em média? Se a sua renda varia, pense numa média dos últimos meses.',
+        t('chat.prazer', { nome: r.nome }),
+        t('chat.renda'),
       ],
       entrada: { tipo: 'valor', permitirZero: true },
     };
@@ -174,7 +166,7 @@ export function passoAtual(r: RespostasChat, nomeConta?: string): PassoChat | nu
   if (r.fonte === undefined) {
     return {
       id: 'fonte',
-      mensagens: ['E de onde vem a maior parte desse dinheiro?'],
+      mensagens: [t('chat.fonte')],
       entrada: { tipo: 'opcoes', opcoes: FONTES_RENDA.map((f) => ({ valor: f.valor, rotulo: f.rotulo })) },
     };
   }
@@ -182,8 +174,8 @@ export function passoAtual(r: RespostasChat, nomeConta?: string): PassoChat | nu
     return {
       id: 'fixas',
       mensagens: [
-        'Quanto você gasta por mês com contas fixas?',
-        'Some o que se repete todo mês: aluguel, condomínio, luz, água, internet, celular, escola, assinaturas. Um valor aproximado já ajuda.',
+        t('chat.fixas1'),
+        t('chat.fixas2'),
       ],
       entrada: { tipo: 'valor', permitirZero: true },
     };
@@ -191,35 +183,35 @@ export function passoAtual(r: RespostasChat, nomeConta?: string): PassoChat | nu
   if (r.dividas === undefined) {
     return {
       id: 'dividas',
-      mensagens: ['Você tem alguma dívida hoje? Cartão, empréstimo, financiamento...'],
-      entrada: { tipo: 'opcoes', opcoes: OPCOES_DIVIDAS },
+      mensagens: [t('chat.dividas')],
+      entrada: { tipo: 'opcoes', opcoes: opcoesDividas() },
     };
   }
   if (r.reserva === undefined) {
     return {
       id: 'reserva',
-      mensagens: ['Você tem algum dinheiro guardado para emergências?'],
-      entrada: { tipo: 'opcoes', opcoes: OPCOES_RESERVA },
+      mensagens: [t('chat.reserva')],
+      entrada: { tipo: 'opcoes', opcoes: opcoesReserva() },
     };
   }
   if (r.reserva === 'parcial' && r.reservaValorCentavos === undefined) {
     return {
       id: 'reserva-valor',
-      mensagens: ['Quanto você tem guardado, mais ou menos?'],
+      mensagens: [t('chat.reservaValor')],
       entrada: { tipo: 'valor', permitirZero: true },
     };
   }
   if (r.investe === undefined) {
     return {
       id: 'investe',
-      mensagens: ['Você já investe o seu dinheiro?'],
-      entrada: { tipo: 'opcoes', opcoes: OPCOES_INVESTE },
+      mensagens: [t('chat.investe')],
+      entrada: { tipo: 'opcoes', opcoes: opcoesInveste() },
     };
   }
   if (r.objetivo === undefined) {
     return {
       id: 'objetivo',
-      mensagens: ['Qual é o seu principal objetivo com o dinheiro agora?'],
+      mensagens: [t('chat.objetivo')],
       entrada: { tipo: 'opcoes', opcoes: OBJETIVOS.map((o) => ({ valor: o.valor, rotulo: o.rotulo })) },
     };
   }
@@ -227,8 +219,8 @@ export function passoAtual(r: RespostasChat, nomeConta?: string): PassoChat | nu
     return {
       id: 'sonhos',
       mensagens: [
-        'Agora a parte boa: quais conquistas você quer realizar?',
-        'Pode escolher mais de uma. Eu crio as metas para você acompanhar.',
+        t('chat.sonhos1'),
+        t('chat.sonhos2'),
       ],
       entrada: { tipo: 'multipla', opcoes: opcoesSonhos(r), exclusiva: NENHUMA },
     };
@@ -236,8 +228,8 @@ export function passoAtual(r: RespostasChat, nomeConta?: string): PassoChat | nu
   if (r.sonhos.includes(OUTRA) && r.outraMeta === undefined) {
     return {
       id: 'outra-meta',
-      mensagens: ['Qual é essa outra conquista?'],
-      entrada: { tipo: 'texto', placeholder: 'Ex.: Festa de casamento' },
+      mensagens: [t('chat.outraMeta')],
+      entrada: { tipo: 'texto', placeholder: t('chat.outraMeta.ex') },
     };
   }
   const indice = (r.metas ?? []).findIndex((m) => m.valorCentavos === undefined || m.prazoMeses === undefined);
@@ -245,47 +237,47 @@ export function passoAtual(r: RespostasChat, nomeConta?: string): PassoChat | nu
     const meta = r.metas![indice];
     if (meta.valorCentavos === undefined) {
       const sugestoes: Opcao[] = [];
-      if (meta.nome === RESERVA && (r.fixasCentavos ?? 0) > 0) {
+      if (meta.sonho === RESERVA && (r.fixasCentavos ?? 0) > 0) {
         const seisMeses = (r.fixasCentavos ?? 0) * 6;
-        sugestoes.push({ valor: String(seisMeses), rotulo: `${formatarCentavos(seisMeses)} (6 meses de contas)` });
+        sugestoes.push({ valor: String(seisMeses), rotulo: t('chat.seisMeses', { valor: formatarCentavos(seisMeses) }) });
       }
       return {
         id: `meta-valor:${indice}`,
-        mensagens: [`Quanto você precisa juntar para "${meta.nome}"?`],
+        mensagens: [t('chat.metaValor', { nome: meta.nome })],
         entrada: { tipo: 'valor', permitirZero: false, sugestoes },
       };
     }
     return {
       id: `meta-prazo:${indice}`,
-      mensagens: [`E para quando você quer "${meta.nome}"?`],
-      entrada: { tipo: 'opcoes', opcoes: OPCOES_PRAZO },
+      mensagens: [t('chat.metaPrazo', { nome: meta.nome })],
+      entrada: { tipo: 'opcoes', opcoes: opcoesPrazo() },
     };
   }
   if (r.metaEconomiaCentavos === undefined) {
     const sugestoes: Opcao[] = [];
     const paraMetas = somaMensalDasMetas(r.metas);
     if (paraMetas > 0) {
-      sugestoes.push({ valor: String(paraMetas), rotulo: `${formatarCentavos(paraMetas)} (para as metas no prazo)` });
+      sugestoes.push({ valor: String(paraMetas), rotulo: t('chat.paraMetas', { valor: formatarCentavos(paraMetas) }) });
     }
     for (const s of sugerirMetasEconomia(r.rendaCentavos ?? 0, r.fixasCentavos ?? 0)) {
       if (s !== paraMetas) sugestoes.push({ valor: String(s), rotulo: formatarCentavos(s) });
     }
-    sugestoes.push({ valor: '0', rotulo: 'Ainda não sei' });
+    sugestoes.push({ valor: '0', rotulo: t('chat.naoSei') });
     return {
       id: 'economia',
-      mensagens: ['Última pergunta: quanto você quer guardar por mês?'],
+      mensagens: [t('chat.economia')],
       entrada: { tipo: 'valor', permitirZero: true, sugestoes },
     };
   }
   if (!r.confirmado) {
     return {
       id: 'resumo',
-      mensagens: ['Pronto! Veja o que eu entendi:', linhasResumo(r), 'Está tudo certo?'],
+      mensagens: [t('chat.resumo1'), linhasResumo(r), t('chat.resumo2')],
       entrada: {
         tipo: 'opcoes',
         opcoes: [
-          { valor: 'sim', rotulo: 'Está certo, vamos começar!' },
-          { valor: 'refazer', rotulo: 'Quero recomeçar' },
+          { valor: 'sim', rotulo: t('chat.confirmar') },
+          { valor: 'refazer', rotulo: t('chat.recomecar') },
         ],
       },
     };
@@ -296,13 +288,15 @@ export function passoAtual(r: RespostasChat, nomeConta?: string): PassoChat | nu
 function lerValor(texto: string, permitirZero: boolean) {
   const valor = lerValorEmCentavos(texto, permitirZero);
   if (valor === null) {
-    throw new ErroValidacao(permitirZero ? 'Digite um valor, como 2500 ou 2.500,00.' : 'Digite um valor maior que zero.');
+    throw new ErroValidacao(
+      permitirZero ? t('chat.e.valor', { exemplo: centavosParaTexto(250050) }) : t('chat.e.maiorZero'),
+    );
   }
   return valor;
 }
 
 function exigirOpcao(opcoes: Opcao[], valor: string) {
-  if (!opcoes.some((o) => o.valor === valor)) throw new ErroValidacao('Escolha uma das opções.');
+  if (!opcoes.some((o) => o.valor === valor)) throw new ErroValidacao(t('chat.e.opcao'));
   return valor;
 }
 
@@ -314,7 +308,7 @@ export function responder(r: RespostasChat, passo: PassoChat, resposta: string |
   switch (id) {
     case 'nome': {
       const nome = texto.replace(/\s+/g, ' ');
-      if (nome.length < 1 || nome.length > 40) throw new ErroValidacao('Digite como quer ser chamado (até 40 letras).');
+      if (nome.length < 1 || nome.length > 40) throw new ErroValidacao(t('chat.e.nome'));
       return { respostas: { ...r, nome }, textoUsuario: nome, reacao: null };
     }
     case 'renda': {
@@ -322,7 +316,7 @@ export function responder(r: RespostasChat, passo: PassoChat, resposta: string |
       return {
         respostas: { ...r, rendaCentavos: renda },
         textoUsuario: formatarCentavos(renda),
-        reacao: renda === 0 ? 'Tudo bem. Dá para organizar as finanças mesmo assim.' : null,
+        reacao: renda === 0 ? t('chat.r.rendaZero') : null,
       };
     }
     case 'fonte': {
@@ -337,34 +331,34 @@ export function responder(r: RespostasChat, passo: PassoChat, resposta: string |
       if ((r.rendaCentavos ?? 0) > 0) {
         reacao =
           resto >= 0
-            ? `Então sobram cerca de ${formatarCentavos(resto)} por mês depois das contas fixas.`
-            : 'Suas contas fixas passam da sua renda. Vamos trabalhar nisso juntos.';
+            ? t('chat.r.sobra', { valor: formatarCentavos(resto) })
+            : t('chat.r.passou');
       }
       return { respostas: novas, textoUsuario: formatarCentavos(fixas), reacao };
     }
     case 'dividas': {
-      const dividas = exigirOpcao(OPCOES_DIVIDAS, texto) as SituacaoDividas;
+      const dividas = exigirOpcao(opcoesDividas(), texto) as SituacaoDividas;
       return {
         respostas: { ...r, dividas },
-        textoUsuario: rotuloDe(OPCOES_DIVIDAS, dividas),
+        textoUsuario: rotuloDe(opcoesDividas(), dividas),
         reacao:
           dividas === 'pesando'
-            ? 'Obrigado pela sinceridade. Organizar as dívidas vai ser prioridade.'
+            ? t('chat.r.pesando')
             : dividas === 'controlada'
-              ? 'Que bom que está sob controle.'
+              ? t('chat.r.controlada')
               : null,
       };
     }
     case 'reserva': {
-      const reserva = exigirOpcao(OPCOES_RESERVA, texto) as SituacaoReserva;
+      const reserva = exigirOpcao(opcoesReserva(), texto) as SituacaoReserva;
       return {
         respostas: { ...r, reserva, reservaValorCentavos: reserva === 'parcial' ? undefined : 0 },
-        textoUsuario: rotuloDe(OPCOES_RESERVA, reserva),
+        textoUsuario: rotuloDe(opcoesReserva(), reserva),
         reacao:
           reserva === 'nao'
-            ? 'Sem problemas: montar uma reserva costuma ser o primeiro passo.'
+            ? t('chat.r.semReserva')
             : reserva === 'completa'
-              ? 'Excelente! Isso dá muita segurança.'
+              ? t('chat.r.reservaCompleta')
               : null,
       };
     }
@@ -373,8 +367,8 @@ export function responder(r: RespostasChat, passo: PassoChat, resposta: string |
       return { respostas: { ...r, reservaValorCentavos: valor }, textoUsuario: formatarCentavos(valor), reacao: null };
     }
     case 'investe': {
-      const investe = exigirOpcao(OPCOES_INVESTE, texto) as SituacaoInvestimentos;
-      return { respostas: { ...r, investe }, textoUsuario: rotuloDe(OPCOES_INVESTE, investe), reacao: null };
+      const investe = exigirOpcao(opcoesInveste(), texto) as SituacaoInvestimentos;
+      return { respostas: { ...r, investe }, textoUsuario: rotuloDe(opcoesInveste(), investe), reacao: null };
     }
     case 'objetivo': {
       const objetivo = exigirOpcao(OBJETIVOS.map((o) => ({ valor: o.valor, rotulo: o.rotulo })), texto) as ObjetivoFinanceiro;
@@ -382,23 +376,28 @@ export function responder(r: RespostasChat, passo: PassoChat, resposta: string |
     }
     case 'sonhos': {
       const escolhidos = Array.isArray(resposta) ? resposta : [];
-      const validos = opcoesSonhos(r).map((o) => o.valor);
+      const opcoesValidas = opcoesSonhos(r);
+      const validos = opcoesValidas.map((o) => o.valor);
       if (escolhidos.length === 0 || escolhidos.some((s) => !validos.includes(s))) {
-        throw new ErroValidacao('Escolha pelo menos uma opção.');
+        throw new ErroValidacao(t('chat.e.umaOpcao'));
       }
       const sonhos = escolhidos.includes(NENHUMA) ? [] : escolhidos;
       const metas: MetaDesejada[] = sonhos
         .filter((s) => s !== OUTRA)
-        .map((nome) => ({ nome, inicialCentavos: nome === RESERVA ? (r.reservaValorCentavos ?? 0) : 0 }));
+        .map((sonho) => ({
+          nome: rotuloDe(opcoesValidas, sonho),
+          sonho,
+          inicialCentavos: sonho === RESERVA ? (r.reservaValorCentavos ?? 0) : 0,
+        }));
       return {
         respostas: { ...r, sonhos, metas },
-        textoUsuario: escolhidos.join(', '),
-        reacao: sonhos.length === 0 ? 'Tudo bem! Você pode criar metas quando quiser, na aba Planejar.' : null,
+        textoUsuario: escolhidos.map((s) => rotuloDe(opcoesValidas, s)).join(', '),
+        reacao: sonhos.length === 0 ? t('chat.r.semMetas', { aba: t('abas.metas') }) : null,
       };
     }
     case 'outra-meta': {
       const nome = texto.replace(/\s+/g, ' ');
-      if (nome.length < 1 || nome.length > 40) throw new ErroValidacao('Dê um nome para a conquista (até 40 letras).');
+      if (nome.length < 1 || nome.length > 40) throw new ErroValidacao(t('chat.e.nomeMeta'));
       return {
         respostas: { ...r, outraMeta: nome, metas: [...(r.metas ?? []), { nome, inicialCentavos: 0 }] },
         textoUsuario: nome,
@@ -413,7 +412,7 @@ export function responder(r: RespostasChat, passo: PassoChat, resposta: string |
     }
     case 'meta-prazo': {
       const i = Number(indiceTexto);
-      const escolha = exigirOpcao(OPCOES_PRAZO, texto);
+      const escolha = exigirOpcao(opcoesPrazo(), texto);
       const prazoMeses = escolha === 'sem' ? null : Number(escolha);
       const metas = (r.metas ?? []).map((m, k) => (k === i ? { ...m, prazoMeses } : m));
       const meta = metas[i];
@@ -423,33 +422,33 @@ export function responder(r: RespostasChat, passo: PassoChat, resposta: string |
         const data = somarMesesNaData(hoje(), prazoMeses);
         reacao =
           porMes > 0
-            ? `Para chegar lá até ${nomeDoMes(data.slice(0, 7))}, seria cerca de ${formatarCentavos(porMes)} por mês.`
-            : 'Você já tem o valor desta meta. Ótimo!';
+            ? t('chat.r.porMes', { mes: nomeDoMes(data.slice(0, 7)), valor: formatarCentavos(porMes) })
+            : t('chat.r.jaTem');
       }
-      return { respostas: { ...r, metas }, textoUsuario: rotuloDe(OPCOES_PRAZO, escolha), reacao };
+      return { respostas: { ...r, metas }, textoUsuario: rotuloDe(opcoesPrazo(), escolha), reacao };
     }
     case 'economia': {
       const valor = lerValor(texto, true);
       const resto = sobra(r);
       const reacao =
         valor > 0 && (r.rendaCentavos ?? 0) > 0 && valor > Math.max(resto, 0)
-          ? `Isso é mais do que sobra hoje depois das contas fixas (${formatarCentavos(Math.max(resto, 0))}). Vamos ver juntos onde ajustar.`
+          ? t('chat.r.maisQueSobra', { valor: formatarCentavos(Math.max(resto, 0)) })
           : null;
       return {
         respostas: { ...r, metaEconomiaCentavos: valor },
-        textoUsuario: valor === 0 ? 'Ainda não sei' : formatarCentavos(valor),
+        textoUsuario: valor === 0 ? t('chat.naoSei') : formatarCentavos(valor),
         reacao,
       };
     }
     case 'resumo': {
       if (texto === 'refazer') {
-        return { respostas: {}, textoUsuario: 'Quero recomeçar', reacao: 'Sem problemas, vamos de novo!' };
+        return { respostas: {}, textoUsuario: t('chat.recomecar'), reacao: t('chat.r.denovo') };
       }
       exigirOpcao([{ valor: 'sim', rotulo: '' }], texto);
-      return { respostas: { ...r, confirmado: true }, textoUsuario: 'Está certo, vamos começar!', reacao: null };
+      return { respostas: { ...r, confirmado: true }, textoUsuario: t('chat.confirmar'), reacao: null };
     }
     default:
-      throw new ErroValidacao('Pergunta desconhecida.');
+      throw new ErroValidacao(t('chat.e.desconhecida'));
   }
 }
 
@@ -471,7 +470,7 @@ export function concluirChat(r: RespostasChat, opcoes: { pularMetasExistentes?: 
     r.objetivo === undefined ||
     r.metaEconomiaCentavos === undefined
   ) {
-    throw new ErroValidacao('A conversa ainda não terminou.');
+    throw new ErroValidacao(t('chat.e.naoTerminou'));
   }
 
   const perfil = validarPerfilFinanceiro({
@@ -485,10 +484,10 @@ export function concluirChat(r: RespostasChat, opcoes: { pularMetasExistentes?: 
 
   salvarSituacaoFinanceira({ dividas: r.dividas, reserva: r.reserva, investe: r.investe });
   const existentes = new Set(
-    opcoes.pularMetasExistentes ? obterMetas().map((m) => m.nome.toLocaleLowerCase('pt-BR')) : [],
+    opcoes.pularMetasExistentes ? obterMetas().map((m) => m.nome.toLocaleLowerCase(localeAtual())) : [],
   );
   for (const m of r.metas ?? []) {
-    if (!m.valorCentavos || existentes.has(m.nome.toLocaleLowerCase('pt-BR'))) continue;
+    if (!m.valorCentavos || existentes.has(m.nome.toLocaleLowerCase(localeAtual()))) continue;
     adicionarMeta(
       {
         nome: m.nome,
