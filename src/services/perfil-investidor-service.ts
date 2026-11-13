@@ -1,12 +1,14 @@
 /**
- * Questionário simplificado de perfil de investidor (inspirado no "suitability").
- * Cada resposta vale de 1 a 3 pontos; a soma define o perfil.
+ * Questionário educativo de perfil de investidor. Cada resposta vale de 1 a 3 pontos; a soma define o perfil.
+ * NÃO é a avaliação de adequação da MiFID II (essa é feita pelas entidades autorizadas) nem aconselhamento
+ * de investimento: o app não recomenda produtos nem instituições.
  */
 
 import {
   obterPerfilInvestidor,
   salvarPerfilInvestidor,
 } from '@/repositories/perfil-investidor-repository';
+import { t, type Chave } from '@/i18n';
 import type { PerfilInvestidor, TipoPerfilInvestidor } from '@/types/financas';
 
 export type Pergunta = {
@@ -14,56 +16,22 @@ export type Pergunta = {
   opcoes: { texto: string; pontos: number }[];
 };
 
-export const PERGUNTAS: Pergunta[] = [
-  {
-    texto: 'Qual é o seu principal objetivo ao investir?',
-    opcoes: [
-      { texto: 'Proteger meu dinheiro, sem correr riscos', pontos: 1 },
-      { texto: 'Equilibrar segurança e rentabilidade', pontos: 2 },
-      { texto: 'Fazer o dinheiro crescer bastante, mesmo com risco', pontos: 3 },
-    ],
-  },
-  {
-    texto: 'Por quanto tempo você pretende deixar o dinheiro investido?',
-    opcoes: [
-      { texto: 'Menos de 1 ano', pontos: 1 },
-      { texto: 'De 1 a 5 anos', pontos: 2 },
-      { texto: 'Mais de 5 anos', pontos: 3 },
-    ],
-  },
-  {
-    texto: 'Se seus investimentos caíssem 20% em um mês, o que você faria?',
-    opcoes: [
-      { texto: 'Venderia tudo para não perder mais', pontos: 1 },
-      { texto: 'Esperaria o mercado se recuperar', pontos: 2 },
-      { texto: 'Aproveitaria para investir mais', pontos: 3 },
-    ],
-  },
-  {
-    texto: 'Qual a sua experiência com investimentos?',
-    opcoes: [
-      { texto: 'Nenhuma, ou só poupança', pontos: 1 },
-      { texto: 'Já investi em renda fixa (CDB, Tesouro) ou fundos', pontos: 2 },
-      { texto: 'Já investi em ações, FIIs ou criptomoedas', pontos: 3 },
-    ],
-  },
-  {
-    texto: 'Você tem uma reserva de emergência?',
-    opcoes: [
-      { texto: 'Não tenho', pontos: 1 },
-      { texto: 'Tenho, mas cobre menos de 6 meses de gastos', pontos: 2 },
-      { texto: 'Sim, cobre 6 meses ou mais', pontos: 3 },
-    ],
-  },
-  {
-    texto: 'Quanto da sua renda mensal sobra para investir?',
-    opcoes: [
-      { texto: 'Menos de 10%', pontos: 1 },
-      { texto: 'Entre 10% e 30%', pontos: 2 },
-      { texto: 'Mais de 30%', pontos: 3 },
-    ],
-  },
-];
+/** Pergunta n (1 a 6), com as 3 opções valendo 1, 2 e 3 pontos. Textos no idioma atual. */
+function pergunta(n: number): Pergunta {
+  return {
+    get texto() {
+      return t(`inv.q${n}` as Chave);
+    },
+    opcoes: [1, 2, 3].map((o) => ({
+      get texto() {
+        return t(`inv.q${n}.o${o}` as Chave);
+      },
+      pontos: o,
+    })),
+  };
+}
+
+export const PERGUNTAS: Pergunta[] = [1, 2, 3, 4, 5, 6].map(pergunta);
 
 const INDICE_RESERVA = 4;
 
@@ -72,7 +40,7 @@ export function calcularPerfil(respostas: number[]): PerfilInvestidor {
     respostas.length !== PERGUNTAS.length ||
     respostas.some((opcao, i) => !Number.isInteger(opcao) || !PERGUNTAS[i].opcoes[opcao])
   ) {
-    throw new Error('Responda todas as perguntas do questionário.');
+    throw new Error(t('inv.erro'));
   }
   const pontos = respostas.reduce((soma, opcao, i) => soma + PERGUNTAS[i].opcoes[opcao].pontos, 0);
   const tipo: TipoPerfilInvestidor = pontos <= 10 ? 'conservador' : pontos <= 14 ? 'moderado' : 'arrojado';
@@ -96,20 +64,30 @@ export function responderQuestionario(respostas: number[]): PerfilInvestidor {
   return perfil;
 }
 
+/** Descrição educativa de cada perfil (sem recomendar produtos: não é aconselhamento de investimento). */
 export const DESCRICAO_PERFIL: Record<TipoPerfilInvestidor, { titulo: string; texto: string }> = {
   conservador: {
-    titulo: 'Conservador',
-    texto:
-      'Você prioriza segurança e liquidez. Costuma combinar com renda fixa de baixo risco, como Tesouro Selic e CDBs com liquidez diária.',
+    get titulo() {
+      return t('inv.conservador.titulo');
+    },
+    get texto() {
+      return t('inv.conservador.texto');
+    },
   },
   moderado: {
-    titulo: 'Moderado',
-    texto:
-      'Você aceita algum risco em troca de mais rentabilidade. Costuma combinar uma base de renda fixa com uma parte menor em fundos e renda variável.',
+    get titulo() {
+      return t('inv.moderado.titulo');
+    },
+    get texto() {
+      return t('inv.moderado.texto');
+    },
   },
   arrojado: {
-    titulo: 'Arrojado',
-    texto:
-      'Você tolera oscilações para buscar retornos maiores no longo prazo. Pode ter uma fatia relevante em renda variável, sempre com diversificação.',
+    get titulo() {
+      return t('inv.arrojado.titulo');
+    },
+    get texto() {
+      return t('inv.arrojado.texto');
+    },
   },
 };

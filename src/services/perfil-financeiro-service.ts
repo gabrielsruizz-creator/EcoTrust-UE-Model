@@ -14,20 +14,52 @@ const MAX_NOME = 40;
 const MAX_VALOR_CENTAVOS = 10_000_000_000;
 
 export const FONTES_RENDA: { valor: FonteRenda; rotulo: string }[] = [
-  { valor: 'clt', rotulo: 'Salário (carteira assinada)' },
-  { valor: 'autonomo', rotulo: 'Autônomo ou freelancer' },
-  { valor: 'empresario', rotulo: 'Empresário' },
-  { valor: 'aposentadoria', rotulo: 'Aposentadoria ou benefício' },
-  { valor: 'estudante', rotulo: 'Bolsa ou mesada' },
-  { valor: 'outra', rotulo: 'Outra' },
+  { valor: 'clt', get rotulo() {
+      return t('rot.renda.clt');
+    } },
+  { valor: 'autonomo', get rotulo() {
+      return t('rot.renda.autonomo');
+    } },
+  { valor: 'empresario', get rotulo() {
+      return t('rot.renda.empresario');
+    } },
+  { valor: 'aposentadoria', get rotulo() {
+      return t('rot.renda.aposentadoria');
+    } },
+  { valor: 'estudante', get rotulo() {
+      return t('rot.renda.estudante');
+    } },
+  { valor: 'outra', get rotulo() {
+      return t('rot.renda.outra');
+    } },
 ];
 
 export const OBJETIVOS: { valor: ObjetivoFinanceiro; rotulo: string; descricao: string }[] = [
-  { valor: 'controlar', rotulo: 'Controlar meus gastos', descricao: 'Entender para onde vai o dinheiro' },
-  { valor: 'reserva', rotulo: 'Montar uma reserva', descricao: 'Ter dinheiro guardado para imprevistos' },
-  { valor: 'dividas', rotulo: 'Sair das dívidas', descricao: 'Organizar e quitar o que devo' },
-  { valor: 'conquista', rotulo: 'Realizar um sonho', descricao: 'Viagem, carro, casa, estudos...' },
-  { valor: 'investir', rotulo: 'Começar a investir', descricao: 'Fazer o dinheiro render' },
+  { valor: 'controlar', get rotulo() {
+      return t('rot.objetivo.controlar');
+    }, get descricao() {
+      return t('rot.objetivo.controlar.desc');
+    } },
+  { valor: 'reserva', get rotulo() {
+      return t('rot.objetivo.reserva');
+    }, get descricao() {
+      return t('rot.objetivo.reserva.desc');
+    } },
+  { valor: 'dividas', get rotulo() {
+      return t('rot.objetivo.dividas');
+    }, get descricao() {
+      return t('rot.objetivo.dividas.desc');
+    } },
+  { valor: 'conquista', get rotulo() {
+      return t('rot.objetivo.conquista');
+    }, get descricao() {
+      return t('rot.objetivo.conquista.desc');
+    } },
+  { valor: 'investir', get rotulo() {
+      return t('rot.objetivo.investir');
+    }, get descricao() {
+      return t('rot.objetivo.investir.desc');
+    } },
 ];
 
 export function rotuloFonteRenda(fonte: FonteRenda) {

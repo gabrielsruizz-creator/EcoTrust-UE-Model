@@ -23,7 +23,7 @@ import {
 import { useT } from '@/hooks/use-idioma';
 import { useConta } from '@/hooks/use-sessao';
 import { useTheme } from '@/hooks/use-theme';
-import type { Chave } from '@/i18n';
+import { localeAtual, type Chave } from '@/i18n';
 import { NOME_PLANO_PLUS } from '@/services/assinatura-service';
 import { apagarContaEDados, sair } from '@/services/conta-service';
 import { rotuloObjetivo } from '@/services/perfil-financeiro-service';
@@ -51,22 +51,22 @@ export default function PerfilScreen() {
 
   function confirmarApagar() {
     Alert.alert(
-      'Apagar conta e dados',
-      'Sua conta e todos os lançamentos, orçamentos, metas e conquistas deste aparelho serão apagados. Isso não pode ser desfeito.',
+      t('pf.apagar'),
+      t('pf.apagar.texto'),
       [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Apagar tudo', style: 'destructive', onPress: () => apagarContaEDados() },
+        { text: t('comum.cancelar'), style: 'cancel' },
+        { text: t('pf.apagarTudo'), style: 'destructive', onPress: () => apagarContaEDados() },
       ],
     );
   }
 
   return (
-    <Tela titulo="Perfil">
+    <Tela titulo={t('abas.perfil')}>
       {/* Cabeçalho */}
       <Pressable
         onPress={() => router.push('/editar-dados-pessoais')}
         accessibilityRole="button"
-        accessibilityLabel={`${conta?.nome ?? ''}, nível ${jornada.nivel}, ${jornada.xp} XP${plus ? `, ${NOME_PLANO_PLUS}` : ''}. Editar dados pessoais`}
+        accessibilityLabel={`${conta?.nome ?? ''}, ${t('pf.nivel', { n: jornada.nivel })}, ${jornada.xp} XP${plus ? `, ${NOME_PLANO_PLUS}` : ''}. ${t('pf.editarDados')}`}
         style={({ pressed }) => pressed && styles.pressionado}>
         <Cartao style={styles.cabecalho}>
           <View style={[styles.anelAvatar, degrade]}>
@@ -77,7 +77,7 @@ export default function PerfilScreen() {
               {conta?.nome}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              Nível {jornada.nivel} · {jornada.xp} XP
+              {t('pf.nivel', { n: jornada.nivel })} · {jornada.xp} XP
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
               {conta?.email}
@@ -95,8 +95,8 @@ export default function PerfilScreen() {
 
       {/* Números da jornada */}
       <View style={styles.numeros}>
-        <Numero icone={<Icone nome="fogo" cor="#FF8A3D" tamanho={18} />} valor={jornada.sequenciaAtual} rotulo="Sequência" />
-        <Numero icone={<Icone nome="trofeu" cor="#F2C94C" tamanho={18} />} valor={alcancadas} rotulo="Conquistas" />
+        <Numero icone={<Icone nome="fogo" cor="#FF8A3D" tamanho={18} />} valor={jornada.sequenciaAtual} rotulo={t('pf.sequencia')} />
+        <Numero icone={<Icone nome="trofeu" cor="#F2C94C" tamanho={18} />} valor={alcancadas} rotulo={t('pf.conquistas')} />
         <Numero icone={<SeloNivel tamanho={22} />} valor={jornada.nivel} rotulo={jornada.nomeNivel} />
       </View>
 
@@ -104,7 +104,7 @@ export default function PerfilScreen() {
       <CartaoPet />
 
       {/* Sobre você */}
-      <Grupo titulo="Sobre você">
+      <Grupo titulo={t('pf.sobre')}>
         <LinhaLista
           icone="impostos"
           titulo={t('fiscal.titulo')}
@@ -120,28 +120,28 @@ export default function PerfilScreen() {
         <LinhaLista
           separador
           icone="usuario"
-          titulo="Meus dados"
+          titulo={t('pf.meusDados')}
           subtitulo={
             preenchidos < TOTAL_CAMPOS_PESSOAIS
-              ? `${preenchidos} de ${TOTAL_CAMPOS_PESSOAIS} preenchidos`
-              : [anos !== null ? `${anos} anos` : null, pessoal.cidade].filter(Boolean).join(' · ')
+              ? t('pf.preenchidos', { n: preenchidos, total: TOTAL_CAMPOS_PESSOAIS })
+              : [anos !== null ? t('pf.anos', { n: anos }) : null, pessoal.cidade].filter(Boolean).join(' · ')
           }
           aoTocar={() => router.push('/editar-dados-pessoais')}
         />
         <LinhaLista
           separador
           icone="carteira"
-          titulo="Situação financeira"
-          subtitulo={situacao ? `Dívidas: ${rotulo(DIVIDAS, situacao.dividas).toLocaleLowerCase('pt-BR')}` : 'Conte sobre dívidas e reserva'}
+          titulo={t('pf.situacao')}
+          subtitulo={situacao ? `${t('pf.dividas')}: ${rotulo(DIVIDAS, situacao.dividas).toLocaleLowerCase(localeAtual())}` : t('pf.situacao.vazio')}
           aoTocar={() => router.push('/editar-situacao')}
         />
         <LinhaLista
           separador
           icone="bandeira"
-          titulo="Objetivos financeiros"
+          titulo={t('pf.objetivos')}
           subtitulo={
             perfilFinanceiro
-              ? `${rotuloObjetivo(perfilFinanceiro.objetivo)} · ${formatarCentavos(perfilFinanceiro.metaEconomiaCentavos)}/mês`
+              ? `${rotuloObjetivo(perfilFinanceiro.objetivo)} · ${t('metas.porMesCurto', { valor: formatarCentavos(perfilFinanceiro.metaEconomiaCentavos) })}`
               : undefined
           }
           aoTocar={() => router.push('/editar-perfil')}
@@ -149,67 +149,67 @@ export default function PerfilScreen() {
         <LinhaLista
           separador
           icone="investimentos"
-          titulo="Perfil de investidor"
-          subtitulo={investidor ? DESCRICAO_PERFIL[investidor.tipo].titulo : 'Descubra em 6 perguntas'}
+          titulo={t('pf.investidor')}
+          subtitulo={investidor ? DESCRICAO_PERFIL[investidor.tipo].titulo : t('pf.investidor.vazio')}
           aoTocar={() => router.push('/perfil-investidor')}
         />
         <LinhaLista
           separador
           icone="chat"
-          titulo="Refazer conversa com o EcoTrust"
+          titulo={t('pf.refazerConversa')}
           aoTocar={() => router.push('/refazer-conversa')}
         />
       </Grupo>
 
-      <Grupo titulo="Sua jornada">
+      <Grupo titulo={t('pf.jornada')}>
         <LinhaLista
           icone="trofeu"
-          titulo="Conquistas"
-          subtitulo={`${alcancadas} de ${jornada.conquistas.length} alcançadas`}
+          titulo={t('pf.conquistas')}
+          subtitulo={t('pf.alcancadas', { n: alcancadas, total: jornada.conquistas.length })}
           aoTocar={() => router.push('/conquistas')}
         />
         <LinhaLista
           separador
           icone="coracao"
-          titulo="Saúde financeira"
-          subtitulo="Sua nota e a evolução mês a mês"
+          titulo={t('pf.saude')}
+          subtitulo={t('pf.saude.texto')}
           aoTocar={() => router.push('/saude-financeira')}
         />
         <LinhaLista
           separador
           icone="etiqueta"
-          titulo="Categorias"
-          subtitulo="Crie, renomeie ou exclua"
+          titulo={t('lanc.categoria')}
+          subtitulo={t('pf.categorias.texto')}
           aoTocar={() => router.push('/categorias')}
         />
       </Grupo>
 
-      <Grupo titulo="Aprender">
+      <Grupo titulo={t('pf.aprender')}>
         <LinhaLista
           icone="aprender"
           titulo="EcoTrust Academy"
-          subtitulo="Cursos, glossário e fórum da comunidade"
+          subtitulo={t('pf.academy.texto')}
           aoTocar={() => router.push('/academy')}
         />
       </Grupo>
 
       <View style={styles.grupo}>
         <ThemedText type="smallBold" accessibilityRole="header">
-          Preferências
+          {t('pf.preferencias')}
         </ThemedText>
         <CartaoPreferencias />
       </View>
 
-      <Grupo titulo="Plano e conta">
+      <Grupo titulo={t('pf.planoConta')}>
         <LinhaLista
           icone="coroa"
-          titulo={plus ? NOME_PLANO_PLUS : `Conhecer o ${NOME_PLANO_PLUS}`}
-          subtitulo={plus ? 'Gerenciar assinatura' : 'Análise, saúde financeira, IA e Academy'}
+          titulo={plus ? NOME_PLANO_PLUS : t('pf.conhecer', { plano: NOME_PLANO_PLUS })}
+          subtitulo={plus ? t('pf.gerirSubscricao') : t('pf.plus.texto')}
           aoTocar={() => router.push('/assinatura')}
           direita={
             !plus ? (
               <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-                Ver
+                {t('pf.ver')}
               </ThemedText>
             ) : undefined
           }
@@ -217,14 +217,14 @@ export default function PerfilScreen() {
         <LinhaLista
           separador
           icone="escudo"
-          titulo="Backup dos dados"
-          subtitulo={ultimoBackup ? `Último: ${tempoRelativo(ultimoBackup)}` : 'Você ainda não fez backup'}
+          titulo={t('pf.backup')}
+          subtitulo={ultimoBackup ? t('pf.backup.ultimo', { quando: tempoRelativo(ultimoBackup) }) : t('pf.backup.nunca')}
           aoTocar={() => router.push('/backup')}
         />
-        <LinhaLista separador icone="sair" titulo="Sair" aoTocar={sair} />
+        <LinhaLista separador icone="sair" titulo={t('pf.sair')} aoTocar={sair} />
       </Grupo>
 
-      <Botao texto="Apagar conta e dados" variante="perigo" icone="lixeira" onPress={confirmarApagar} />
+      <Botao texto={t('pf.apagar')} variante="perigo" icone="lixeira" onPress={confirmarApagar} />
     </Tela>
   );
 }

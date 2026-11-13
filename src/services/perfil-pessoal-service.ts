@@ -3,6 +3,7 @@
  * Todos os campos pessoais são opcionais: a pessoa preenche o que quiser.
  */
 
+import { t } from '@/i18n';
 import { obterPerfilPessoal, salvarPerfilPessoal } from '@/repositories/perfil-pessoal-repository';
 import { obterSituacaoFinanceira, salvarSituacaoFinanceira } from '@/repositories/situacao-repository';
 import { ErroValidacao } from '@/services/erros';
@@ -24,37 +25,75 @@ export const AVATARES = ['🙂', '😎', '🦊', '🐼', '🦁', '🐢', '🌱',
 export const QUANTIDADE_CORES_AVATAR = 6;
 
 export const ESTADOS_CIVIS: Opcao<EstadoCivil>[] = [
-  { valor: 'solteiro', rotulo: 'Solteiro(a)' },
-  { valor: 'casado', rotulo: 'Casado(a)' },
-  { valor: 'uniao', rotulo: 'União estável' },
-  { valor: 'divorciado', rotulo: 'Divorciado(a)' },
-  { valor: 'viuvo', rotulo: 'Viúvo(a)' },
+  { valor: 'solteiro', get rotulo() {
+      return t('rot.civil.solteiro');
+    } },
+  { valor: 'casado', get rotulo() {
+      return t('rot.civil.casado');
+    } },
+  { valor: 'uniao', get rotulo() {
+      return t('rot.civil.uniao');
+    } },
+  { valor: 'divorciado', get rotulo() {
+      return t('rot.civil.divorciado');
+    } },
+  { valor: 'viuvo', get rotulo() {
+      return t('rot.civil.viuvo');
+    } },
 ];
 
 export const MORADIAS: Opcao<Moradia>[] = [
-  { valor: 'aluguel', rotulo: 'Aluguel' },
-  { valor: 'propria', rotulo: 'Casa própria (quitada)' },
-  { valor: 'financiada', rotulo: 'Financiada' },
-  { valor: 'familia', rotulo: 'Com a família' },
-  { valor: 'outra', rotulo: 'Outra' },
+  { valor: 'aluguel', get rotulo() {
+      return t('rot.moradia.aluguel');
+    } },
+  { valor: 'propria', get rotulo() {
+      return t('rot.moradia.propria');
+    } },
+  { valor: 'financiada', get rotulo() {
+      return t('rot.moradia.financiada');
+    } },
+  { valor: 'familia', get rotulo() {
+      return t('rot.moradia.familia');
+    } },
+  { valor: 'outra', get rotulo() {
+      return t('rot.moradia.outra');
+    } },
 ];
 
 export const DIVIDAS: Opcao<SituacaoDividas>[] = [
-  { valor: 'nao', rotulo: 'Sem dívidas' },
-  { valor: 'controlada', rotulo: 'Sob controle' },
-  { valor: 'pesando', rotulo: 'Pesando no orçamento' },
+  { valor: 'nao', get rotulo() {
+      return t('rot.dividas.nao');
+    } },
+  { valor: 'controlada', get rotulo() {
+      return t('rot.dividas.controlada');
+    } },
+  { valor: 'pesando', get rotulo() {
+      return t('rot.dividas.pesando');
+    } },
 ];
 
 export const RESERVAS: Opcao<SituacaoReserva>[] = [
-  { valor: 'nao', rotulo: 'Não tenho' },
-  { valor: 'parcial', rotulo: 'Tenho um pouco' },
-  { valor: 'completa', rotulo: '6 meses ou mais' },
+  { valor: 'nao', get rotulo() {
+      return t('rot.reserva.nao');
+    } },
+  { valor: 'parcial', get rotulo() {
+      return t('rot.reserva.parcial');
+    } },
+  { valor: 'completa', get rotulo() {
+      return t('rot.reserva.completa');
+    } },
 ];
 
 export const INVESTIMENTOS: Opcao<SituacaoInvestimentos>[] = [
-  { valor: 'nao', rotulo: 'Ainda não invisto' },
-  { valor: 'poupanca', rotulo: 'Só poupança' },
-  { valor: 'outros', rotulo: 'Outros investimentos' },
+  { valor: 'nao', get rotulo() {
+      return t('rot.investe.nao');
+    } },
+  { valor: 'poupanca', get rotulo() {
+      return t('rot.investe.poupanca');
+    } },
+  { valor: 'outros', get rotulo() {
+      return t('rot.investe.outros');
+    } },
 ];
 
 export function rotulo<T extends string>(opcoes: Opcao<T>[], valor: T | null | undefined) {

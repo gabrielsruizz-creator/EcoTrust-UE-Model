@@ -14,6 +14,7 @@
  * novas e a nota de saúde do mês (e devolve as conquistas recém-alcançadas, para comemorar).
  */
 
+import { t } from '@/i18n';
 import {
   contarDepositosEmMetas,
   contarOrcamentos,
@@ -37,31 +38,97 @@ import type { PerfilPessoal, ProgressoMeta, ResumoMes, SituacaoFinanceira } from
 import { diasEntre, hoje, mesAtual, paraDataLocal, somarMeses } from '@/utils/datas';
 
 export const NIVEIS = [
-  { minimo: 0, nome: 'Iniciante' },
-  { minimo: 100, nome: 'Organizado' },
-  { minimo: 300, nome: 'Planejador' },
-  { minimo: 600, nome: 'Poupador' },
-  { minimo: 1000, nome: 'Estrategista' },
-  { minimo: 1600, nome: 'Investidor consciente' },
-  { minimo: 2500, nome: 'Mestre das finanças' },
+  { minimo: 0, get nome() {
+      return t('rot.nivel.iniciante');
+    } },
+  { minimo: 100, get nome() {
+      return t('rot.nivel.organizado');
+    } },
+  { minimo: 300, get nome() {
+      return t('rot.nivel.planejador');
+    } },
+  { minimo: 600, get nome() {
+      return t('rot.nivel.poupador');
+    } },
+  { minimo: 1000, get nome() {
+      return t('rot.nivel.estrategista');
+    } },
+  { minimo: 1600, get nome() {
+      return t('rot.nivel.investidor');
+    } },
+  { minimo: 2500, get nome() {
+      return t('rot.nivel.mestre');
+    } },
 ];
 
 export type DefinicaoConquista = { id: string; nome: string; descricao: string; icone: string };
 
 export const CONQUISTAS: DefinicaoConquista[] = [
-  { id: 'primeiro-passo', nome: 'Primeiro passo', descricao: 'Registrou o primeiro lançamento.', icone: '🌱' },
-  { id: 'registrador', nome: 'Registrador', descricao: 'Registrou 50 lançamentos.', icone: '📒' },
-  { id: 'sequencia-7', nome: 'Uma semana firme', descricao: 'Registrou algo 7 dias seguidos.', icone: '🔥' },
-  { id: 'sequencia-30', nome: 'Hábito de ferro', descricao: 'Registrou algo 30 dias seguidos.', icone: '💪' },
-  { id: 'primeira-meta', nome: 'Sonho no papel', descricao: 'Criou a primeira meta.', icone: '🎯' },
-  { id: 'meta-concluida', nome: 'Missão cumprida', descricao: 'Concluiu uma meta.', icone: '🏆' },
-  { id: 'reserva-completa', nome: 'Porto seguro', descricao: 'Completou a reserva de emergência.', icone: '🛡️' },
-  { id: 'orcamento-definido', nome: 'No controle', descricao: 'Definiu um orçamento.', icone: '📊' },
-  { id: 'mes-no-azul', nome: 'Mês no azul', descricao: 'Terminou um mês dentro de todos os orçamentos.', icone: '💙' },
-  { id: 'poupador', nome: 'Poupador', descricao: 'Guardou 20% ou mais da renda em um mês.', icone: '💰' },
-  { id: 'saude-boa', nome: 'Saúde em dia', descricao: 'Alcançou nota 70 de saúde financeira.', icone: '❤️' },
-  { id: 'perfil-completo', nome: 'Quem sou eu', descricao: 'Completou os dados pessoais do perfil.', icone: '🪪' },
-  { id: 'curso-concluido', nome: 'Aluno dedicado', descricao: 'Concluiu um curso da Trust Academy.', icone: '🎓' },
+  { id: 'primeiro-passo', get nome() {
+      return t('conq.primeiro-passo.nome');
+    }, get descricao() {
+      return t('conq.primeiro-passo.desc');
+    }, icone: '🌱' },
+  { id: 'registrador', get nome() {
+      return t('conq.registrador.nome');
+    }, get descricao() {
+      return t('conq.registrador.desc');
+    }, icone: '📒' },
+  { id: 'sequencia-7', get nome() {
+      return t('conq.sequencia-7.nome');
+    }, get descricao() {
+      return t('conq.sequencia-7.desc');
+    }, icone: '🔥' },
+  { id: 'sequencia-30', get nome() {
+      return t('conq.sequencia-30.nome');
+    }, get descricao() {
+      return t('conq.sequencia-30.desc');
+    }, icone: '💪' },
+  { id: 'primeira-meta', get nome() {
+      return t('conq.primeira-meta.nome');
+    }, get descricao() {
+      return t('conq.primeira-meta.desc');
+    }, icone: '🎯' },
+  { id: 'meta-concluida', get nome() {
+      return t('conq.meta-concluida.nome');
+    }, get descricao() {
+      return t('conq.meta-concluida.desc');
+    }, icone: '🏆' },
+  { id: 'reserva-completa', get nome() {
+      return t('conq.reserva-completa.nome');
+    }, get descricao() {
+      return t('conq.reserva-completa.desc');
+    }, icone: '🛡️' },
+  { id: 'orcamento-definido', get nome() {
+      return t('conq.orcamento-definido.nome');
+    }, get descricao() {
+      return t('conq.orcamento-definido.desc');
+    }, icone: '📊' },
+  { id: 'mes-no-azul', get nome() {
+      return t('conq.mes-no-azul.nome');
+    }, get descricao() {
+      return t('conq.mes-no-azul.desc');
+    }, icone: '💙' },
+  { id: 'poupador', get nome() {
+      return t('conq.poupador.nome');
+    }, get descricao() {
+      return t('conq.poupador.desc');
+    }, icone: '💰' },
+  { id: 'saude-boa', get nome() {
+      return t('conq.saude-boa.nome');
+    }, get descricao() {
+      return t('conq.saude-boa.desc');
+    }, icone: '❤️' },
+  { id: 'perfil-completo', get nome() {
+      return t('conq.perfil-completo.nome');
+    }, get descricao() {
+      return t('conq.perfil-completo.desc');
+    }, icone: '🪪' },
+  { id: 'curso-concluido', get nome() {
+      return t('conq.curso-concluido.nome');
+    }, get descricao() {
+      return t('conq.curso-concluido.desc');
+    }, icone: '🎓' },
 ];
 
 export type ConquistaJornada = DefinicaoConquista & {

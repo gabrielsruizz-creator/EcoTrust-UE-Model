@@ -7,10 +7,12 @@ import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { PAISES_FISCAIS, PAISES_UE, type CodigoPais } from '@/data/paises';
+import { useImpostosFixos } from '@/hooks/use-dados';
 import { useIdioma, useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { localeAtual, type Chave } from '@/i18n';
 import { ErroValidacao } from '@/services/erros';
+import { salvarPatrimonio } from '@/services/impostos-renda-service';
 import { REGIOES_FISCAIS, salvarPerfilFiscal } from '@/services/perfil-fiscal-service';
 import type { PerfilFiscal, SituacaoProfissional, TipoCombustivel } from '@/types/financas';
 import { centavosParaTexto, exemploValorVazio, lerValorEmCentavos, simboloMoeda } from '@/utils/moeda';
@@ -50,6 +52,10 @@ export function FormularioPerfilFiscal({ inicial, primeiraVez, aoGuardar }: Prop
   const theme = useTheme();
   const [p, setP] = useState<PerfilFiscal>(inicial ?? PADRAO);
   const [brutoTexto, setBrutoTexto] = useState(p.brutoAnualCentavos ? centavosParaTexto(p.brutoAnualCentavos) : '');
+  const fixos = useImpostosFixos();
+  const textoDe = (c: number | undefined) => (c ? centavosParaTexto(c) : '');
+  const [imovelTexto, setImovelTexto] = useState(textoDe(fixos?.iptuAnualCentavos));
+  const [veiculoTexto, setVeiculoTexto] = useState(textoDe(fixos?.ipvaAnualCentavos));
 
   const mudar = (m: Partial<PerfilFiscal>) => setP((atual) => ({ ...atual, ...m }));
   const regioes = REGIOES_FISCAIS[p.paisResidencia] ?? [];
@@ -62,7 +68,14 @@ export function FormularioPerfilFiscal({ inicial, primeiraVez, aoGuardar }: Prop
       Alert.alert(t('comum.erroGuardar'), t('fiscal.erro.rendimento'));
       return;
     }
+    const imovel = imovelTexto.trim() ? lerValorEmCentavos(imovelTexto, true) : 0;
+    const veiculo = veiculoTexto.trim() ? lerValorEmCentavos(veiculoTexto, true) : 0;
+    if (imovel === null || veiculo === null) {
+      Alert.alert(t('comum.erroGuardar'), t('patrimonio.erro.valor'));
+      return;
+    }
     try {
+      salvarPatrimonio({ imovelAnualCentavos: imovel, veiculoAnualCentavos: veiculo, outrosMensalCentavos: fixos?.outrosMensalCentavos ?? 0 });
       salvarPerfilFiscal({
         ...p,
         brutoAnualCentavos: bruto,
@@ -167,6 +180,9 @@ export function FormularioPerfilFiscal({ inicial, primeiraVez, aoGuardar }: Prop
         />
       )}
 
+      <CampoAnual titulo={t('patrimonio.imovel')} ajuda={t('patrimonio.imovel.ajuda')} valor={imovelTexto} aoMudar={setImovelTexto} />
+      <CampoAnual titulo={t('patrimonio.veiculo')} ajuda={t('patrimonio.veiculo.ajuda')} valor={veiculoTexto} aoMudar={setVeiculoTexto} />
+
       <Grupo titulo={t('fiscal.combustivel')}>
         {(['gasolina', 'gasoleo'] as TipoCombustivel[]).map((c) => (
           <Chip key={c} texto={t(`fiscal.combustivel.${c}`)} ativo={p.combustivel === c} aoTocar={() => mudar({ combustivel: c })} />
@@ -192,6 +208,30 @@ function Grupo({ titulo, ajuda, children }: { titulo: string; ajuda?: string; ch
       <View style={styles.chips} accessibilityRole="radiogroup" accessibilityLabel={titulo}>
         {children}
       </View>
+    </View>
+  );
+}
+
+function CampoAnual({ titulo, ajuda, valor, aoMudar }: { titulo: string; ajuda: string; valor: string; aoMudar: (v: string) => void }) {
+  const theme = useTheme();
+  return (
+    <View style={styles.grupo}>
+      <ThemedText type="smallBold">{titulo}</ThemedText>
+      <View style={[styles.campo, { backgroundColor: theme.backgroundElement }]}>
+        <ThemedText themeColor="textSecondary">{simboloMoeda()}</ThemedText>
+        <TextInput
+          style={[styles.input, { color: theme.text }]}
+          value={valor}
+          onChangeText={aoMudar}
+          placeholder={exemploValorVazio()}
+          placeholderTextColor={theme.textSecondary}
+          keyboardType="decimal-pad"
+          accessibilityLabel={titulo}
+        />
+      </View>
+      <ThemedText type="small" themeColor="textSecondary">
+        {ajuda}
+      </ThemedText>
     </View>
   );
 }
