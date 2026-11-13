@@ -308,3 +308,31 @@ export function obterImpostometroUE(mes: string): ImpostometroUE {
     rendaAnoCentavos: rendaAno,
   });
 }
+
+/**
+ * Imposto de cada despesa de um mês, pelo id do lançamento (lista de Transações e Início).
+ * A origem usa os nomes das telas: 'nota' = identificado no recibo; despesas sem regras ficam de fora.
+ */
+export function obterImpostosDosLancamentosUE(mes: string): Map<number, { centavos: number; origem: 'nota' | 'estimado' }> {
+  const fiscal = obterPerfilFiscal();
+  const resultado = new Map<number, { centavos: number; origem: 'nota' | 'estimado' }>();
+  if (!fiscal) return resultado;
+  const perfis = perfisDasCategorias();
+  for (const t of listarTransacoes({ mes, tipo: 'despesa' })) {
+    const imp = impostoDaDespesa(t, perfis.get(t.categoriaId) ?? 'geral', fiscal);
+    if (imp.origem === 'semRegras') continue;
+    resultado.set(t.id, { centavos: Math.round(imp.totalCentavos), origem: imp.origem === 'identificado' ? 'nota' : 'estimado' });
+  }
+  return resultado;
+}
+
+/** Carga total dos últimos meses (do mais antigo ao atual), para o minigráfico do Início. */
+export function obterHistoricoImpostosUE(mes: string, meses = 6): { mes: string; centavos: number }[] {
+  const base = { perfis: perfisDasCategorias(), fiscal: obterPerfilFiscal(), fixos: obterImpostosFixos() };
+  const lista: { mes: string; centavos: number }[] = [];
+  for (let i = meses - 1; i >= 0; i--) {
+    const m = somarMeses(mes, -i);
+    lista.push({ mes: m, centavos: totalDoMes(m, base).carga });
+  }
+  return lista;
+}

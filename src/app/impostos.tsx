@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { openBrowserAsync } from 'expo-web-browser';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -8,70 +7,70 @@ import { Icone } from '@/components/icone';
 import { Botao, Cartao, IconeCirculo, LinhaLista, Tela, useDegrade } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { SeriesColors, Spacing } from '@/constants/theme';
-import { TRIBUTOS } from '@/data/carga-tributaria';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useCpfNaNota, useImpostometro } from '@/hooks/use-dados';
+import { useImpostometroUE } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
+import { localeAtual, type Chave } from '@/i18n';
 import { formatarDataCurta, mesAtual, nomeDoMes, nomeDoMesTitulo, somarMeses } from '@/utils/datas';
 import { formatarCentavos } from '@/utils/moeda';
 import { visualCategoria } from '@/utils/visual';
 
-/** "2026-03-12" → "12 de março" */
+/** Número com no máximo uma casa decimal, no formato do idioma. */
+function numero(n: number) {
+  return n.toLocaleString(localeAtual(), { maximumFractionDigits: 1 });
+}
+
+/** "2026-03-12" → "12 de março" / "12 March" */
 function diaEMes(data: string) {
   const [ano, mes, dia] = data.split('-').map(Number);
-  return new Date(ano, mes - 1, dia).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+  return new Date(ano, mes - 1, dia).toLocaleDateString(localeAtual(), { day: 'numeric', month: 'long' });
 }
 
-/** Formata "12.5" como "12,5". */
-function numero(n: number) {
-  return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
-}
-
-/** Impostômetro pessoal (aberto pelo Início) (quanto do que você gastou no mês foi imposto). */
+/**
+ * Impostómetro (edição europeia): impostos das compras pelo país onde aconteceram, identificados (recibo)
+ * separados dos estimados, mais o imposto sobre o rendimento pela residência fiscal.
+ */
 export default function ImpostosScreen() {
+  const t = useT();
   const theme = useTheme();
   const degrade = useDegrade(135);
   const esquema = useColorScheme() === 'light' ? 'light' : 'dark';
   const [mes, setMes] = useState(mesAtual());
-  const imp = useImpostometro(mes);
-  const cpf = useCpfNaNota(Number(mes.slice(0, 4)));
+  const imp = useImpostometroUE(mes);
   const nomeMes = nomeDoMes(mes).split(' ')[0];
   const ehMesAtual = mes >= mesAtual();
-  const corTributo = (id: string) => SeriesColors[esquema][TRIBUTOS.findIndex((t) => t.id === id) % 8];
+  const pais = (codigo: string) => t(`pais.${codigo}` as Chave);
+  const consumo = imp.identificadosCentavos + imp.estimadosCentavos;
+  const rendaEPatrimonio = imp.cargaTotalCentavos - consumo;
+  const residencia = imp.residencia ?? 'PT';
+
+  let textoRenda: string | null = null;
+  if (imp.motivoSemRenda === 'sem-rendimento' || imp.motivoSemRenda === 'sem-perfil') textoRenda = t('imp.renda.semRendimento');
+  else if (imp.motivoSemRenda === 'pais') textoRenda = t('imp.renda.semRegras', { pais: pais(residencia) });
+  else if (imp.motivoSemRenda === 'ano') textoRenda = t('imp.renda.ano', { ano: mes.slice(0, 4), pais: pais(residencia) });
+  else if (imp.motivoSemRenda === 'situacao') textoRenda = t('imp.renda.situacao', { pais: pais(residencia) });
+
+  const maiorPais = Math.max(1, ...imp.porPais.map((p) => p.impostosCentavos));
 
   return (
-    <Tela
-      voltar
-      titulo="Impostômetro"
-      subtitulo="Quanto do seu dinheiro vai para o governo"
-      acoes={[
-        { icone: 'ajustes', rotulo: 'Ajustar tipos de consumo', aoTocar: () => router.push('/ajustar-impostos') },
-        { icone: 'qrcode', rotulo: 'Ler QR Code da nota fiscal', aoTocar: () => router.push('/ler-nota') },
-      ]}>
+    <Tela voltar titulo={t('imp.titulo')} subtitulo={t('imp.subtitulo')}>
       {/* Mês */}
       <View style={styles.seletorMes}>
-        <BotaoSeta icone="voltar" rotulo="Mês anterior" aoTocar={() => setMes(somarMeses(mes, -1))} />
+        <BotaoSeta icone="voltar" rotulo={t('imp.mesAnterior')} aoTocar={() => setMes(somarMeses(mes, -1))} />
         <ThemedText type="smallBold" style={styles.nomeMes} accessibilityLiveRegion="polite">
           {nomeDoMesTitulo(mes)}
         </ThemedText>
-        <BotaoSeta
-          icone="avancar"
-          rotulo="Próximo mês"
-          desativado={ehMesAtual}
-          aoTocar={() => setMes(somarMeses(mes, 1))}
-        />
+        <BotaoSeta icone="avancar" rotulo={t('imp.proximoMes')} desativado={ehMesAtual} aoTocar={() => setMes(somarMeses(mes, 1))} />
       </View>
 
       {/* Total do mês */}
-      <View
-        style={[styles.destaque, degrade, { boxShadow: `0 12px 32px ${theme.brilho}` }]}
-        accessible
-        accessibilityLabel={`Impostos pagos em ${nomeMes}: ${formatarCentavos(imp.cargaTotalCentavos)}${imp.fixos ? `, sendo ${formatarCentavos(imp.impostosCentavos)} no consumo` : ''}${imp.percentualDosGastos !== null ? `. ${numero(imp.percentualDosGastos)}% do que você gastou foi imposto` : ''}.`}>
+      <View style={[styles.destaque, degrade, { boxShadow: `0 12px 32px ${theme.brilho}` }]} accessible>
         <View style={styles.decoracao} />
         <View style={styles.linha}>
           <Icone nome="impostos" cor="#FFFFFF" tamanho={18} />
           <ThemedText type="small" style={styles.textoClaro}>
-            Impostos que você pagou em {nomeMes}
+            {t('imp.destaque.titulo', { mes: nomeMes })}
           </ThemedText>
         </View>
         <ThemedText style={styles.valorDestaque} numberOfLines={1} adjustsFontSizeToFit>
@@ -79,39 +78,26 @@ export default function ImpostosScreen() {
         </ThemedText>
         <ThemedText type="small" style={styles.textoClaro}>
           {imp.percentualDosGastos !== null
-            ? `${numero(imp.percentualDosGastos)}% dos ${formatarCentavos(imp.gastosCentavos)} que você gastou foram para o governo.`
-            : 'Nenhuma despesa registrada neste mês.'}
-          {imp.fixos ? ` Mais ${formatarCentavos(imp.fixos.totalCentavos)} da renda e do patrimônio.` : ''}
+            ? t('imp.destaque.percentual', { percentual: numero(imp.percentualDosGastos), gastos: formatarCentavos(imp.gastosCentavos) })
+            : t('imp.destaque.semDespesas')}
+          {rendaEPatrimonio > 0 ? ` ${t('imp.destaque.maisRenda', { valor: formatarCentavos(rendaEPatrimonio) })}` : ''}
         </ThemedText>
         {imp.variacao !== null && (
           <View style={styles.pilula}>
             <Icone nome={imp.variacao >= 0 ? 'subindo' : 'descendo'} cor="#FFFFFF" tamanho={14} />
             <ThemedText type="smallBold" style={styles.textoBranco}>
-              {imp.variacao >= 0 ? '+' : ''}
-              {imp.variacao}% que no mês anterior
+              {t('imp.variacao', { valor: `${imp.variacao >= 0 ? '+' : ''}${imp.variacao}` })}
             </ThemedText>
           </View>
         )}
       </View>
 
-      {imp.cargaTotalCentavos > 0 && (
-        <Botao
-          texto="Compartilhar meu Impostômetro"
-          variante="secundario"
-          icone="compartilhar"
-          onPress={() => router.push({ pathname: '/compartilhar-impostos', params: { mes } })}
-        />
-      )}
-
       {imp.despesas === 0 && (
         <Cartao>
-          <ThemedText type="small">
-            Registre suas despesas e o EcoTrust mostra quanto delas foi imposto: ICMS, PIS/Cofins, IPI,
-            ISS e os tributos que as empresas embutem no preço.
-          </ThemedText>
+          <ThemedText type="small">{t('imp.vazio')}</ThemedText>
           {ehMesAtual && (
             <Botao
-              texto="Registrar despesa"
+              texto={t('imp.registar')}
               icone="mais"
               onPress={() => router.push({ pathname: '/novo-lancamento', params: { tipo: 'despesa' } })}
             />
@@ -119,162 +105,103 @@ export default function ImpostosScreen() {
         </Cartao>
       )}
 
-      {/* Carga total: consumo + renda + patrimônio */}
-      <Cartao>
-        <ThemedText type="smallBold">Sua carga total</ThemedText>
-        <LinhaCarga rotulo="No consumo (embutido nas compras)" valor={imp.impostosCentavos} />
-        {imp.fixos ? (
-          <>
-            <LinhaCarga
-              rotulo={imp.fixos.descontadosNaFonte ? 'Na renda (INSS e IR do holerite)' : 'Na renda (INSS e IR)'}
-              valor={imp.fixos.inssCentavos + imp.fixos.irCentavos}
-            />
-            <LinhaCarga rotulo="No patrimônio (IPVA e IPTU, por mês)" valor={imp.fixos.ipvaCentavos + imp.fixos.iptuCentavos} />
-            <LinhaCarga rotulo="Outros (ex.: DAS do MEI)" valor={imp.fixos.outrosCentavos} />
-            <Botao
-              texto="Editar impostos da renda"
-              variante="secundario"
-              icone="editar"
-              onPress={() => router.push('/impostos-renda')}
-            />
-          </>
-        ) : (
-          <>
-            <ThemedText type="small" themeColor="textSecondary">
-              Você também paga INSS e Imposto de Renda sobre o salário, e IPVA e IPTU sobre o que tem.
-              Inclua esses valores para ver quanto realmente vai para o governo.
-            </ThemedText>
-            <Botao texto="Incluir impostos da renda" icone="mais" onPress={() => router.push('/impostos-renda')} />
-          </>
-        )}
-      </Cartao>
-
-      {imp.cargaTotalCentavos > 0 && (
-        <>
-          {/* Dias de trabalho */}
-          <Cartao>
-            <View style={styles.linha}>
-              <IconeCirculo icone="relogio" cor={theme.brand} tamanho={36} />
-              <ThemedText type="smallBold" style={styles.flex}>
-                Dias trabalhados para o governo
-              </ThemedText>
-            </View>
-            {imp.diasTrabalhados !== null && imp.percentualDaRenda !== null ? (
-              <>
-                <ThemedText style={styles.valorGrande}>
-                  {numero(imp.diasTrabalhados)} {imp.diasTrabalhados === 1 ? 'dia' : 'dias'}
-                  <ThemedText type="small" themeColor="textSecondary">
-                    {' '}
-                    de {imp.diasNoMes}
-                  </ThemedText>
-                </ThemedText>
-                <BarraProgresso
-                  percentual={(imp.diasTrabalhados / imp.diasNoMes) * 100}
-                  rotuloAcessivel={`${numero(imp.diasTrabalhados)} de ${imp.diasNoMes} dias`}
-                />
-                <ThemedText type="small" themeColor="textSecondary">
-                  Esses impostos equivalem a {numero(imp.percentualDaRenda)}% da sua{' '}
-                  {imp.origemRenda === 'receitas' ? 'renda do mês' : 'renda informada no perfil'}
-                  {imp.fixos?.descontadosNaFonte ? ' antes dos descontos' : ''} (
-                  {formatarCentavos(imp.rendaCentavos ?? 0)}).
-                </ThemedText>
-              </>
-            ) : (
-              <ThemedText type="small" themeColor="textSecondary">
-                Registre suas receitas do mês para ver quantos dias de trabalho foram só para pagar
-                impostos.
-              </ThemedText>
-            )}
-          </Cartao>
-
-          {/* Para quem foi */}
-          <ThemedText type="smallBold" accessibilityRole="header">
-            Para quem foi o dinheiro
+      {/* Compras: identificado × estimado, IVA × especiais */}
+      {imp.despesas > 0 && (
+        <Cartao>
+          <ThemedText type="smallBold">{t('imp.consumo.titulo')}</ThemedText>
+          <LinhaValor rotulo={t('imp.identificado')} valor={imp.identificadosCentavos} />
+          <LinhaValor rotulo={t('imp.estimado')} valor={imp.estimadosCentavos} />
+          <ThemedText type="small" themeColor="textSecondary">
+            {t('imp.identificado.ajuda', { n: imp.despesasIdentificadas, total: imp.despesas - imp.semRegras.despesas })}
           </ThemedText>
-          <Cartao>
-            {imp.porEsfera.map((e, i) => {
-              const cor = SeriesColors[esquema][i];
-              return (
-                <View
-                  key={e.esfera}
-                  style={styles.barraLinha}
-                  accessible
-                  accessibilityLabel={`${e.nome}: ${formatarCentavos(e.centavos)}, ${numero(e.percentual)}%`}>
-                  <View style={styles.linha}>
-                    <ThemedText type="small" style={styles.flex}>
-                      {e.nome}
-                    </ThemedText>
-                    <ThemedText type="smallBold">{formatarCentavos(e.centavos)}</ThemedText>
-                    <ThemedText type="small" themeColor="textSecondary" style={styles.percentual}>
-                      {numero(e.percentual)}%
-                    </ThemedText>
-                  </View>
-                  <BarraProgresso percentual={e.percentual} cor={cor} altura={6} />
-                </View>
-              );
-            })}
-          </Cartao>
-
-        </>
+          <View style={[styles.separador, { borderTopColor: theme.border }]} />
+          <LinhaValor rotulo={t('imp.iva')} valor={imp.ivaCentavos} />
+          {imp.especiaisCentavos > 0 && <LinhaValor rotulo={t('imp.especiais')} valor={imp.especiaisCentavos} />}
+          {imp.semRegras.despesas > 0 && (
+            <ThemedText type="small" style={{ color: theme.textSecondary }}>
+              {t('imp.semRegras', { n: imp.semRegras.despesas, valor: formatarCentavos(imp.semRegras.gastoCentavos) })}
+            </ThemedText>
+          )}
+        </Cartao>
       )}
 
-      {imp.despesas > 0 && (
+      {/* Rendimento e património */}
+      <Cartao>
+        <ThemedText type="smallBold">{t('imp.renda.titulo')}</ThemedText>
+        {imp.renda ? (
+          <>
+            <LinhaValor rotulo={t('imp.renda.imposto')} valor={imp.renda.impostoCentavos} />
+            <LinhaValor rotulo={t('imp.renda.contribuicoes')} valor={imp.renda.contribuicoesCentavos} />
+            {imp.renda.bonusCentavos > 0 && <LinhaValor rotulo={t('imp.renda.bonus')} valor={imp.renda.bonusCentavos} sinal="+" />}
+            <ThemedText type="small" themeColor="textSecondary">
+              {t('imp.renda.base', { pais: pais(residencia) })}
+            </ThemedText>
+          </>
+        ) : (
+          <ThemedText type="small" themeColor="textSecondary">
+            {textoRenda}
+          </ThemedText>
+        )}
+        {imp.patrimonioCentavos > 0 && <LinhaValor rotulo={t('imp.patrimonio')} valor={imp.patrimonioCentavos} />}
+        <Botao texto={t('imp.editarPerfil')} variante="secundario" icone="ajustes" onPress={() => router.push('/editar-perfil-fiscal')} />
+      </Cartao>
+
+      {/* Por país */}
+      {imp.porPais.length > 0 && (
         <>
-          {/* Por imposto */}
           <ThemedText type="smallBold" accessibilityRole="header">
-            Por imposto
+            {t('imp.porPais')}
           </ThemedText>
           <Cartao>
-            {imp.porTributo.map(({ tributo, centavos, percentual }, i) => (
+            {imp.porPais.map((p, i) => (
               <View
-                key={tributo.id}
-                style={[styles.tributo, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.border }]}
+                key={p.pais}
+                style={styles.barraLinha}
                 accessible
-                accessibilityLabel={`${tributo.sigla}: ${formatarCentavos(centavos)}, ${numero(percentual)}% dos impostos. ${tributo.descricao}`}>
-                <View style={[styles.marcador, { backgroundColor: corTributo(tributo.id) }]} />
-                <View style={styles.flex}>
-                  <View style={styles.linha}>
-                    <ThemedText type="smallBold" style={styles.flex}>
-                      {tributo.sigla}
-                    </ThemedText>
-                    <ThemedText type="smallBold">{formatarCentavos(centavos)}</ThemedText>
-                  </View>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    {tributo.descricao}
+                accessibilityLabel={`${pais(p.pais)}: ${formatarCentavos(p.impostosCentavos)}, ${t('imp.despesas', { n: p.despesas })}`}>
+                <View style={styles.linha}>
+                  <ThemedText type="small" style={styles.flex} numberOfLines={1}>
+                    {pais(p.pais)}
+                    {p.pais === residencia ? ` · ${t('imp.residencia')}` : ''}
                   </ThemedText>
+                  <ThemedText type="smallBold">{formatarCentavos(p.impostosCentavos)}</ThemedText>
                 </View>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('imp.despesas', { n: p.despesas })} · {formatarCentavos(p.gastoCentavos)}
+                </ThemedText>
+                <BarraProgresso
+                  percentual={(p.impostosCentavos / maiorPais) * 100}
+                  cor={SeriesColors[esquema][i % 8]}
+                  altura={6}
+                />
               </View>
             ))}
           </Cartao>
+        </>
+      )}
 
-          {/* Por categoria */}
-          <View style={styles.linha}>
-            <ThemedText type="smallBold" accessibilityRole="header" style={styles.flex}>
-              Por categoria
-            </ThemedText>
-            <Pressable onPress={() => router.push('/ajustar-impostos')} accessibilityRole="link" hitSlop={12}>
-              <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-                Ajustar
-              </ThemedText>
-            </Pressable>
-          </View>
+      {/* Por categoria */}
+      {imp.porCategoria.length > 0 && (
+        <>
+          <ThemedText type="smallBold" accessibilityRole="header">
+            {t('imp.porCategoria')}
+          </ThemedText>
           <Cartao>
             {imp.porCategoria.map((c) => {
               const visual = visualCategoria(c.categoria, c.categoriaId);
-              const cor = SeriesColors[esquema][visual.cor];
               return (
                 <View
                   key={c.categoriaId}
                   style={styles.categoria}
                   accessible
-                  accessibilityLabel={`${c.categoria}: ${formatarCentavos(c.impostosCentavos)} de impostos em ${formatarCentavos(c.gastoCentavos)} gastos, ${numero(c.carga)}%`}>
-                  <IconeCirculo icone={visual.icone} cor={cor} tamanho={36} />
+                  accessibilityLabel={`${c.categoria}: ${formatarCentavos(c.impostosCentavos)}, ${t('imp.carga', { percentual: numero(c.carga) })}`}>
+                  <IconeCirculo icone={visual.icone} cor={SeriesColors[esquema][visual.cor]} tamanho={36} />
                   <View style={styles.flex}>
                     <ThemedText type="small" numberOfLines={1}>
                       {c.categoria}
                     </ThemedText>
                     <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
-                      {numero(c.carga)}% de {formatarCentavos(c.gastoCentavos)}
+                      {t('imp.carga', { percentual: numero(c.carga) })} · {formatarCentavos(c.gastoCentavos)}
                     </ThemedText>
                   </View>
                   <ThemedText type="smallBold">{formatarCentavos(c.impostosCentavos)}</ThemedText>
@@ -282,156 +209,88 @@ export default function ImpostosScreen() {
               );
             })}
           </Cartao>
-
-          {/* Maiores */}
-          {imp.maioresLancamentos.length > 0 && (
-            <>
-              <ThemedText type="smallBold" accessibilityRole="header">
-                Despesas que mais pagaram imposto
-              </ThemedText>
-              <Cartao style={styles.cartaoLista}>
-                {imp.maioresLancamentos.map(({ transacao: t, impostosCentavos, origem }, i) => (
-                  <LinhaLista
-                    key={t.id}
-                    titulo={t.descricao || t.categoriaNome}
-                    subtitulo={`${formatarDataCurta(t.data)} · ${formatarCentavos(t.valorCentavos)} · ${origem === 'nota' ? 'valor da nota' : 'estimado'}`}
-                    direita={<ThemedText type="smallBold">{formatarCentavos(impostosCentavos)}</ThemedText>}
-                    aoTocar={() => router.push({ pathname: '/lancamento/[id]', params: { id: String(t.id) } })}
-                    rotuloAcessivel={`${t.descricao || t.categoriaNome}: ${formatarCentavos(impostosCentavos)} de impostos em ${formatarCentavos(t.valorCentavos)}`}
-                    separador={i > 0}
-                  />
-                ))}
-              </Cartao>
-            </>
-          )}
         </>
       )}
 
-      {/* Ano e Dia da Liberdade de Impostos */}
-      <Cartao>
-        <View style={styles.linhaCartao}>
-          <IconeCirculo icone="calendario" cor={theme.brand} tamanho={36} />
-          <View style={styles.flex}>
-            <ThemedText type="small" themeColor="textSecondary">
-              Em {mes.slice(0, 4)}, até {nomeMes}
-            </ThemedText>
-            <ThemedText type="smallBold">
-              {formatarCentavos(imp.acumuladoAnoCentavos)} em impostos{imp.fixos ? '' : ' sobre consumo'}
-            </ThemedText>
-          </View>
-        </View>
-        {imp.liberdade && (
-          <View
-            style={[styles.liberdade, { backgroundColor: theme.accentSoft }]}
-            accessible
-            accessibilityLabel={`Seu Dia da Liberdade de Impostos: ${diaEMes(imp.liberdade.data)}. ${numero(imp.liberdade.percentual)}% da sua renda do ano foi para impostos.`}>
-            <ThemedText type="small" style={{ color: theme.accentText }}>
-              Seu Dia da Liberdade de Impostos
-            </ThemedText>
-            <ThemedText style={styles.valorGrande}>{diaEMes(imp.liberdade.data)}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {numero(imp.liberdade.percentual)}% da sua renda deste ano foi para impostos. É como se você
-              tivesse trabalhado de 1º de janeiro até {diaEMes(imp.liberdade.data)} ({imp.liberdade.dias}{' '}
-              {imp.liberdade.dias === 1 ? 'dia' : 'dias'}) só para o governo.
-            </ThemedText>
-          </View>
-        )}
-      </Cartao>
-
-      {/* Ferramentas */}
-      <ThemedText type="smallBold" accessibilityRole="header">
-        Ferramentas
-      </ThemedText>
-      <Cartao style={styles.cartaoLista}>
-        <LinhaLista
-          icone="recibo"
-          corIcone={theme.brand}
-          titulo="Imposto de Renda"
-          subtitulo="Saúde e educação que entram na declaração"
-          aoTocar={() => router.push('/imposto-de-renda')}
-        />
-        <LinhaLista
-          separador
-          icone="impostos"
-          corIcone={theme.brand}
-          titulo="Simulador da reforma tributária"
-          subtitulo="Suas compras na regra nova (IBS e CBS)"
-          aoTocar={() => router.push('/reforma-tributaria')}
-        />
-        <LinhaLista
-          separador
-          icone="compras"
-          corIcone={theme.brand}
-          titulo="Meus produtos e preços"
-          subtitulo="Sua inflação pessoal e onde é mais barato"
-          aoTocar={() => router.push('/meus-produtos')}
-        />
-      </Cartao>
-
-      {/* CPF na nota */}
-      {cpf && (
-        <Cartao>
-          <ThemedText type="smallBold">CPF na nota · {cpf.uf}</ThemedText>
-          <ThemedText type="small" themeColor="textSecondary">
-            {cpf.programa
-              ? `Com o CPF na nota, o ${cpf.programa.nome} ${cpf.programa.beneficio}.`
-              : 'Veja no site da Secretaria da Fazenda do seu estado se há programa que devolve parte do ICMS ou sorteia prêmios para quem pede CPF na nota.'}
+      {/* Maiores */}
+      {imp.maioresLancamentos.length > 0 && (
+        <>
+          <ThemedText type="smallBold" accessibilityRole="header">
+            {t('imp.maiores')}
           </ThemedText>
-          {cpf.semCpf > 0 && (
-            <ThemedText type="small">
-              Das {cpf.total} notas que você leu em {mes.slice(0, 4)},{' '}
-              <ThemedText type="smallBold">
-                {cpf.semCpf} {cpf.semCpf === 1 ? 'saiu' : 'saíram'} sem o seu CPF
-              </ThemedText>
-              . Peça o CPF no caixa nas próximas compras.
-            </ThemedText>
-          )}
-          {cpf.programa?.site && (
-            <Pressable onPress={() => openBrowserAsync(cpf.programa!.site!)} accessibilityRole="link" hitSlop={8}>
-              <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-                Abrir o site do {cpf.programa.nome}
-              </ThemedText>
-            </Pressable>
+          <Cartao style={styles.cartaoLista}>
+            {imp.maioresLancamentos.map(({ transacao: tr, impostos }, i) => (
+              <LinhaLista
+                key={tr.id}
+                separador={i > 0}
+                titulo={tr.descricao || tr.categoriaNome}
+                subtitulo={[
+                  formatarDataCurta(tr.data),
+                  formatarCentavos(tr.valorCentavos),
+                  pais(impostos.pais),
+                  t(impostos.origem === 'identificado' ? 'imp.origem.identificado' : 'imp.origem.estimado'),
+                ].join(' · ')}
+                direita={<ThemedText type="smallBold">{formatarCentavos(impostos.totalCentavos)}</ThemedText>}
+                aoTocar={() => router.push({ pathname: '/lancamento/[id]', params: { id: String(tr.id) } })}
+              />
+            ))}
+          </Cartao>
+        </>
+      )}
+
+      {/* Dias de trabalho e Dia da Libertação */}
+      {imp.diasTrabalhados !== null && imp.cargaTotalCentavos > 0 && (
+        <Cartao>
+          <ThemedText type="smallBold">{t('imp.dias.titulo')}</ThemedText>
+          <ThemedText style={styles.valorGrande}>
+            {t('imp.dias.texto', { dias: numero(imp.diasTrabalhados), total: imp.diasNoMes, mes: nomeMes })}
+          </ThemedText>
+          {imp.liberdade && (
+            <View style={[styles.liberdade, { backgroundColor: theme.accentSoft }]}>
+              <ThemedText type="smallBold">{t('imp.liberdade.titulo')}</ThemedText>
+              <ThemedText type="small">{t('imp.liberdade.texto')}</ThemedText>
+              <ThemedText style={styles.valorGrande}>{diaEMes(imp.liberdade.data)}</ThemedText>
+            </View>
           )}
         </Cartao>
       )}
 
-      {/* Como calculamos */}
+      {/* Avisos */}
+      {imp.avisos.length > 0 && (
+        <Cartao>
+          <ThemedText type="smallBold">{t('imp.avisos.titulo')}</ThemedText>
+          {imp.avisos.map((a) => (
+            <View key={a} style={styles.aviso}>
+              <Icone nome="ajuda" cor={theme.textSecondary} tamanho={16} />
+              <ThemedText type="small" themeColor="textSecondary" style={styles.flex}>
+                {t(`aviso.${a}` as Chave)}
+              </ThemedText>
+            </View>
+          ))}
+        </Cartao>
+      )}
+
       <Cartao>
-        <ThemedText type="smallBold">Como o EcoTrust calcula</ThemedText>
+        <ThemedText type="smallBold">{t('imp.como.titulo')}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          {imp.despesas > 0
-            ? `${imp.despesasComNota} de ${imp.despesas} ${imp.despesas === 1 ? 'despesa usa' : 'despesas usam'} o valor da nota fiscal` +
-              (imp.despesasPorItens > 0 ? ` e ${imp.despesasPorItens} ${imp.despesasPorItens === 1 ? 'é estimada' : 'são estimadas'} produto a produto` : '') +
-              '. '
-            : ''}
-          Sem o “Valor aprox. dos tributos” da nota, estimamos pelos produtos comprados (quando a nota
-          foi lida pelo QR Code) ou pela carga média do tipo de consumo da categoria. O valor real
-          varia conforme o produto e o estado.
+          {t('imp.como.texto')}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          Reforma tributária: a partir de 2027 o PIS/Cofins vira CBS e, até 2033, ICMS e ISS viram
-          IBS. O Impostômetro vai acompanhar essas mudanças.
+          {t('fiscal.estimativa')}
         </ThemedText>
-        <Botao
-          texto="Ajustar tipos de consumo"
-          variante="secundario"
-          icone="ajustes"
-          onPress={() => router.push('/ajustar-impostos')}
-        />
       </Cartao>
     </Tela>
   );
 }
 
-function LinhaCarga({ rotulo, valor }: { rotulo: string; valor: number }) {
-  if (valor === 0) return null;
+function LinhaValor({ rotulo, valor, sinal }: { rotulo: string; valor: number; sinal?: string }) {
+  const texto = `${sinal ? `${sinal} ` : ''}${formatarCentavos(valor)}`;
   return (
-    <View style={styles.linha} accessible accessibilityLabel={`${rotulo}: ${formatarCentavos(valor)}`}>
+    <View style={styles.linha} accessible accessibilityLabel={`${rotulo}: ${texto}`}>
       <ThemedText type="small" themeColor="textSecondary" style={styles.flex}>
         {rotulo}
       </ThemedText>
-      <ThemedText type="smallBold">{formatarCentavos(valor)}</ThemedText>
+      <ThemedText type="smallBold">{texto}</ThemedText>
     </View>
   );
 }
@@ -468,24 +327,11 @@ function BotaoSeta({
 }
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  pressionado: {
-    opacity: 0.7,
-  },
-  desativado: {
-    opacity: 0.35,
-  },
-  seletorMes: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-  },
-  nomeMes: {
-    flex: 1,
-    textAlign: 'center',
-  },
+  flex: { flex: 1 },
+  pressionado: { opacity: 0.7 },
+  desativado: { opacity: 0.35 },
+  seletorMes: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
+  nomeMes: { flex: 1, textAlign: 'center' },
   seta: {
     width: 44,
     height: 44,
@@ -494,12 +340,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  destaque: {
-    borderRadius: Spacing.four,
-    padding: Spacing.four,
-    gap: Spacing.one,
-    overflow: 'hidden',
-  },
+  destaque: { borderRadius: Spacing.four, padding: Spacing.four, gap: Spacing.one, overflow: 'hidden' },
   decoracao: {
     position: 'absolute',
     right: -40,
@@ -509,18 +350,9 @@ const styles = StyleSheet.create({
     borderRadius: 90,
     backgroundColor: 'rgba(255,255,255,0.10)',
   },
-  textoClaro: {
-    color: 'rgba(255,255,255,0.85)',
-  },
-  textoBranco: {
-    color: '#FFFFFF',
-  },
-  valorDestaque: {
-    fontSize: 36,
-    lineHeight: 44,
-    fontWeight: 700,
-    color: '#FFFFFF',
-  },
+  textoClaro: { color: 'rgba(255,255,255,0.85)' },
+  textoBranco: { color: '#FFFFFF' },
+  valorDestaque: { fontSize: 36, lineHeight: 44, fontWeight: 700, color: '#FFFFFF' },
   pilula: {
     alignSelf: 'flex-start',
     flexDirection: 'row',
@@ -532,52 +364,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.18)',
     marginTop: Spacing.one,
   },
-  linha: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-  },
-  linhaCartao: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.three,
-  },
-  liberdade: {
-    padding: Spacing.three,
-    borderRadius: Spacing.three,
-    gap: Spacing.one,
-  },
-  valorGrande: {
-    fontSize: 24,
-    lineHeight: 32,
-    fontWeight: 700,
-  },
-  barraLinha: {
-    gap: Spacing.one,
-  },
-  percentual: {
-    width: 52,
-    textAlign: 'right',
-  },
-  tributo: {
-    flexDirection: 'row',
-    gap: Spacing.three,
-    paddingVertical: Spacing.two,
-  },
-  marcador: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginTop: 6,
-  },
-  categoria: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.three,
-    minHeight: 48,
-  },
-  cartaoLista: {
-    paddingVertical: Spacing.one,
-    gap: 0,
-  },
+  linha: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
+  separador: { borderTopWidth: StyleSheet.hairlineWidth, marginVertical: Spacing.one },
+  liberdade: { padding: Spacing.three, borderRadius: Spacing.three, gap: Spacing.one },
+  valorGrande: { fontSize: 24, lineHeight: 32, fontWeight: 700 },
+  barraLinha: { gap: Spacing.one },
+  categoria: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three, minHeight: 48 },
+  aviso: { flexDirection: 'row', gap: Spacing.two, alignItems: 'flex-start' },
+  cartaoLista: { paddingVertical: Spacing.one, gap: 0 },
 });

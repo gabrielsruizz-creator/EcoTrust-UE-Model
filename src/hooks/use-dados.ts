@@ -22,12 +22,14 @@ import { obterAnaliseSalva, obterEvolucao } from '@/services/evolucao-service';
 import { obterForum, obterTopico } from '@/services/forum-service';
 import { obterJornada } from '@/services/gamificacao-service';
 import {
-  obterHistoricoImpostos,
   obterImpostometro,
   obterImpostosDoLancamento,
-  obterImpostosDosLancamentos,
 } from '@/services/impostometro-service';
-import { obterImpostometroUE } from '@/services/impostometro-ue-service';
+import {
+  obterHistoricoImpostosUE,
+  obterImpostometroUE,
+  obterImpostosDosLancamentosUE,
+} from '@/services/impostometro-ue-service';
 import { obterImpostosFixos } from '@/services/impostos-renda-service';
 import { obterPerfilFiscal } from '@/services/perfil-fiscal-service';
 import { obterDeducoesIR } from '@/services/ir-service';
@@ -76,7 +78,7 @@ export function useImpostosDoLancamento(id: number) {
 /** Impostos de cada despesa do mês, pelo id do lançamento. */
 export function useImpostosDosLancamentos(mes: string) {
   const versao = useVersaoDados();
-  return useMemo(() => obterImpostosDosLancamentos(mes), [versao, mes]);
+  return useMemo(() => obterImpostosDosLancamentosUE(mes), [versao, mes]);
 }
 
 /** Impostos da renda e do patrimônio configurados pelo usuário (null se nada configurado). */
@@ -124,7 +126,7 @@ export function useAnalisePrecos() {
 /** Carga de impostos dos últimos 6 meses (minigráfico). */
 export function useHistoricoImpostos(mes: string) {
   const versao = useVersaoDados();
-  return useMemo(() => obterHistoricoImpostos(mes), [versao, mes]);
+  return useMemo(() => obterHistoricoImpostosUE(mes), [versao, mes]);
 }
 
 export function useImpostometro(mes: string) {

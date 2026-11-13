@@ -13,7 +13,7 @@ import { Spacing } from '@/constants/theme';
 import {
   useDashboard,
   useHistoricoImpostos,
-  useImpostometro,
+  useImpostometroUE,
   useImpostosDosLancamentos,
   useOrcamentos,
   usePerfilFinanceiro,
@@ -21,6 +21,7 @@ import {
 } from '@/hooks/use-dados';
 import { useConta } from '@/hooks/use-sessao';
 import { useTheme } from '@/hooks/use-theme';
+import { localeAtual } from '@/i18n';
 import type { OrigemImposto } from '@/services/impostometro-service';
 import { primeiroNome, saudacao } from '@/services/perfil-financeiro-service';
 import type { Transacao } from '@/types/financas';
@@ -42,7 +43,7 @@ export default function InicioScreen() {
   const theme = useTheme();
   const mes = mesAtual();
   const dashboard = useDashboard(mes);
-  const impostos = useImpostometro(mes);
+  const impostos = useImpostometroUE(mes);
   const historico = useHistoricoImpostos(mes);
   const impostosPorLancamento = useImpostosDosLancamentos(mes);
   const orcamentos = useOrcamentos(mes);
@@ -124,7 +125,7 @@ export default function InicioScreen() {
               </ThemedText>
               {' em impostos'}
               {impostos.percentualDosGastos !== null
-                ? ` · ${impostos.percentualDosGastos.toLocaleString('pt-BR')}% das saídas`
+                ? ` · ${impostos.percentualDosGastos.toLocaleString(localeAtual())}% das saídas`
                 : ''}
             </ThemedText>
             <Minigrafico valores={historico.map((h) => h.centavos)} largura={56} altura={22} />

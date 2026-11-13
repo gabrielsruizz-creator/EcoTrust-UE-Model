@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 import { banco, despesa, limparBanco } from './banco-falso';
-import { calcularImpostometroUE, obterImpostometroUE } from '@/services/impostometro-ue-service';
+import {
+  calcularImpostometroUE,
+  obterHistoricoImpostosUE,
+  obterImpostometroUE,
+  obterImpostosDosLancamentosUE,
+} from '@/services/impostometro-ue-service';
 import { definirOndeFoiACompra, salvarPerfilFiscal } from '@/services/perfil-fiscal-service';
 import { ErroValidacao } from '@/services/erros';
 import type { PerfilFiscal } from '@/types/financas';
@@ -190,5 +195,32 @@ describe('perfil fiscal e país da compra', () => {
     expect(() => definirOndeFoiACompra(jantar.id, 'US')).toThrow(ErroValidacao);
     definirOndeFoiACompra(jantar.id, null);
     expect(obterImpostometroUE('2026-11').porPais.map((p) => p.pais)).toEqual(['PT']);
+  });
+});
+
+describe('listas e histórico', () => {
+  it('imposto por lançamento: recibo = "nota", resto estimado, país sem regras fica de fora', () => {
+    banco.perfilFiscal = residentePT;
+    const recibo = despesa({ valorCentavos: 12_300, categoriaId: SUPERMERCADO, data: '2026-11-02', tributosCentavos: 1_100 });
+    const jantar = despesa({ valorCentavos: 5_000, categoriaId: RESTAURANTE, data: '2026-11-03' });
+    const berlim = despesa({ valorCentavos: 5_000, categoriaId: RESTAURANTE, data: '2026-11-04', paisConsumo: 'DE' });
+    banco.transacoes = [recibo, jantar, berlim];
+    const mapa = obterImpostosDosLancamentosUE('2026-11');
+    expect(mapa.get(recibo.id)).toEqual({ centavos: 1_100, origem: 'nota' });
+    expect(mapa.get(jantar.id)).toEqual({ centavos: 575, origem: 'estimado' });
+    expect(mapa.has(berlim.id)).toBe(false);
+  });
+
+  it('sem perfil fiscal não estima nada', () => {
+    banco.transacoes = [despesa({ valorCentavos: 5_000, categoriaId: RESTAURANTE, data: '2026-11-03' })];
+    expect(obterImpostosDosLancamentosUE('2026-11').size).toBe(0);
+  });
+
+  it('histórico de 6 meses, do mais antigo ao atual', () => {
+    banco.perfilFiscal = { ...residentePT, brutoAnualCentavos: null };
+    banco.transacoes = [despesa({ valorCentavos: 5_000, categoriaId: RESTAURANTE, data: '2026-10-03' })];
+    const h = obterHistoricoImpostosUE('2026-11');
+    expect(h.map((x) => x.mes)).toEqual(['2026-06', '2026-07', '2026-08', '2026-09', '2026-10', '2026-11']);
+    expect(h[4].centavos).toBe(575);
   });
 });
