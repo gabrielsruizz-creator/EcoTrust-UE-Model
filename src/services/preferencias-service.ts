@@ -8,6 +8,10 @@ import * as Notifications from 'expo-notifications';
 import { AndroidImportance } from 'expo-notifications';
 import { Appearance, Platform } from 'react-native';
 
+import { getLocales } from 'expo-localization';
+
+import { definirIdioma, t } from '@/i18n';
+import { ehIdioma, escolherIdioma, type Idioma } from '@/i18n/idiomas';
 import { lerConfiguracao, salvarConfiguracao } from '@/repositories/configuracoes-repository';
 import { ErroValidacao } from '@/services/erros';
 
@@ -15,6 +19,8 @@ export type Tema = 'sistema' | 'claro' | 'escuro';
 
 export type Preferencias = {
   tema: Tema;
+  /** Idioma escolhido no app (null = o do aparelho). Independente do país e da moeda. */
+  idioma: Idioma | null;
   /** Cartões de vidro (Liquid Glass) em vez de cartões sólidos de "papel" */
   vidro: boolean;
   /** Dia do mês em que o salário cai (1 a 31), ou null */
@@ -29,6 +35,7 @@ export const HORAS_LEMBRETE = [8, 12, 18, 21];
 
 const PADRAO: Preferencias = {
   tema: 'sistema',
+  idioma: null,
   vidro: false,
   diaPagamento: null,
   lembreteDiario: false,
@@ -47,16 +54,17 @@ export function obterPreferencias(): Preferencias {
 }
 
 export function validarPreferencias(p: Preferencias): Preferencias {
-  if (!['sistema', 'claro', 'escuro'].includes(p.tema)) throw new ErroValidacao('Tema inválido.');
-  if (typeof p.vidro !== 'boolean') throw new ErroValidacao('Opção de vidro inválida.');
+  if (!['sistema', 'claro', 'escuro'].includes(p.tema)) throw new ErroValidacao(t('pref.erro.tema'));
+  if (typeof p.vidro !== 'boolean') throw new ErroValidacao(t('pref.erro.vidro'));
+  if (p.idioma !== null && !ehIdioma(p.idioma)) throw new ErroValidacao(t('pref.erro.idioma'));
   if (p.diaPagamento !== null && (!Number.isInteger(p.diaPagamento) || p.diaPagamento < 1 || p.diaPagamento > 31)) {
-    throw new ErroValidacao('O dia do pagamento deve ser de 1 a 31.');
+    throw new ErroValidacao(t('pref.erro.dia'));
   }
   if (!Number.isInteger(p.horaLembrete) || p.horaLembrete < 0 || p.horaLembrete > 23) {
-    throw new ErroValidacao('Hora do lembrete inválida.');
+    throw new ErroValidacao(t('pref.erro.hora'));
   }
   if (p.lembretePagamento && p.diaPagamento === null) {
-    throw new ErroValidacao('Informe o dia do pagamento para receber esse lembrete.');
+    throw new ErroValidacao(t('pref.erro.lembreteSemDia'));
   }
   return p;
 }
@@ -64,6 +72,8 @@ export function validarPreferencias(p: Preferencias): Preferencias {
 /** Salva, aplica o tema e reagenda os lembretes. Retorna false se a pessoa negou notificações. */
 export async function salvarPreferencias(p: Preferencias): Promise<boolean> {
   const validas = validarPreferencias(p);
+  // O idioma muda antes de salvar: a gravação avisa as telas, que já recalculam no idioma novo.
+  aplicarIdioma(validas.idioma);
   salvarConfiguracao('preferencias', JSON.stringify(validas));
   aplicarTema(validas.tema);
   return agendarLembretes(validas);
@@ -71,6 +81,19 @@ export async function salvarPreferencias(p: Preferencias): Promise<boolean> {
 
 export function aplicarTema(tema: Tema) {
   Appearance.setColorScheme(tema === 'claro' ? 'light' : tema === 'escuro' ? 'dark' : 'unspecified');
+}
+
+/** Idioma do aparelho entre os suportados (português vira pt-PT). */
+export function idiomaDoAparelho(): Idioma {
+  try {
+    return escolherIdioma(getLocales().map((l) => l.languageTag));
+  } catch {
+    return escolherIdioma([]);
+  }
+}
+
+export function aplicarIdioma(idioma: Idioma | null) {
+  definirIdioma(idioma ?? idiomaDoAparelho());
 }
 
 // ---------- Lembretes (notificações locais) ----------
@@ -92,14 +115,14 @@ export async function agendarLembretes(p: Preferencias): Promise<boolean> {
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(CANAL, {
-      name: 'Lembretes',
+      name: t('notif.canal'),
       importance: AndroidImportance.DEFAULT,
     });
   }
 
   if (p.lembreteDiario) {
     await Notifications.scheduleNotificationAsync({
-      content: { title: 'EcoTrust', body: 'Já registrou seus gastos de hoje? Leva menos de um minuto.' },
+      content: { title: 'EcoTrust', body: t('notif.diario.texto') },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
         hour: p.horaLembrete,
@@ -111,8 +134,8 @@ export async function agendarLembretes(p: Preferencias): Promise<boolean> {
   if (p.lembretePagamento && p.diaPagamento !== null) {
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Dia de pagamento',
-        body: 'Que tal separar primeiro o valor das suas metas? Pague-se primeiro!',
+        title: t('notif.pagamento.titulo'),
+        body: t('notif.pagamento.texto'),
       },
       // Meses curtos não têm dia 29-31: nesses casos o lembrete vem no dia 28.
       trigger: {

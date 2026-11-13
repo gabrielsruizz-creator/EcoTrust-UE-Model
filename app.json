@@ -57,6 +57,21 @@
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
+      ],
+      [
+        "expo-localization",
+        {
+          "supportedLocales": [
+            "en",
+            "pt-PT",
+            "es",
+            "fr",
+            "de",
+            "it",
+            "nl",
+            "pl"
+          ]
+        }
       ]
     ],
     "experiments": {

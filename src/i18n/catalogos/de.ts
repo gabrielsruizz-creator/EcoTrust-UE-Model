@@ -1,0 +1,53 @@
+import type { Catalogo } from '@/i18n/tipos';
+
+export const de: Catalogo = {
+  'comum.erroGuardar': 'Speichern nicht möglich',
+  'comum.tenteNovamente': 'Bitte versuche es erneut.',
+  'comum.dias': { one: '{n} Tag', other: '{n} Tage' },
+
+  'abas.inicio': 'Start',
+  'abas.transacoes': 'Umsätze',
+  'abas.adicionar': 'Hinzufügen',
+  'abas.metas': 'Ziele',
+  'abas.perfil': 'Profil',
+
+  'pref.aparencia': 'Darstellung',
+  'pref.tema.sistema': 'System',
+  'pref.tema.claro': 'Hell',
+  'pref.tema.escuro': 'Dunkel',
+  'pref.idioma': 'Sprache',
+  'pref.idioma.aparelho': 'Gerätesprache',
+  'pref.idioma.descricao': 'Die Sprache ändert weder deinen steuerlichen Wohnsitz noch deine Währung.',
+  'pref.vidro': 'Glaseffekt (Liquid Glass)',
+  'pref.vidro.nativo': 'Glaskarten von iOS. Ausschalten für deckende Karten.',
+  'pref.vidro.simulado':
+    'Simuliertes Glas (der echte Effekt braucht iOS 26 oder neuer). Ausschalten für deckende Karten.',
+  'pref.vidro.desligado': 'Deckende Karten im Papierstil. Einschalten, um die Glaskarten zu sehen.',
+  'pref.diaPagamento': 'Zahltag',
+  'pref.diaPagamento.descricao': 'Tag im Monat, an dem dein Gehalt eingeht',
+  'pref.diaPagamento.rotulo': 'Zahltag, von 1 bis 31',
+  'pref.lembreteDiario': 'Tägliche Erinnerung',
+  'pref.lembreteDiario.descricao': 'Um die Ausgaben des Tages einzutragen',
+  'pref.lembreteDiario.horario': 'Uhrzeit der Erinnerung',
+  'pref.hora': '{h}:00 Uhr',
+  'pref.lembretePagamento': 'Erinnerung am Zahltag',
+  'pref.lembretePagamento.descricao': 'Um zuerst Geld für deine Ziele zurückzulegen',
+  'pref.lembretePagamento.semDia': 'Gib oben deinen Zahltag an',
+  'pref.biometria': 'Mit Biometrie anmelden',
+  'pref.notificacoesDesligadas.titulo': 'Mitteilungen deaktiviert',
+  'pref.notificacoesDesligadas.texto':
+    'Um Erinnerungen zu erhalten, erlaube Mitteilungen von EcoTrust in den Einstellungen deines Handys.',
+  'pref.biometriaFalhou.titulo': 'Biometrie nicht aktiviert',
+  'pref.biometriaFalhou.texto': 'Fingerabdruck oder Face ID konnte nicht bestätigt werden.',
+  'pref.erro.tema': 'Ungültiges Design.',
+  'pref.erro.vidro': 'Ungültige Glas-Option.',
+  'pref.erro.idioma': 'Ungültige Sprache.',
+  'pref.erro.dia': 'Der Zahltag muss zwischen 1 und 31 liegen.',
+  'pref.erro.hora': 'Ungültige Uhrzeit für die Erinnerung.',
+  'pref.erro.lembreteSemDia': 'Gib deinen Zahltag an, um diese Erinnerung zu erhalten.',
+
+  'notif.canal': 'Erinnerungen',
+  'notif.diario.texto': 'Schon die heutigen Ausgaben eingetragen? Dauert keine Minute.',
+  'notif.pagamento.titulo': 'Zahltag',
+  'notif.pagamento.texto': 'Wie wäre es, zuerst Geld für deine Ziele zurückzulegen? Bezahl dich selbst zuerst!',
+};

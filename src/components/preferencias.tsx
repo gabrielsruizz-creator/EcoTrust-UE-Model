@@ -6,22 +6,26 @@ import { Cartao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useAparencia } from '@/hooks/use-aparencia';
+import { useT } from '@/hooks/use-idioma';
 import { usePreferencias } from '@/hooks/use-dados';
 import { useConta } from '@/hooks/use-sessao';
 import { useTheme } from '@/hooks/use-theme';
 import { biometriaDisponivel, definirBiometria } from '@/services/conta-service';
 import { ErroValidacao } from '@/services/erros';
+import { IDIOMAS } from '@/i18n/idiomas';
+import type { Chave } from '@/i18n';
 import { HORAS_LEMBRETE, salvarPreferencias, type Preferencias, type Tema } from '@/services/preferencias-service';
 
-const TEMAS: { valor: Tema; rotulo: string }[] = [
-  { valor: 'sistema', rotulo: 'Do celular' },
-  { valor: 'claro', rotulo: 'Claro' },
-  { valor: 'escuro', rotulo: 'Escuro' },
+const TEMAS: { valor: Tema; rotulo: Chave }[] = [
+  { valor: 'sistema', rotulo: 'pref.tema.sistema' },
+  { valor: 'claro', rotulo: 'pref.tema.claro' },
+  { valor: 'escuro', rotulo: 'pref.tema.escuro' },
 ];
 
-/** Tema, dia do pagamento, lembretes e biometria. */
+/** Tema, idioma, dia do pagamento, lembretes e biometria. */
 export function CartaoPreferencias() {
   const theme = useTheme();
+  const t = useT();
   const preferencias = usePreferencias();
   const { vidroNativoDisponivel } = useAparencia();
   const conta = useConta();
@@ -37,13 +41,10 @@ export function CartaoPreferencias() {
       const permitiu = await salvarPreferencias({ ...preferencias, ...mudanca });
       if (!permitiu) {
         await salvarPreferencias({ ...preferencias, ...mudanca, lembreteDiario: false, lembretePagamento: false });
-        Alert.alert(
-          'Notificações desativadas',
-          'Para receber lembretes, permita as notificações do EcoTrust nas configurações do celular.',
-        );
+        Alert.alert(t('pref.notificacoesDesligadas.titulo'), t('pref.notificacoesDesligadas.texto'));
       }
     } catch (e) {
-      Alert.alert('Não foi possível salvar', e instanceof ErroValidacao ? e.message : 'Tente novamente.');
+      Alert.alert(t('comum.erroGuardar'), e instanceof ErroValidacao ? e.message : t('comum.tenteNovamente'));
     }
   }
 
@@ -55,54 +56,80 @@ export function CartaoPreferencias() {
 
   async function alternarBiometria(ativar: boolean) {
     const ok = await definirBiometria(ativar);
-    if (!ok && ativar) Alert.alert('Biometria não ativada', 'Não foi possível confirmar sua digital ou Face ID.');
+    if (!ok && ativar) Alert.alert(t('pref.biometriaFalhou.titulo'), t('pref.biometriaFalhou.texto'));
   }
 
   return (
     <Cartao>
-      <ThemedText type="smallBold">Aparência</ThemedText>
-      <View style={styles.chips} accessibilityRole="radiogroup">
-        {TEMAS.map((t) => (
-          <Chip key={t.valor} texto={t.rotulo} ativo={preferencias.tema === t.valor} aoTocar={() => atualizar({ tema: t.valor })} />
+      <ThemedText type="smallBold">{t('pref.aparencia')}</ThemedText>
+      <View style={styles.chips} accessibilityRole="radiogroup" accessibilityLabel={t('pref.aparencia')}>
+        {TEMAS.map((tema) => (
+          <Chip
+            key={tema.valor}
+            texto={t(tema.rotulo)}
+            ativo={preferencias.tema === tema.valor}
+            aoTocar={() => atualizar({ tema: tema.valor })}
+          />
         ))}
       </View>
       <View style={styles.linha}>
         <View style={styles.flex}>
-          <ThemedText type="small">Efeito vidro (Liquid Glass)</ThemedText>
+          <ThemedText type="small">{t('pref.vidro')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
             {preferencias.vidro
               ? vidroNativoDisponivel
-                ? 'Cartões de vidro do iOS. Desligue para cartões sólidos.'
-                : 'Vidro simulado (o efeito nativo é do iOS 26 em diante). Desligue para cartões sólidos.'
-              : 'Cartões sólidos, estilo papel. Ligue para ver os cartões de vidro.'}
+                ? t('pref.vidro.nativo')
+                : t('pref.vidro.simulado')
+              : t('pref.vidro.desligado')}
           </ThemedText>
         </View>
         <Switch
           value={preferencias.vidro}
           onValueChange={(vidro) => atualizar({ vidro })}
           trackColor={{ true: theme.positive }}
-          accessibilityLabel="Efeito vidro (Liquid Glass)"
+          accessibilityLabel={t('pref.vidro')}
         />
+      </View>
+
+      <View style={[styles.separador, { borderTopColor: theme.backgroundSelected }]} />
+      <ThemedText type="small">{t('pref.idioma')}</ThemedText>
+      <ThemedText type="small" themeColor="textSecondary">
+        {t('pref.idioma.descricao')}
+      </ThemedText>
+      <View style={styles.chips} accessibilityRole="radiogroup" accessibilityLabel={t('pref.idioma')}>
+        <Chip
+          texto={t('pref.idioma.aparelho')}
+          ativo={preferencias.idioma === null}
+          aoTocar={() => atualizar({ idioma: null })}
+        />
+        {IDIOMAS.map((idioma) => (
+          <Chip
+            key={idioma.id}
+            texto={idioma.nomeNativo}
+            ativo={preferencias.idioma === idioma.id}
+            aoTocar={() => atualizar({ idioma: idioma.id })}
+          />
+        ))}
       </View>
 
       <View style={[styles.separador, { borderTopColor: theme.backgroundSelected }]} />
       <View style={styles.linha}>
         <View style={styles.flex}>
-          <ThemedText type="small">Dia do pagamento</ThemedText>
+          <ThemedText type="small">{t('pref.diaPagamento')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Dia do mês em que seu salário cai
+            {t('pref.diaPagamento.descricao')}
           </ThemedText>
         </View>
         <TextInput
           style={[styles.campoDia, { color: theme.text, backgroundColor: theme.background }]}
           value={diaTexto}
-          onChangeText={(t) => setDiaTexto(t.replace(/\D/g, '').slice(0, 2))}
+          onChangeText={(texto) => setDiaTexto(texto.replace(/\D/g, '').slice(0, 2))}
           onEndEditing={salvarDia}
           onSubmitEditing={salvarDia}
           placeholder="–"
           placeholderTextColor={theme.textSecondary}
           keyboardType="number-pad"
-          accessibilityLabel="Dia do pagamento, de 1 a 31"
+          accessibilityLabel={t('pref.diaPagamento.rotulo')}
           maxLength={2}
         />
       </View>
@@ -110,37 +137,37 @@ export function CartaoPreferencias() {
       <View style={[styles.separador, { borderTopColor: theme.backgroundSelected }]} />
       <View style={styles.linha}>
         <View style={styles.flex}>
-          <ThemedText type="small">Lembrete diário</ThemedText>
+          <ThemedText type="small">{t('pref.lembreteDiario')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Para registrar os gastos do dia
+            {t('pref.lembreteDiario.descricao')}
           </ThemedText>
         </View>
         <Switch
           value={preferencias.lembreteDiario}
           onValueChange={(v) => atualizar({ lembreteDiario: v })}
-          accessibilityLabel="Lembrete diário"
+          accessibilityLabel={t('pref.lembreteDiario')}
         />
       </View>
       {preferencias.lembreteDiario && (
-        <View style={styles.chips} accessibilityRole="radiogroup" accessibilityLabel="Horário do lembrete">
+        <View style={styles.chips} accessibilityRole="radiogroup" accessibilityLabel={t('pref.lembreteDiario.horario')}>
           {HORAS_LEMBRETE.map((h) => (
-            <Chip key={h} texto={`${h}h`} ativo={preferencias.horaLembrete === h} aoTocar={() => atualizar({ horaLembrete: h })} />
+            <Chip key={h} texto={t('pref.hora', { h })} ativo={preferencias.horaLembrete === h} aoTocar={() => atualizar({ horaLembrete: h })} />
           ))}
         </View>
       )}
 
       <View style={styles.linha}>
         <View style={styles.flex}>
-          <ThemedText type="small">Lembrete no dia do pagamento</ThemedText>
+          <ThemedText type="small">{t('pref.lembretePagamento')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {preferencias.diaPagamento ? 'Para guardar nas metas primeiro' : 'Informe o dia do pagamento acima'}
+            {preferencias.diaPagamento ? t('pref.lembretePagamento.descricao') : t('pref.lembretePagamento.semDia')}
           </ThemedText>
         </View>
         <Switch
           value={preferencias.lembretePagamento}
           disabled={preferencias.diaPagamento === null}
           onValueChange={(v) => atualizar({ lembretePagamento: v })}
-          accessibilityLabel="Lembrete no dia do pagamento"
+          accessibilityLabel={t('pref.lembretePagamento')}
         />
       </View>
 
@@ -149,9 +176,9 @@ export function CartaoPreferencias() {
           <View style={[styles.separador, { borderTopColor: theme.backgroundSelected }]} />
           <View style={styles.linha}>
             <ThemedText type="small" style={styles.flex}>
-              Entrar com biometria
+              {t('pref.biometria')}
             </ThemedText>
-            <Switch value={conta.biometria} onValueChange={alternarBiometria} accessibilityLabel="Entrar com biometria" />
+            <Switch value={conta.biometria} onValueChange={alternarBiometria} accessibilityLabel={t('pref.biometria')} />
           </View>
         </>
       )}

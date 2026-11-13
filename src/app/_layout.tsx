@@ -10,13 +10,26 @@ import { usePerfilFinanceiro } from '@/hooks/use-dados';
 import { useSessao } from '@/hooks/use-sessao';
 import { iniciarSincronizacaoJornada } from '@/services/celebracao-service';
 import { BLOQUEIO_SEGUNDO_PLANO_MS, sair } from '@/services/conta-service';
-import { aplicarTema, configurarNotificacoes, obterPreferencias } from '@/services/preferencias-service';
+import {
+  aplicarIdioma,
+  aplicarTema,
+  configurarNotificacoes,
+  idiomaDoAparelho,
+  obterPreferencias,
+} from '@/services/preferencias-service';
 
 // Se algo falhar ao abrir o banco ou montar uma tela, o Expo Router mostra uma tela de erro com "tentar de novo".
 export { ErrorBoundary } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
 configurarNotificacoes();
+
+// O idioma precisa estar certo antes da primeira tela aparecer.
+try {
+  aplicarIdioma(obterPreferencias().idioma);
+} catch {
+  aplicarIdioma(idiomaDoAparelho());
+}
 
 /** Aplica o tema escolhido nas preferências (claro, escuro ou o do sistema). */
 function useTemaPreferido() {

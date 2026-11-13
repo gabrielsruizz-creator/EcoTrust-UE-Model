@@ -1,0 +1,53 @@
+import type { Catalogo } from '@/i18n/tipos';
+
+export const es: Catalogo = {
+  'comum.erroGuardar': 'No se pudo guardar',
+  'comum.tenteNovamente': 'Inténtalo de nuevo.',
+  'comum.dias': { one: '{n} día', other: '{n} días' },
+
+  'abas.inicio': 'Inicio',
+  'abas.transacoes': 'Movimientos',
+  'abas.adicionar': 'Añadir',
+  'abas.metas': 'Metas',
+  'abas.perfil': 'Perfil',
+
+  'pref.aparencia': 'Apariencia',
+  'pref.tema.sistema': 'Del sistema',
+  'pref.tema.claro': 'Claro',
+  'pref.tema.escuro': 'Oscuro',
+  'pref.idioma': 'Idioma',
+  'pref.idioma.aparelho': 'Del dispositivo',
+  'pref.idioma.descricao': 'El idioma no cambia tu residencia fiscal ni tu moneda.',
+  'pref.vidro': 'Efecto cristal (Liquid Glass)',
+  'pref.vidro.nativo': 'Tarjetas de cristal de iOS. Desactívalo para tarjetas sólidas.',
+  'pref.vidro.simulado':
+    'Cristal simulado (el efecto nativo requiere iOS 26 o posterior). Desactívalo para tarjetas sólidas.',
+  'pref.vidro.desligado': 'Tarjetas sólidas, estilo papel. Actívalo para ver las tarjetas de cristal.',
+  'pref.diaPagamento': 'Día de cobro',
+  'pref.diaPagamento.descricao': 'Día del mes en que cobras el sueldo',
+  'pref.diaPagamento.rotulo': 'Día de cobro, del 1 al 31',
+  'pref.lembreteDiario': 'Recordatorio diario',
+  'pref.lembreteDiario.descricao': 'Para anotar los gastos del día',
+  'pref.lembreteDiario.horario': 'Hora del recordatorio',
+  'pref.hora': '{h}:00',
+  'pref.lembretePagamento': 'Recordatorio el día de cobro',
+  'pref.lembretePagamento.descricao': 'Para apartar primero el dinero de tus metas',
+  'pref.lembretePagamento.semDia': 'Indica arriba tu día de cobro',
+  'pref.biometria': 'Entrar con biometría',
+  'pref.notificacoesDesligadas.titulo': 'Notificaciones desactivadas',
+  'pref.notificacoesDesligadas.texto':
+    'Para recibir recordatorios, permite las notificaciones de EcoTrust en los ajustes del móvil.',
+  'pref.biometriaFalhou.titulo': 'Biometría no activada',
+  'pref.biometriaFalhou.texto': 'No se pudo confirmar tu huella o Face ID.',
+  'pref.erro.tema': 'Tema no válido.',
+  'pref.erro.vidro': 'Opción de cristal no válida.',
+  'pref.erro.idioma': 'Idioma no válido.',
+  'pref.erro.dia': 'El día de cobro debe ser del 1 al 31.',
+  'pref.erro.hora': 'Hora del recordatorio no válida.',
+  'pref.erro.lembreteSemDia': 'Indica tu día de cobro para recibir este recordatorio.',
+
+  'notif.canal': 'Recordatorios',
+  'notif.diario.texto': '¿Ya anotaste los gastos de hoy? Te llevará menos de un minuto.',
+  'notif.pagamento.titulo': 'Día de cobro',
+  'notif.pagamento.texto': '¿Qué tal apartar primero el dinero de tus metas? ¡Págate a ti primero!',
+};
