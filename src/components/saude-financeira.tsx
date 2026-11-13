@@ -8,6 +8,7 @@ import { Cartao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useAssinatura, useSaude } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { temAcesso } from '@/services/assinatura-service';
 import type { FaixaSaude, FatorSaude, SituacaoFator } from '@/services/saude-service';
@@ -52,13 +53,14 @@ export function LinhaFator({ fator }: { fator: FatorSaude }) {
 
 /** Cartão compacto da saúde financeira (Início e EcoTrust IA). Toque abre os detalhes. */
 export function CartaoSaude() {
+  const t = useT();
   const assinatura = useAssinatura();
   if (!temAcesso('saude', assinatura)) {
     return (
       <BloqueioPremium
         recurso="saude"
         compacto
-        previa={<ThemedText type="small">Descubra sua nota de saúde financeira de 0 a 100.</ThemedText>}
+        previa={<ThemedText type="small">{t('sf.previa')}</ThemedText>}
       />
     );
   }
@@ -66,6 +68,7 @@ export function CartaoSaude() {
 }
 
 function CartaoSaudeCompleto() {
+  const t = useT();
   const theme = useTheme();
   const saude = useSaude();
   const corFaixa = useCorFaixa();
@@ -81,12 +84,12 @@ function CartaoSaudeCompleto() {
       accessibilityRole="button"
       accessibilityLabel={
         saude.nota === null
-          ? 'Saúde financeira: ainda sem dados. Abre os detalhes.'
-          : `Saúde financeira: ${saude.nota} de 100, ${saude.rotuloFaixa}. Abre os detalhes.`
+          ? t('sf.cartao.semDados')
+          : t('sf.cartao.nota', { nota: saude.nota, faixa: saude.rotuloFaixa })
       }
       style={({ pressed }) => pressed && styles.pressionado}>
       <Cartao>
-        <ThemedText type="smallBold">Saúde financeira</ThemedText>
+        <ThemedText type="smallBold">{t('pf.saude')}</ThemedText>
         <View style={styles.linha}>
           <AnelProgresso
             percentual={saude.nota ?? 0}
@@ -94,13 +97,13 @@ function CartaoSaudeCompleto() {
             tamanho={96}
             espessura={10}
             rotulo={saude.nota === null ? '–' : String(saude.nota)}
-            subrotulo="de 100"
+            subrotulo={t('sf.de100')}
           />
           <View style={styles.flex}>
             <ThemedText type="smallBold">{saude.rotuloFaixa}</ThemedText>
             {saude.nota === null ? (
               <ThemedText type="small" themeColor="textSecondary">
-                Registre seus lançamentos para o EcoTrust calcular sua nota.
+                {t('sf.cartao.registe')}
               </ThemedText>
             ) : (
               destaques.map((f) => <LinhaFator key={f.id} fator={f} />)
@@ -108,7 +111,7 @@ function CartaoSaudeCompleto() {
           </View>
         </View>
         <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-          Ver detalhes ›
+          {t('sf.verDetalhes')}
         </ThemedText>
       </Cartao>
     </Pressable>

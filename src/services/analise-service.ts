@@ -4,23 +4,23 @@
  * `gerarAnalise` é puro (fácil de testar e de evoluir); `obterAnalise` busca os dados no banco.
  */
 
+import { t } from '@/i18n';
+import { categoriaEssencial, ehMetaDeReserva } from '@/i18n/categorias';
 import { obterPerfilFinanceiro } from '@/repositories/perfil-financeiro-repository';
 import { listarTransacoes } from '@/repositories/transacoes-repository';
 import { obterMetas, textoRitmo } from '@/services/metas-service';
 import { obterOrcamentos, type ResumoOrcamentos } from '@/services/orcamento-service';
 import { obterResumoDoMes } from '@/services/resumo-service';
 import type { PerfilFinanceiro, ProgressoMeta, ResumoMes } from '@/types/financas';
-import { hoje, nomeDoMes, somarMeses } from '@/utils/datas';
+import { hoje, nomeDoMesSemAno, somarMeses } from '@/utils/datas';
 import { formatarCentavos } from '@/utils/moeda';
 
-/** Diferença mínima (em centavos) para comentar a variação de uma categoria: R$ 100 */
+/** Diferença mínima (em cêntimos) para comentar a variação de uma categoria: 100 na moeda principal */
 const VARIACAO_MINIMA_CENTAVOS = 10_000;
 /** E também pelo menos 15% de variação */
 const VARIACAO_MINIMA_PERCENTUAL = 0.15;
 /** A projeção do mês só aparece a partir deste dia (antes disso é muito incerta) */
 const DIA_MINIMO_PROJECAO = 5;
-/** Categorias essenciais (ou pagamento de dívidas) não entram na sugestão "onde reduzir" */
-const ESSENCIAIS = new Set(['Moradia', 'Saúde', 'Educação', 'Dívidas']);
 
 export type TemaInsight = 'renda' | 'gastos' | 'orcamento' | 'metas';
 
@@ -56,7 +56,6 @@ export type EntradaAnalise = {
 };
 
 const pct = (valor: number) => `${Math.round(valor * 100)}%`;
-const minuscula = (texto: string) => texto.toLocaleLowerCase('pt-BR');
 
 function analisarRenda(e: EntradaAnalise): InsightIA[] {
   const insights: InsightIA[] = [];
@@ -70,18 +69,18 @@ function analisarRenda(e: EntradaAnalise): InsightIA[] {
         id: 'poupanca-negativa',
         tom: 'alerta',
         tema: 'renda',
-        titulo: 'Gastando mais do que ganha',
-        texto: `Neste mês você gastou ${formatarCentavos(atual.despesasCentavos - atual.receitasCentavos)} a mais do que recebeu.`,
+        titulo: t('an.poupNeg.titulo'),
+        texto: t('an.poupNeg.texto', { valor: formatarCentavos(atual.despesasCentavos - atual.receitasCentavos) }),
       });
     } else {
       insights.push({
         id: 'taxa-poupanca',
         tom: taxa >= 0.1 ? 'positivo' : 'neutro',
         tema: 'renda',
-        titulo: 'Quanto você está economizando',
+        titulo: t('an.poup.titulo'),
         texto:
-          `Você está economizando ${pct(taxa)} da sua renda mensal.` +
-          (taxa < 0.1 ? ' O ideal é chegar a pelo menos 10%.' : taxa >= 0.2 ? ' Excelente ritmo!' : ''),
+          t('an.poup.texto', { pct: pct(taxa) }) +
+          (taxa < 0.1 ? t('an.poup.chegar10') : taxa >= 0.2 ? t('an.poup.excelente') : ''),
       });
     }
   }
@@ -95,14 +94,10 @@ function analisarRenda(e: EntradaAnalise): InsightIA[] {
       id: 'peso-fixas',
       tom: peso > 0.5 ? 'alerta' : peso <= 0.3 ? 'positivo' : 'neutro',
       tema: 'renda',
-      titulo: 'Despesas fixas',
+      titulo: t('saude.fixas'),
       texto:
-        `Suas despesas fixas representam ${pct(peso)} da sua renda.` +
-        (peso > 0.5
-          ? ' Acima de 50% sobra pouco espaço para imprevistos.'
-          : peso <= 0.3
-            ? ' Isso deixa uma boa margem no orçamento.'
-            : ''),
+        t('an.fixas.texto', { pct: pct(peso) }) +
+        (peso > 0.5 ? t('an.fixas.altas') : peso <= 0.3 ? t('an.fixas.margem') : ''),
     });
   }
   return insights;
@@ -138,8 +133,8 @@ function analisarGastos(e: EntradaAnalise): InsightIA[] {
         id: `alta-${v.categoria}`,
         tom: 'alerta',
         tema: 'gastos',
-        titulo: `Mais gastos com ${minuscula(v.categoria)}`,
-        texto: `Você gastou ${formatarCentavos(v.diferenca)} a mais em ${minuscula(v.categoria)} este mês do que no mês passado.`,
+        titulo: t('an.alta.titulo', { categoria: v.categoria }),
+        texto: t('an.alta.texto', { valor: formatarCentavos(v.diferenca), categoria: v.categoria }),
       }),
     );
 
@@ -149,8 +144,8 @@ function analisarGastos(e: EntradaAnalise): InsightIA[] {
       id: `queda-${queda.categoria}`,
       tom: 'positivo',
       tema: 'gastos',
-      titulo: `Menos gastos com ${minuscula(queda.categoria)}`,
-      texto: `Você gastou ${formatarCentavos(-queda.diferenca)} a menos em ${minuscula(queda.categoria)} do que no mês passado.`,
+      titulo: t('an.queda.titulo', { categoria: queda.categoria }),
+      texto: t('an.queda.texto', { valor: formatarCentavos(-queda.diferenca), categoria: queda.categoria }),
     });
   }
 
@@ -166,8 +161,11 @@ function analisarGastos(e: EntradaAnalise): InsightIA[] {
         id: 'comparacao-media',
         tom: diferenca > 0 ? 'alerta' : 'positivo',
         tema: 'gastos',
-        titulo: 'Comparado com a sua média',
-        texto: `Seus gastos deste mês estão ${pct(Math.abs(diferenca))} ${diferenca > 0 ? 'acima' : 'abaixo'} da sua média dos últimos ${mesesComGasto.length} meses.`,
+        titulo: t('an.media.titulo'),
+        texto: t(diferenca > 0 ? 'an.media.acima' : 'an.media.abaixo', {
+          pct: pct(Math.abs(diferenca)),
+          n: mesesComGasto.length,
+        }),
       });
     }
   }
@@ -188,28 +186,32 @@ function analisarGastos(e: EntradaAnalise): InsightIA[] {
         id: 'projecao-mes',
         tom: passa ? 'alerta' : 'neutro',
         tema: 'gastos',
-        titulo: 'Projeção do mês',
+        titulo: t('an.proj.titulo'),
         texto:
-          `No ritmo atual, você vai gastar cerca de ${formatarCentavos(projecao)} em ${nomeDoMes(e.mes).split(' ')[0]}.` +
+          t('an.proj.texto', { valor: formatarCentavos(projecao), mes: nomeDoMesSemAno(e.mes) }) +
           (passa && limite !== null
-            ? ` Isso passa do seu limite em ${formatarCentavos(projecao - limite)}.`
+            ? t('an.proj.passa', { valor: formatarCentavos(projecao - limite) })
             : limite !== null
-              ? ' Dentro do seu limite.'
+              ? t('an.proj.dentro')
               : ''),
       });
     }
   }
 
   // Onde reduzir: a maior categoria não essencial
-  const reduzivel = atual.despesasPorCategoria.find((c) => !ESSENCIAIS.has(c.categoria));
+  const reduzivel = atual.despesasPorCategoria.find((c) => !categoriaEssencial(c.categoria));
   if (reduzivel && reduzivel.totalCentavos >= 5_000) {
     const economia = Math.round(reduzivel.totalCentavos * 0.1);
     insights.push({
       id: 'onde-reduzir',
       tom: 'neutro',
       tema: 'gastos',
-      titulo: 'Onde dá para reduzir',
-      texto: `${reduzivel.categoria} é seu maior gasto que não é essencial (${formatarCentavos(reduzivel.totalCentavos)} neste mês). Reduzir 10% economizaria ${formatarCentavos(economia)} por mês.`,
+      titulo: t('an.reduzir.titulo'),
+      texto: t('an.reduzir.texto', {
+        categoria: reduzivel.categoria,
+        valor: formatarCentavos(reduzivel.totalCentavos),
+        economia: formatarCentavos(economia),
+      }),
     });
   }
   return insights;
@@ -224,7 +226,7 @@ function analisarOrcamento(e: EntradaAnalise): InsightIA[] {
       id: `orcamento-${s.categoriaId ?? 'geral'}`,
       tom: 'alerta',
       tema: 'orcamento',
-      titulo: s.situacao === 'ultrapassou' ? 'Orçamento ultrapassado' : 'Perto do limite',
+      titulo: s.situacao === 'ultrapassou' ? t('an.orc.passou') : t('an.orc.perto'),
       texto: s.mensagem,
     });
   }
@@ -233,17 +235,17 @@ function analisarOrcamento(e: EntradaAnalise): InsightIA[] {
       id: 'sem-orcamento',
       tom: 'neutro',
       tema: 'orcamento',
-      titulo: 'Defina um orçamento',
-      texto: 'Você ainda não tem orçamento. Definir um limite mensal ajuda o EcoTrust a avisar antes de você gastar demais.',
-      acao: { rotulo: 'Definir orçamento', rota: '/orcamento' },
+      titulo: t('an.orc.defina'),
+      texto: t('an.orc.defina.texto'),
+      acao: { rotulo: t('an.orc.definir'), rota: '/orcamento' },
     });
   } else if (categorias.length > 0 && categorias.every((c) => c.situacao === 'dentro') && (!geral || geral.situacao === 'dentro')) {
     insights.push({
       id: 'orcamento-em-dia',
       tom: 'positivo',
       tema: 'orcamento',
-      titulo: 'Orçamento em dia',
-      texto: 'Todos os seus orçamentos estão dentro do limite neste mês.',
+      titulo: t('an.orc.emDia'),
+      texto: t('an.orc.emDia.texto'),
     });
   }
   return insights;
@@ -261,7 +263,10 @@ function analisarMetas(e: EntradaAnalise): InsightIA[] {
         tom: 'alerta',
         tema: 'metas',
         titulo: m.nome,
-        texto: `Para cumprir o prazo, você precisa guardar ${formatarCentavos(m.porMesNecessarioCentavos)} por mês. Seu ritmo recente é de ${formatarCentavos(m.ritmoMensalCentavos)}.`,
+        texto: t('an.meta.atrasada', {
+          necessario: formatarCentavos(m.porMesNecessarioCentavos),
+          ritmo: formatarCentavos(m.ritmoMensalCentavos),
+        }),
       });
     } else if (ritmo) {
       insights.push({ id: `meta-ritmo-${m.id}`, tom: 'positivo', tema: 'metas', titulo: m.nome, texto: ritmo });
@@ -271,34 +276,34 @@ function analisarMetas(e: EntradaAnalise): InsightIA[] {
         tom: 'alerta',
         tema: 'metas',
         titulo: m.nome,
-        texto: `O prazo desta meta já passou e ainda faltam ${formatarCentavos(m.faltaCentavos)}. Que tal definir um novo prazo?`,
+        texto: t('an.meta.vencida', { valor: formatarCentavos(m.faltaCentavos) }),
       });
     }
   }
 
   for (const m of e.metas.filter((x) => x.concluida)) {
-    insights.push({ id: `meta-concluida-${m.id}`, tom: 'positivo', tema: 'metas', titulo: m.nome, texto: 'Meta alcançada! Parabéns.' });
+    insights.push({ id: `meta-concluida-${m.id}`, tom: 'positivo', tema: 'metas', titulo: m.nome, texto: t('an.meta.concluida') });
   }
 
-  const temReserva = e.metas.some((m) => minuscula(m.nome).includes('reserva'));
+  const temReserva = e.metas.some((m) => ehMetaDeReserva(m.nome));
   const fixas = e.perfil?.despesasFixasCentavos ?? 0;
   if (!temReserva && fixas > 0) {
     insights.push({
       id: 'sugestao-reserva',
       tom: 'neutro',
       tema: 'metas',
-      titulo: 'Reserva de emergência',
-      texto: `Uma reserva de 6 meses das suas contas fixas seria ${formatarCentavos(fixas * 6)}. Ela protege você de imprevistos antes de investir.`,
-      acao: { rotulo: 'Criar meta', rota: '/nova-meta' },
+      titulo: t('sit.reserva'),
+      texto: t('an.reserva.texto', { valor: formatarCentavos(fixas * 6) }),
+      acao: { rotulo: t('an.criarMeta'), rota: '/nova-meta' },
     });
   } else if (e.metas.length === 0) {
     insights.push({
       id: 'sem-metas',
       tom: 'neutro',
       tema: 'metas',
-      titulo: 'Crie uma meta',
-      texto: 'Metas dão um destino para o dinheiro que sobra. Comece com uma pequena.',
-      acao: { rotulo: 'Criar meta', rota: '/nova-meta' },
+      titulo: t('an.semMetas.titulo'),
+      texto: t('an.semMetas.texto'),
+      acao: { rotulo: t('an.criarMeta'), rota: '/nova-meta' },
     });
   }
   return insights;
@@ -310,15 +315,15 @@ export function gerarAnalise(e: EntradaAnalise): Analise {
   if (e.atual.receitasCentavos === 0 && e.atual.despesasCentavos === 0 && e.metas.length === 0) {
     return {
       mes: e.mes,
-      resumo: `Ainda não há dados de ${nomeDoMes(e.mes).split(' ')[0]} para analisar.`,
+      resumo: t('an.semDados.resumo', { mes: nomeDoMesSemAno(e.mes) }),
       insights: [
         {
           id: 'sem-dados',
           tom: 'neutro',
           tema: 'gastos',
-          titulo: 'Comece registrando',
-          texto: 'Registre suas receitas e despesas do mês. Quanto mais dados, melhores as análises do EcoTrust.',
-          acao: { rotulo: 'Novo lançamento', rota: '/novo-lancamento' },
+          titulo: t('an.semDados.titulo'),
+          texto: t('an.semDados.texto'),
+          acao: { rotulo: t('an.novoLancamento'), rota: '/novo-lancamento' },
         },
       ],
     };
@@ -333,13 +338,19 @@ export function gerarAnalise(e: EntradaAnalise): Analise {
   const alertas = insights.filter((i) => i.tom === 'alerta').length;
   const positivos = insights.filter((i) => i.tom === 'positivo').length;
   const partes: string[] = [];
-  if (alertas > 0) partes.push(`${alertas} ${alertas === 1 ? 'ponto de atenção' : 'pontos de atenção'}`);
-  if (positivos > 0) partes.push(`${positivos} ${positivos === 1 ? 'boa notícia' : 'boas notícias'}`);
-  const nome = nomeDoMes(e.mes).split(' ')[0];
+  if (alertas > 0) partes.push(t('an.alertas', { n: alertas }));
+  if (positivos > 0) partes.push(t('an.positivos', { n: positivos }));
+  const mes = nomeDoMesSemAno(e.mes);
+  const resumo =
+    partes.length === 2
+      ? t('an.resumo.ambos', { mes, a: partes[0], b: partes[1] })
+      : partes.length === 1
+        ? t('an.resumo.um', { mes, a: partes[0] })
+        : t('an.resumo.nada', { mes });
 
   return {
     mes: e.mes,
-    resumo: partes.length > 0 ? `Analisei ${nome}: ${partes.join(' e ')}.` : `Analisei ${nome}. Veja o que encontrei.`,
+    resumo,
     insights,
   };
 }
@@ -353,8 +364,8 @@ export function obterAnalise(mes: string): Analise {
     historico: [1, 2, 3].map((i) => obterResumoDoMes(somarMeses(mes, -i))),
     perfil: obterPerfilFinanceiro(),
     recorrentesCentavos: listarTransacoes({ mes, tipo: 'despesa' })
-      .filter((t) => t.recorrente)
-      .reduce((s, t) => s + t.valorCentavos, 0),
+      .filter((tr) => tr.recorrente)
+      .reduce((s, tr) => s + tr.valorCentavos, 0),
     orcamentos: obterOrcamentos(mes),
     metas: obterMetas(),
   });

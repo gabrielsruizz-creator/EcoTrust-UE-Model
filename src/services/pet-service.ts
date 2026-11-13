@@ -7,6 +7,7 @@
  * `calcularPet` é puro; `obterPet` busca os dados.
  */
 
+import { t, type Chave } from '@/i18n';
 import { lerConfiguracao, salvarConfiguracao } from '@/repositories/configuracoes-repository';
 import { listarMomentosDeRegistro } from '@/repositories/jornada-repository';
 import { ErroValidacao } from '@/services/erros';
@@ -21,21 +22,29 @@ import { formatarCentavos } from '@/utils/moeda';
 export type HumorPet = 'radiante' | 'feliz' | 'tranquilo' | 'preocupado' | 'com-fome' | 'triste';
 export type EstagioPet = 'filhote' | 'jovem' | 'adulto' | 'sabio';
 
-export const ROTULO_HUMOR: Record<HumorPet, string> = {
-  radiante: 'Radiante',
-  feliz: 'Feliz',
-  tranquilo: 'Tranquilo',
-  preocupado: 'Preocupado',
-  'com-fome': 'Com fome',
-  triste: 'Triste',
-};
+const HUMORES: HumorPet[] = ['radiante', 'feliz', 'tranquilo', 'preocupado', 'com-fome', 'triste'];
 
-const ESTAGIOS: { estagio: EstagioPet; nome: string; nivelMinimo: number }[] = [
-  { estagio: 'filhote', nome: 'Filhote', nivelMinimo: 1 },
-  { estagio: 'jovem', nome: 'Jovem', nivelMinimo: 3 },
-  { estagio: 'adulto', nome: 'Adulto', nivelMinimo: 5 },
-  { estagio: 'sabio', nome: 'Sábio', nivelMinimo: 7 },
-];
+/** Nome de cada humor no idioma atual. */
+export const ROTULO_HUMOR = Object.defineProperties(
+  {} as Record<HumorPet, string>,
+  Object.fromEntries(
+    HUMORES.map((h) => [h, { get: () => t(`pet.humor.${h}` as Chave), enumerable: true }]),
+  ),
+);
+
+type Estagio = { estagio: EstagioPet; readonly nome: string; nivelMinimo: number };
+
+function estagio(id: EstagioPet, nivelMinimo: number): Estagio {
+  return {
+    estagio: id,
+    nivelMinimo,
+    get nome() {
+      return t(`pet.estagio.${id}` as Chave);
+    },
+  };
+}
+
+const ESTAGIOS: Estagio[] = [estagio('filhote', 1), estagio('jovem', 3), estagio('adulto', 5), estagio('sabio', 7)];
 
 export type EstadoPet = {
   nome: string;
@@ -57,7 +66,8 @@ export type EntradaPet = {
   diasSemRegistro: number | null;
   sequenciaAtual: number;
   notaSaude: number | null;
-  orcamentosUltrapassados: string[];
+  /** Nomes dos orçamentos ultrapassados; null = orçamento mensal (geral) */
+  orcamentosUltrapassados: (string | null)[];
   /** A meta ativa mais adiantada */
   metaMaisPerto: { nome: string; faltaCentavos: number; percentual: number } | null;
   nivel: number;
@@ -72,7 +82,7 @@ export function estagioDoNivel(nivel: number) {
 }
 
 export function calcularPet(e: EntradaPet): EstadoPet {
-  const nome = primeiroNome(e.nomeUsuario) || 'você';
+  const nome = primeiroNome(e.nomeUsuario);
   const dias = e.diasSemRegistro;
   const energia = dias === null ? 50 : Math.max(0, 100 - dias * 20);
 
@@ -88,47 +98,48 @@ export function calcularPet(e: EntradaPet): EstadoPet {
   const falas: string[] = [];
   switch (humor) {
     case 'triste':
-      falas.push(`Faz ${dias} dias que você não aparece... Senti sua falta. Registra um gasto pra eu me animar?`);
+      falas.push(t('pet.f.triste', { n: dias ?? 0 }));
       break;
     case 'com-fome':
-      falas.push(`Estou com fome! 🪙 Faz ${dias} dias sem registros. Me alimente registrando seus gastos.`);
+      falas.push(t('pet.f.fome', { n: dias ?? 0 }));
       break;
     case 'preocupado':
-      falas.push(
-        e.orcamentosUltrapassados.length > 0
-          ? `Ei, ${nome}... o orçamento de ${e.orcamentosUltrapassados[0].toLocaleLowerCase('pt-BR')} estourou. Vamos segurar um pouco?`
-          : 'Estou um pouco preocupado com as suas finanças. Que tal olhar a análise juntos?',
-      );
+      if (e.orcamentosUltrapassados.length > 0) {
+        const categoria = e.orcamentosUltrapassados[0];
+        falas.push(categoria === null ? t('pet.f.orcGeral', { nome }) : t('pet.f.orcCategoria', { nome, categoria }));
+      } else {
+        falas.push(t('pet.f.preocupado'));
+      }
       break;
     case 'radiante':
-      falas.push(`Uau, ${nome}! Você está mandando muito bem. Estou radiante! ✨`);
+      falas.push(t('pet.f.radiante', { nome }));
       break;
     case 'feliz':
-      falas.push(`Oi, ${nome}! Estou feliz com os seus hábitos. Continue assim!`);
+      falas.push(t('pet.f.feliz', { nome }));
       break;
     default:
       falas.push(
         dias === null
-          ? `Oi! Eu sou o ${e.nomePet}. Registre seu primeiro gasto e eu vou crescer junto com você.`
-          : `Oi, ${nome}! Tudo tranquilo por aqui. Já registrou seus gastos hoje?`,
+          ? t('pet.f.primeiro', { pet: e.nomePet })
+          : t('pet.f.tranquilo', { nome }),
       );
   }
 
-  if (e.sequenciaAtual >= 2) falas.push(`🔥 ${e.sequenciaAtual} dias seguidos registrando! Não quebra a sequência!`);
+  if (e.sequenciaAtual >= 2) falas.push(t('pet.f.sequencia', { n: e.sequenciaAtual }));
   if (e.metaMaisPerto) {
     const m = e.metaMaisPerto;
     falas.push(
       m.percentual >= 50
-        ? `Faltam ${formatarCentavos(m.faltaCentavos)} para "${m.nome}". Estamos quase lá!`
-        : `Sua meta "${m.nome}" está em ${Math.floor(m.percentual)}%. Cada real guardado conta!`,
+        ? t('pet.f.quaseMeta', { valor: formatarCentavos(m.faltaCentavos), meta: m.nome })
+        : t('pet.f.meta', { meta: m.nome, pct: Math.floor(m.percentual) }),
     );
   }
 
   const { atual, proximo } = estagioDoNivel(e.nivel);
   if (proximo && e.xpFaltando !== null) {
-    falas.push(`Faltam ${e.xpFaltando} XP para você subir de nível. No nível ${proximo.nivelMinimo} eu viro ${proximo.nome}!`);
+    falas.push(t('pet.f.xp', { xp: e.xpFaltando, nivel: proximo.nivelMinimo, estagio: proximo.nome }));
   }
-  falas.push('Sabia que registrar os gastos todo dia é o hábito que mais ajuda a economizar?');
+  falas.push(t('pet.f.dica'));
 
   return {
     nome: e.nomePet,
@@ -137,7 +148,7 @@ export function calcularPet(e: EntradaPet): EstadoPet {
     nomeEstagio: atual.nome,
     energia,
     falas,
-    proximaEvolucao: proximo ? `Eu evoluo para ${proximo.nome} no nível ${proximo.nivelMinimo}.` : null,
+    proximaEvolucao: proximo ? t('pet.evolucao', { estagio: proximo.nome, nivel: proximo.nivelMinimo }) : null,
   };
 }
 
@@ -150,8 +161,8 @@ export function nomeDoPet() {
 
 export function renomearPet(nome: string) {
   const limpo = nome.trim().replace(/\s+/g, ' ');
-  if (!limpo) throw new ErroValidacao('Dê um nome ao seu companheiro.');
-  if (limpo.length > 16) throw new ErroValidacao('Use no máximo 16 letras.');
+  if (!limpo) throw new ErroValidacao(t('pet.e.nome'));
+  if (limpo.length > 16) throw new ErroValidacao(t('pet.e.max'));
   salvarConfiguracao(CHAVE_NOME, limpo);
 }
 
@@ -174,7 +185,7 @@ export function obterPet(nomeUsuario: string, inicioConta: string | null = null)
     notaSaude: obterSaude().nota,
     orcamentosUltrapassados: [orcamentos.geral, ...orcamentos.categorias]
       .filter((o) => o !== null && o.situacao === 'ultrapassou')
-      .map((o) => (o!.categoriaId === null ? 'mensal' : o!.nome)),
+      .map((o) => (o!.categoriaId === null ? null : o!.nome)),
     metaMaisPerto: metaMaisPerto
       ? { nome: metaMaisPerto.nome, faltaCentavos: metaMaisPerto.faltaCentavos, percentual: metaMaisPerto.percentual }
       : null,

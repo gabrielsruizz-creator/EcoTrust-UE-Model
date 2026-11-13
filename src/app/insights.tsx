@@ -11,6 +11,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAnalise, useAssinatura } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { temAcesso } from '@/services/assinatura-service';
 import { mesAtual } from '@/utils/datas';
 
@@ -18,6 +19,7 @@ type Secao = 'analise' | 'perguntar';
 
 /** Insights financeiros: análise automática e conversa com o EcoTrust (recursos do Plus). */
 export default function InsightsScreen() {
+  const t = useT();
   const [secao, setSecao] = useState<Secao>('analise');
   const plus = temAcesso('analise', useAssinatura());
 
@@ -26,18 +28,18 @@ export default function InsightsScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.cabecalho}>
           <View style={styles.topo}>
-            <BotaoIcone icone="voltar" rotulo="Voltar" aoTocar={() => router.back()} />
+            <BotaoIcone icone="voltar" rotulo={t('comum.voltar')} aoTocar={() => router.back()} />
             <ThemedText style={styles.titulo} accessibilityRole="header">
-              Insights financeiros
+              {t('ia.titulo')}
             </ThemedText>
           </View>
           <Segmentado
-            rotulo="Seção"
+            rotulo={t('ia.secao')}
             valor={secao}
             aoMudar={setSecao}
             opcoes={[
-              { valor: 'analise', texto: 'Análise' },
-              { valor: 'perguntar', texto: 'Perguntar à IA' },
+              { valor: 'analise', texto: t('ia.analise') },
+              { valor: 'perguntar', texto: t('ia.perguntar') },
             ]}
           />
         </View>

@@ -9,6 +9,7 @@ import { Botao, Cartao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { usePet } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useConta } from '@/hooks/use-sessao';
 import { useTheme } from '@/hooks/use-theme';
 import { ErroValidacao } from '@/services/erros';
@@ -16,6 +17,7 @@ import { renomearPet, ROTULO_HUMOR } from '@/services/pet-service';
 
 /** O mascote do EcoTrust: conversa, reage aos seus hábitos e cresce com o seu nível. */
 export function CartaoPet() {
+  const t = useT();
   const theme = useTheme();
   const conta = useConta();
   const pet = usePet(conta?.nome ?? '', conta?.criadoEm ?? null);
@@ -31,7 +33,7 @@ export function CartaoPet() {
       renomearPet(novoNome);
       setEditandoNome(false);
     } catch (e) {
-      Alert.alert('Nome inválido', e instanceof ErroValidacao ? e.message : 'Tente outro nome.');
+      Alert.alert(t('pet.nomeInvalido'), e instanceof ErroValidacao ? e.message : t('pet.tenteOutro'));
     }
   }
 
@@ -48,7 +50,7 @@ export function CartaoPet() {
               maxLength={16}
               autoFocus
               onSubmitEditing={salvarNome}
-              accessibilityLabel="Nome do seu companheiro"
+              accessibilityLabel={t('pet.nomeCampo')}
             />
             <Pressable onPress={salvarNome} accessibilityRole="button" hitSlop={8}>
               <ThemedText type="smallBold" style={{ color: theme.accentText }}>
@@ -67,7 +69,7 @@ export function CartaoPet() {
                 setEditandoNome(true);
               }}
               accessibilityRole="button"
-              accessibilityLabel={`Renomear ${pet.nome}`}
+              accessibilityLabel={t('pet.renomear', { nome: pet.nome })}
               hitSlop={8}>
               <ThemedText type="small" themeColor="textSecondary">
                 ✎
@@ -82,7 +84,7 @@ export function CartaoPet() {
       </View>
 
       {/* Balão de fala */}
-      <Pressable onPress={() => setIndiceFala(indiceFala + 1)} accessibilityRole="button" accessibilityHint="Mostra a próxima frase">
+      <Pressable onPress={() => setIndiceFala(indiceFala + 1)} accessibilityRole="button" accessibilityHint={t('pet.proxima')}>
         <Animated.View
           key={indiceFala}
           entering={FadeIn.duration(250)}
@@ -98,27 +100,28 @@ export function CartaoPet() {
           humor={pet.humor}
           estagio={pet.estagio}
           aoTocar={() => setIndiceFala(indiceFala + 1)}
-          rotuloAcessivel={`${pet.nome}, ${pet.nomeEstagio}, está ${ROTULO_HUMOR[pet.humor].toLocaleLowerCase('pt-BR')}. Diz: ${fala}`}
+          rotuloAcessivel={t('pet.rotulo', { nome: pet.nome, estagio: pet.nomeEstagio, humor: ROTULO_HUMOR[pet.humor], fala })}
         />
       </View>
 
       {/* Energia */}
       <View style={styles.linha}>
         <ThemedText type="small" themeColor="textSecondary">
-          Energia
+          {t('pet.energia')}
         </ThemedText>
         <View style={styles.flex}>
-          <BarraProgresso percentual={pet.energia} cor={corEnergia} rotuloAcessivel={`Energia de ${pet.nome}`} />
+          <BarraProgresso percentual={pet.energia} cor={corEnergia} rotuloAcessivel={t('pet.energiaDe', { nome: pet.nome })} />
         </View>
         <ThemedText type="small" themeColor="textSecondary">
           {pet.energia}%
         </ThemedText>
       </View>
       <ThemedText type="small" themeColor="textSecondary">
-        Registrar gastos alimenta o {pet.nome}.{pet.proximaEvolucao ? ` ${pet.proximaEvolucao}` : ''}
+        {t('pet.alimenta', { nome: pet.nome })}
+        {pet.proximaEvolucao ? ` ${pet.proximaEvolucao}` : ''}
       </ThemedText>
 
-      <Botao texto="Ver minha saúde financeira" variante="secundario" onPress={() => router.push('/saude-financeira')} />
+      <Botao texto={t('pet.verSaude')} variante="secundario" onPress={() => router.push('/saude-financeira')} />
     </Cartao>
   );
 }

@@ -57,7 +57,7 @@ const NOMES_ANTIGOS: Record<string, ChaveCategoria> = {
   investimentos: 'investimentos',
 };
 
-function normalizar(texto: string) {
+export function normalizarTexto(texto: string) {
   return texto
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
@@ -74,9 +74,46 @@ export function chaveDaCategoriaPorNome(nome: string): ChaveCategoria | null {
     for (const catalogo of Object.values(CATALOGOS)) {
       for (const chave of CHAVES_CATEGORIAS) {
         const texto = (catalogo as Record<string, unknown>)[`categoria.${chave}`];
-        if (typeof texto === 'string' && !porNome.has(normalizar(texto))) porNome.set(normalizar(texto), chave);
+        if (typeof texto === 'string' && !porNome.has(normalizarTexto(texto))) porNome.set(normalizarTexto(texto), chave);
       }
     }
   }
-  return porNome.get(normalizar(nome)) ?? null;
+  return porNome.get(normalizarTexto(nome)) ?? null;
+}
+
+/** Categorias padrão onde normalmente dá para cortar (lazer, compras, subscrições, viagens). */
+export const CATEGORIAS_NAO_ESSENCIAIS: readonly ChaveCategoria[] = ['lazer', 'compras', 'assinaturas', 'viagens'];
+
+/** Categorias padrão de gastos essenciais (não entram na sugestão de onde reduzir). */
+export const CATEGORIAS_ESSENCIAIS: readonly ChaveCategoria[] = ['moradia', 'contas', 'saude', 'educacao', 'supermercado'];
+
+export function categoriaNaoEssencial(nome: string) {
+  const chave = chaveDaCategoriaPorNome(nome);
+  return chave !== null && CATEGORIAS_NAO_ESSENCIAIS.includes(chave);
+}
+
+export function categoriaEssencial(nome: string) {
+  const chave = chaveDaCategoriaPorNome(nome);
+  return chave !== null && CATEGORIAS_ESSENCIAIS.includes(chave);
+}
+
+let termosReserva: string[] | null = null;
+
+/**
+ * A meta é o fundo de emergência? Reconhece o nome em qualquer idioma (o que a conversa de
+ * boas-vindas cria) e as metas antigas com "reserva" no nome.
+ */
+export function ehMetaDeReserva(nome: string) {
+  if (!termosReserva) {
+    const termos = new Set(['reserva', 'emergen']);
+    for (const catalogo of Object.values(CATALOGOS)) {
+      for (const chave of ['chat.sonho.reserva', 'sit.reserva']) {
+        const texto = (catalogo as Record<string, unknown>)[chave];
+        if (typeof texto === 'string') termos.add(normalizarTexto(texto));
+      }
+    }
+    termosReserva = [...termos];
+  }
+  const alvo = normalizarTexto(nome);
+  return termosReserva.some((termo) => alvo.includes(termo));
 }

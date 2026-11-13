@@ -26,7 +26,7 @@ import { useT } from '@/hooks/use-idioma';
 import type { OrigemImposto } from '@/services/impostometro-ue-service';
 import { primeiroNome, saudacao } from '@/services/perfil-financeiro-service';
 import type { Transacao } from '@/types/financas';
-import { diasEntre, formatarDataCurta, hoje, mesAtual, nomeDoMes } from '@/utils/datas';
+import { diasEntre, formatarDataCurta, hoje, mesAtual, nomeDoMesSemAno } from '@/utils/datas';
 import { formatarCentavos, formatarSemCentimos } from '@/utils/moeda';
 import { visualCategoria } from '@/utils/visual';
 
@@ -52,7 +52,7 @@ export default function InicioScreen() {
   const perfil = usePerfilFinanceiro();
   const conta = useConta();
   const nome = perfil ? primeiroNome(perfil.nome) : conta ? primeiroNome(conta.nome) : '';
-  const nomeMes = nomeDoMes(mes).split(' ')[0];
+  const nomeMes = nomeDoMesSemAno(mes);
 
   const estourados = orcamentos.categorias.filter((o) => o.situacao === 'ultrapassou');
   const excesso = estourados.reduce((s, o) => s + Math.max(0, -o.restanteCentavos), 0);

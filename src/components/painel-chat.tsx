@@ -16,20 +16,17 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useT } from '@/hooks/use-idioma';
 import { usePerfilInvestidor } from '@/hooks/use-dados';
 import { montarContextoIA } from '@/services/contexto-ia-service';
 
 type Mensagem = { role: 'user' | 'assistant'; content: string };
 
-const SUGESTOES = [
-  'Como estão meus gastos este mês?',
-  'Onde posso reduzir meus gastos?',
-  'Como chego mais rápido na minha meta?',
-  'Por onde começo a investir?',
-];
+const SUGESTOES = ['ia.sug1', 'ia.sug2', 'ia.sug3', 'ia.sug4'] as const;
 
 /** Chat com o Claude ("Perguntar ao EcoTrust"), mostrado dentro da aba EcoTrust IA. */
 export function PainelChat() {
+  const t = useT();
   const theme = useTheme();
   const perfil = usePerfilInvestidor();
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
@@ -58,14 +55,14 @@ export function PainelChat() {
       const dados = (await resposta.json()) as { resposta?: string; erro?: string };
       setMensagens([
         ...historico,
-        { role: 'assistant', content: dados.resposta ?? dados.erro ?? 'Não consegui responder agora.' },
+        { role: 'assistant', content: dados.resposta ?? dados.erro ?? t('ia.semResposta') },
       ]);
     } catch {
       setMensagens([
         ...historico,
         {
           role: 'assistant',
-          content: 'Não consegui me conectar ao servidor. Confira se o "npx expo start" está rodando.',
+          content: t('ia.semServidor'),
         },
       ]);
     } finally {
@@ -86,18 +83,15 @@ export function PainelChat() {
         {mensagens.length === 0 && (
           <View style={styles.vazio}>
             <ThemedText type="small" themeColor="textSecondary">
-              Pergunte sobre seus gastos, orçamento, metas, como montar uma reserva ou quais
-              tipos de investimento combinam com você. O EcoTrust vê o resumo dos seus dados,
-              não cada lançamento.
+              {t('ia.intro')}
             </ThemedText>
             {!perfil && (
               <ThemedText type="small" style={{ color: theme.negative }}>
-                Dica: responda o questionário na aba Perfil para receber orientações mais
-                adequadas.
+                {t('ia.dicaPerfil')}
               </ThemedText>
             )}
             {SUGESTOES.map((s) => (
-              <Botao key={s} texto={s} variante="secundario" onPress={() => enviar(s)} />
+              <Botao key={s} texto={t(s)} variante="secundario" onPress={() => enviar(t(s))} />
             ))}
           </View>
         )}
@@ -120,7 +114,7 @@ export function PainelChat() {
 
         {mensagens.length > 0 && (
           <ThemedText type="small" themeColor="textSecondary" style={styles.aviso}>
-            Conteúdo educativo, não é recomendação de investimento.
+            {t('ia.educativo')}
           </ThemedText>
         )}
       </ScrollView>
@@ -128,7 +122,7 @@ export function PainelChat() {
       <View style={styles.entrada}>
         <TextInput
           style={[styles.campo, { color: theme.text, backgroundColor: theme.backgroundElement }]}
-          placeholder="Escreva sua pergunta..."
+          placeholder={t('ia.placeholder')}
           placeholderTextColor={theme.textSecondary}
           value={texto}
           onChangeText={setTexto}

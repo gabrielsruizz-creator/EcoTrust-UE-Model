@@ -9,19 +9,21 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useAnalise } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import type { TemaInsight } from '@/services/analise-service';
 import { mesAtual } from '@/utils/datas';
 
-const NOME_TEMA: Record<TemaInsight, string> = {
-  renda: 'Renda',
-  gastos: 'Gastos',
-  orcamento: 'Orçamento',
-  metas: 'Metas',
-};
+const NOME_TEMA = {
+  renda: 'ia.tema.renda',
+  gastos: 'ia.tema.gastos',
+  orcamento: 'saude.orcamento',
+  metas: 'saude.metas',
+} as const satisfies Record<TemaInsight, string>;
 
 /** Análise automática da vida financeira, mostrada dentro da aba EcoTrust IA. */
 export function PainelAnalise() {
+  const t = useT();
   const theme = useTheme();
   const analise = useAnalise(mesAtual());
 
@@ -39,7 +41,7 @@ export function PainelAnalise() {
               {analise.resumo}
             </ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              Atualizado agora, com base nos seus lançamentos, orçamentos e metas.
+              {t('ia.atualizado')}
             </ThemedText>
           </View>
         </ThemedView>
@@ -55,7 +57,7 @@ export function PainelAnalise() {
             tom={insight.tom}
             titulo={insight.titulo}
             texto={insight.texto}
-            etiqueta={NOME_TEMA[insight.tema]}>
+            etiqueta={t(NOME_TEMA[insight.tema])}>
             {insight.acao && (
               <Botao
                 texto={insight.acao.rotulo}

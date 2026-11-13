@@ -64,6 +64,12 @@ export function nomeDoMes(mes: string) {
   return new Date(ano, m - 1, 1).toLocaleDateString(localeAtual(), { month: 'long', year: 'numeric' });
 }
 
+/** "2026-10" → "outubro" / "October" (só o mês, no idioma atual). */
+export function nomeDoMesSemAno(mes: string) {
+  const [ano, m] = mes.split('-').map(Number);
+  return new Date(ano, m - 1, 1).toLocaleDateString(localeAtual(), { month: 'long' });
+}
+
 /** "2026-10-06" → "06/10/2026" (pt-PT, en, fr, es, it), "06.10.2026" (de, pl), "06-10-2026" (nl) */
 export function formatarData(data: string) {
   const [ano, mes, dia] = data.split('-').map(Number);

@@ -3,11 +3,12 @@
  * Ordem de importância: alertas → conquistas → informações. A tela mostra o primeiro da lista.
  */
 
+import { localeAtual, t } from '@/i18n';
 import type { StatusOrcamento } from '@/services/orcamento-service';
 import type { Insight, ResumoMes } from '@/types/financas';
 import { formatarCentavos } from '@/utils/moeda';
 
-/** Só comparamos categorias que tiveram pelo menos R$ 50 no mês passado, para evitar "aumentou 300%" sobre R$ 5. */
+/** Só comparamos categorias com pelo menos 50 (moeda principal) no mês passado, para evitar "aumentou 300%" sobre 5. */
 const MINIMO_COMPARACAO_CENTAVOS = 5000;
 /** Aumento a partir do qual vale avisar */
 const AUMENTO_RELEVANTE = 0.15;
@@ -31,10 +32,6 @@ export type EntradaInsights = {
   orcamentosCategorias: StatusOrcamento[];
   impostos?: ResumoImpostosInsight | null;
 };
-
-function nomeCategoria(nome: string) {
-  return nome.toLocaleLowerCase('pt-BR');
-}
 
 function maiorAumentoDeCategoria(atual: ResumoMes, anterior: ResumoMes) {
   let maior: { categoria: string; percentual: number; diferenca: number } | null = null;
@@ -62,8 +59,7 @@ export function gerarInsights(entrada: EntradaInsights): Insight[] {
       {
         id: 'sem-dados',
         tom: 'neutro',
-        texto:
-          'Você ainda não registrou nada neste mês. Adicione suas receitas e despesas para o EcoTrust analisar sua vida financeira.',
+        texto: t('ins.semDados'),
       },
     ];
   }
@@ -74,7 +70,7 @@ export function gerarInsights(entrada: EntradaInsights): Insight[] {
     insights.push({
       id: 'gastou-mais-que-recebeu',
       tom: 'alerta',
-      texto: `Suas despesas deste mês já passaram suas receitas em ${formatarCentavos(atual.despesasCentavos - atual.receitasCentavos)}.`,
+      texto: t('ins.passouReceitas', { valor: formatarCentavos(atual.despesasCentavos - atual.receitasCentavos) }),
     });
   }
 
@@ -85,10 +81,10 @@ export function gerarInsights(entrada: EntradaInsights): Insight[] {
       tom: 'alerta',
       texto:
         entrada.origemLimite === 'orcamento'
-          ? `Você ultrapassou seu orçamento mensal em ${excesso}.`
+          ? t('ins.passouOrcamento', { valor: excesso })
           : entrada.metaEconomiaCentavos > 0
-            ? `Você já gastou ${excesso} além do que pode para atingir sua meta deste mês.`
-            : `Você já gastou ${excesso} além da sua renda deste mês.`,
+            ? t('ins.passouMeta', { valor: excesso })
+            : t('ins.passouRenda', { valor: excesso }),
     });
   }
 
@@ -111,7 +107,7 @@ export function gerarInsights(entrada: EntradaInsights): Insight[] {
     insights.push({
       id: 'aumento-categoria',
       tom: 'alerta',
-      texto: `Seus gastos com ${nomeCategoria(aumento.categoria)} aumentaram ${aumento.percentual}% em relação ao mês passado.`,
+      texto: t('ins.aumento', { categoria: aumento.categoria, pct: aumento.percentual }),
     });
   }
 
@@ -119,13 +115,13 @@ export function gerarInsights(entrada: EntradaInsights): Insight[] {
     insights.push({
       id: 'meta-atingida',
       tom: 'positivo',
-      texto: 'Parabéns! Você já atingiu sua meta de economia deste mês.',
+      texto: t('ins.metaAtingida'),
     });
   } else if (entrada.percentualMeta !== null && entrada.percentualMeta > 0) {
     insights.push({
       id: 'progresso-meta',
       tom: 'positivo',
-      texto: `Você já economizou ${Math.floor(entrada.percentualMeta)}% da sua meta deste mês.`,
+      texto: t('ins.progressoMeta', { pct: Math.floor(entrada.percentualMeta) }),
     });
   }
 
@@ -137,7 +133,7 @@ export function gerarInsights(entrada: EntradaInsights): Insight[] {
     insights.push({
       id: 'dentro-do-orcamento',
       tom: 'positivo',
-      texto: `Você está dentro do seu orçamento mensal. Ainda pode gastar ${formatarCentavos(entrada.disponivelParaGastarCentavos)} este mês.`,
+      texto: t('ins.dentro', { valor: formatarCentavos(entrada.disponivelParaGastarCentavos) }),
     });
   }
 
@@ -148,8 +144,11 @@ export function gerarInsights(entrada: EntradaInsights): Insight[] {
       id: 'impostos-do-mes',
       tom: 'neutro',
       texto:
-        `${formatarCentavos(impostos.impostosCentavos)} dos seus gastos deste mês foram impostos (${impostos.percentualDosGastos.toLocaleString('pt-BR')}%).` +
-        (maior ? ` Onde mais pesou: ${nomeCategoria(maior.nome)}, com ${formatarCentavos(maior.impostosCentavos)}.` : ''),
+        t('ins.impostos', {
+          valor: formatarCentavos(impostos.impostosCentavos),
+          pct: impostos.percentualDosGastos.toLocaleString(localeAtual()),
+        }) +
+        (maior ? t('ins.impostosOnde', { categoria: maior.nome, valor: formatarCentavos(maior.impostosCentavos) }) : ''),
     });
   }
 
@@ -158,7 +157,11 @@ export function gerarInsights(entrada: EntradaInsights): Insight[] {
     insights.push({
       id: 'categoria-principal',
       tom: 'neutro',
-      texto: `Sua maior despesa do mês é ${nomeCategoria(principal.categoria)}: ${formatarCentavos(principal.totalCentavos)} (${Math.round((principal.totalCentavos / atual.despesasCentavos) * 100)}% dos gastos).`,
+      texto: t('ins.principal', {
+        categoria: principal.categoria,
+        valor: formatarCentavos(principal.totalCentavos),
+        pct: Math.round((principal.totalCentavos / atual.despesasCentavos) * 100),
+      }),
     });
   }
 
@@ -166,7 +169,7 @@ export function gerarInsights(entrada: EntradaInsights): Insight[] {
     insights.push({
       id: 'continue-registrando',
       tom: 'neutro',
-      texto: 'Continue registrando seus gastos: quanto mais dados, melhores as análises do EcoTrust.',
+      texto: t('ins.continue'),
     });
   }
 

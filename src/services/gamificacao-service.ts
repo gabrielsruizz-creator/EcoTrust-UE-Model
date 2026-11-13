@@ -15,6 +15,7 @@
  */
 
 import { t } from '@/i18n';
+import { ehMetaDeReserva } from '@/i18n/categorias';
 import {
   contarDepositosEmMetas,
   contarOrcamentos,
@@ -211,7 +212,7 @@ export function calcularJornada(e: EntradaJornada): Jornada {
   const metasConcluidas = e.metas.filter((m) => m.concluida).length;
   const reservaCompleta =
     e.situacao?.reserva === 'completa' ||
-    e.metas.some((m) => m.concluida && m.nome.toLocaleLowerCase('pt-BR').includes('reserva'));
+    e.metas.some((m) => m.concluida && ehMetaDeReserva(m.nome));
   const pessoalCompleto = e.perfilPessoal !== null && camposPreenchidos(e.perfilPessoal) === TOTAL_CAMPOS_PESSOAIS;
 
   const condicoes: Record<string, { alcancada: boolean; progresso: string | null }> = {

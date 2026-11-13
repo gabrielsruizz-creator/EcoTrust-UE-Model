@@ -3,15 +3,16 @@ import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 
 export type TomInsight = 'alerta' | 'positivo' | 'neutro';
 
-const TITULO_PADRAO: Record<TomInsight, string> = {
-  alerta: 'Atenção',
-  positivo: 'Muito bem',
-  neutro: 'EcoTrust analisou',
-};
+const TITULO_PADRAO = {
+  alerta: 'ia.tom.alerta',
+  positivo: 'ia.tom.positivo',
+  neutro: 'ia.tom.neutro',
+} as const satisfies Record<TomInsight, string>;
 
 type Props = {
   tom: TomInsight;
@@ -26,13 +27,14 @@ type Props = {
 
 /** Cartão de insight: fundo suave e borda na cor do tom, sempre com título em texto (não só cor). */
 export function CartaoInsight({ tom, texto, titulo, etiqueta, children }: Props) {
+  const t = useT();
   const theme = useTheme();
   const cores = {
     alerta: { fundo: theme.negativeSoft, destaque: theme.negative },
     positivo: { fundo: theme.positiveSoft, destaque: theme.positive },
     neutro: { fundo: theme.accentSoft, destaque: theme.accent },
   }[tom];
-  const tituloFinal = titulo ?? TITULO_PADRAO[tom];
+  const tituloFinal = titulo ?? t(TITULO_PADRAO[tom]);
 
   return (
     <View

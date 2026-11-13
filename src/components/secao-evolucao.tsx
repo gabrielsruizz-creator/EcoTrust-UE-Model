@@ -7,6 +7,7 @@ import { Botao, Cartao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useEvolucao } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { ErroValidacao } from '@/services/erros';
 import { pedirAnaliseDaEvolucao } from '@/services/evolucao-service';
@@ -14,6 +15,7 @@ import { formatarData, nomeDoMes, paraDataLocal } from '@/utils/datas';
 
 /** Evolução da nota mês a mês, com comentários da EcoTrust IA (recurso do Plus). */
 export function SecaoEvolucao() {
+  const t = useT();
   const theme = useTheme();
   const { evolucao, analise } = useEvolucao();
   const [escolhido, setEscolhido] = useState<number | null>(null);
@@ -30,7 +32,7 @@ export function SecaoEvolucao() {
     try {
       await pedirAnaliseDaEvolucao(evolucao);
     } catch (e) {
-      setErro(e instanceof ErroValidacao ? e.message : 'Não foi possível gerar a análise agora.');
+      setErro(e instanceof ErroValidacao ? e.message : t('evo.e.gerar'));
     } finally {
       setCarregando(false);
     }
@@ -68,7 +70,7 @@ export function SecaoEvolucao() {
           </View>
         ) : (
           <Botao
-            texto={analise ? 'Atualizar análise' : 'Pedir análise ao EcoTrust'}
+            texto={analise ? t('evo.atualizar') : t('evo.pedir')}
             variante={analise ? 'secundario' : 'primario'}
             onPress={pedirAnalise}
           />
@@ -78,7 +80,7 @@ export function SecaoEvolucao() {
       {pontos.length > 0 && (
         <Cartao>
           <ThemedText type="small" themeColor="textSecondary">
-            Toque num mês para ver o que mudou.
+            {t('evo.toque')}
           </ThemedText>
           <GraficoEvolucao pontos={pontos} selecionado={indice} aoSelecionar={setEscolhido} />
         </Cartao>

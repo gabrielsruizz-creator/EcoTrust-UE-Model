@@ -12,7 +12,7 @@ import { useImpostometroUE } from '@/hooks/use-dados';
 import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { localeAtual, type Chave } from '@/i18n';
-import { formatarDataCurta, mesAtual, nomeDoMes, nomeDoMesTitulo, somarMeses } from '@/utils/datas';
+import { formatarDataCurta, mesAtual, nomeDoMesSemAno, nomeDoMesTitulo, somarMeses } from '@/utils/datas';
 import { formatarCentavos } from '@/utils/moeda';
 import { visualCategoria } from '@/utils/visual';
 
@@ -38,7 +38,7 @@ export default function ImpostosScreen() {
   const esquema = useColorScheme() === 'light' ? 'light' : 'dark';
   const [mes, setMes] = useState(mesAtual());
   const imp = useImpostometroUE(mes);
-  const nomeMes = nomeDoMes(mes).split(' ')[0];
+  const nomeMes = nomeDoMesSemAno(mes);
   const ehMesAtual = mes >= mesAtual();
   const pais = (codigo: string) => t(`pais.${codigo}` as Chave);
   const consumo = imp.identificadosCentavos + imp.estimadosCentavos;

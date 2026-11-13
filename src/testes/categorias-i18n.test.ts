@@ -1,7 +1,13 @@
 import { afterAll, describe, expect, it } from '@jest/globals';
 
 import { definirIdioma } from '@/i18n';
-import { chaveDaCategoriaPorNome, nomeDaCategoria } from '@/i18n/categorias';
+import {
+  categoriaEssencial,
+  categoriaNaoEssencial,
+  chaveDaCategoriaPorNome,
+  ehMetaDeReserva,
+  nomeDaCategoria,
+} from '@/i18n/categorias';
 import { visualCategoria } from '@/utils/visual';
 
 afterAll(() => definirIdioma('en'));
@@ -28,5 +34,22 @@ describe('categorias padrão no idioma escolhido', () => {
     expect(visualCategoria('Bills', 3)).toEqual(pt);
     expect(visualCategoria('Nebenkosten', 3)).toEqual(pt);
     expect(visualCategoria('Minha categoria', 3).icone).toBe('etiqueta');
+  });
+});
+
+describe('metas e categorias em qualquer idioma', () => {
+  it('reconhece o fundo de emergência pelo nome', () => {
+    for (const nome of ['Fundo de emergência', 'Emergency fund', 'Notgroschen', 'Fondo di emergenza', 'Reserva de emergência', 'Noodfonds']) {
+      expect([nome, ehMetaDeReserva(nome)]).toEqual([nome, true]);
+    }
+    expect(ehMetaDeReserva('Viagem ao Japão')).toBe(false);
+  });
+
+  it('separa gastos essenciais e não essenciais pela chave', () => {
+    expect(categoriaNaoEssencial('Lazer')).toBe(true);
+    expect(categoriaNaoEssencial('Leisure')).toBe(true);
+    expect(categoriaEssencial('Saúde')).toBe(true);
+    expect(categoriaNaoEssencial('Saúde')).toBe(false);
+    expect(categoriaNaoEssencial('Animais')).toBe(false);
   });
 });

@@ -12,6 +12,7 @@ import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useAssinatura, useSaude } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { temAcesso } from '@/services/assinatura-service';
 import { ROTULO_FAIXA, type FatorSaude } from '@/services/saude-service';
 
@@ -23,12 +24,13 @@ const FAIXAS = [
 ] as const;
 
 export default function SaudeFinanceiraScreen() {
+  const t = useT();
   const saude = useSaude();
   const corFaixa = useCorFaixa();
   const plus = temAcesso('saude', useAssinatura());
 
   return (
-    <TelaSecundaria titulo="Saúde financeira">
+    <TelaSecundaria titulo={t('pf.saude')}>
       {!plus ? (
         <BloqueioPremium recurso="saude" />
       ) : (
@@ -40,9 +42,9 @@ export default function SaudeFinanceiraScreen() {
               tamanho={168}
               espessura={16}
               rotulo={saude.nota === null ? '–' : String(saude.nota)}
-              subrotulo="de 100"
+              subrotulo={t('sf.de100')}
               rotuloAcessivel={
-                saude.nota === null ? 'Saúde financeira sem dados' : `Saúde financeira: ${saude.nota} de 100`
+                saude.nota === null ? t('sf.semDados') : t('sf.nota', { nota: saude.nota })
               }
             />
             <ThemedText style={styles.faixa}>{saude.rotuloFaixa}</ThemedText>
@@ -51,18 +53,18 @@ export default function SaudeFinanceiraScreen() {
           {saude.nota === null ? (
             <Cartao>
               <ThemedText>
-                Registre suas receitas e despesas para o EcoTrust calcular sua saúde financeira.
+                {t('sf.registe')}
               </ThemedText>
-              <Botao texto="+ Novo lançamento" onPress={() => router.push('/novo-lancamento')} />
+              <Botao texto={t('sf.novo')} onPress={() => router.push('/novo-lancamento')} />
             </Cartao>
           ) : (
             <>
               <ThemedText type="smallBold" accessibilityRole="header">
-                Sua evolução
+                {t('sf.evolucao')}
               </ThemedText>
               <SecaoEvolucao />
               <ThemedText type="smallBold" accessibilityRole="header">
-                O que compõe a sua nota
+                {t('sf.compoe')}
               </ThemedText>
               {saude.fatores.map((f) => (
                 <CartaoFator key={f.id} fator={f} />
@@ -71,13 +73,11 @@ export default function SaudeFinanceiraScreen() {
           )}
 
           <ThemedText type="smallBold" accessibilityRole="header">
-            Como a nota é calculada
+            {t('sf.como')}
           </ThemedText>
           <Cartao>
             <ThemedText type="small">
-              A nota vai de 0 a 100 e soma seis fatores: taxa de poupança (25 pontos), despesas fixas
-              (20), orçamento (20), metas (15), gastos não essenciais (10) e saldo acumulado (10).
-              Ela é recalculada a cada lançamento.
+              {t('sf.metodo')}
             </ThemedText>
             <View style={styles.faixas}>
               {FAIXAS.map((f) => (
@@ -90,8 +90,7 @@ export default function SaudeFinanceiraScreen() {
               ))}
             </View>
             <ThemedText type="small" themeColor="textSecondary">
-              Esta é a primeira versão da metodologia EcoTrust. Ela é educativa e não substitui uma
-              análise de crédito ou a orientação de um profissional.
+              {t('sf.aviso')}
             </ThemedText>
           </Cartao>
         </>
@@ -101,6 +100,7 @@ export default function SaudeFinanceiraScreen() {
 }
 
 function CartaoFator({ fator }: { fator: FatorSaude }) {
+  const t = useT();
   const cor = useCorFator()(fator.situacao);
   const pontos = Math.round(fator.pontos);
   return (
@@ -108,7 +108,7 @@ function CartaoFator({ fator }: { fator: FatorSaude }) {
       <View
         style={styles.linhaFator}
         accessible
-        accessibilityLabel={`${fator.nome}: ${pontos} de ${fator.maximo} pontos. ${fator.resumo}`}>
+        accessibilityLabel={t('sf.fatorRotulo', { nome: fator.nome, pontos, maximo: fator.maximo, resumo: fator.resumo })}>
         <IconeSituacao situacao={ICONE_FATOR[fator.situacao]} cor={cor} />
         <View style={styles.flex}>
           <ThemedText type="smallBold">{fator.nome}</ThemedText>
