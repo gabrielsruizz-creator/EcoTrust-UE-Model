@@ -1,0 +1,67 @@
+{
+ "fonte": "European Commission, Weekly Oil Bulletin (energy.ec.europa.eu): Oil_Bulletin_Duties_and_taxes.xlsx e Weekly prices with Taxes",
+ "consultadoEm": "2026-11-13",
+ "precosEm": "2026-11-09",
+ "paises": {
+  "PT": {
+   "gasolina": {
+    "ivaPercentual": 23,
+    "ivaDesde": "2012-01-01",
+    "impostoEspecialPor1000L": 458.38,
+    "impostoEspecialDesde": "2026-11-09",
+    "outrosPor1000L": 153.1,
+    "outrosDesde": "2025-01-01",
+    "precoComImpostosPor1000L": 1922.0
+   },
+   "gasoleo": {
+    "ivaPercentual": 23,
+    "ivaDesde": "2012-01-01",
+    "impostoEspecialPor1000L": 269.59,
+    "impostoEspecialDesde": "2026-11-09",
+    "outrosPor1000L": 166.79,
+    "outrosDesde": "2025-01-01",
+    "precoComImpostosPor1000L": 2135.0
+   }
+  },
+  "MT": {
+   "gasolina": {
+    "ivaPercentual": 18,
+    "ivaDesde": "2004-01-01",
+    "impostoEspecialPor1000L": 549.38,
+    "impostoEspecialDesde": "2016-01-01",
+    "outrosPor1000L": 0.0,
+    "outrosDesde": "2013-04-01",
+    "precoComImpostosPor1000L": 1340.0
+   },
+   "gasoleo": {
+    "ivaPercentual": 18,
+    "ivaDesde": "2004-01-01",
+    "impostoEspecialPor1000L": 472.4,
+    "impostoEspecialDesde": "2016-01-01",
+    "outrosPor1000L": 0.0,
+    "outrosDesde": "2013-04-01",
+    "precoComImpostosPor1000L": 1210.0
+   }
+  },
+  "IT": {
+   "gasolina": {
+    "ivaPercentual": 22,
+    "ivaDesde": "2013-10-01",
+    "impostoEspecialPor1000L": 672.9,
+    "impostoEspecialDesde": "2026-10-28",
+    "outrosPor1000L": 0.0,
+    "outrosDesde": "2008-09-25",
+    "precoComImpostosPor1000L": 1995.43
+   },
+   "gasoleo": {
+    "ivaPercentual": 22,
+    "ivaDesde": "2013-10-01",
+    "impostoEspecialPor1000L": 622.9,
+    "impostoEspecialDesde": "2026-10-28",
+    "outrosPor1000L": 0.0,
+    "outrosDesde": "2008-09-25",
+    "precoComImpostosPor1000L": 2218.39
+   }
+  }
+ }
+}

@@ -31,8 +31,7 @@ export const ITALIA: PaisFiscal = {
     },
     combustivel: {
       tipo: 'normal',
-      base: 'Taxa normal para combustível de automóvel',
-      aConfirmar: 'Accise sobre combustíveis ainda não estão incluídas',
+      base: 'Taxa normal para combustível de automóvel; accise em combustivel.ts (Oil Bulletin)',
     },
     transporte: {
       tipo: 'reduzida1',

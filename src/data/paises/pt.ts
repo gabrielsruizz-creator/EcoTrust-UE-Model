@@ -68,8 +68,7 @@ export const PORTUGAL: PaisFiscal = {
     },
     combustivel: {
       tipo: 'normal',
-      base: 'Taxa normal; só o gasóleo colorido e marcado tem 13% (TEDB FOSSIL_FUEL)',
-      aConfirmar: 'ISP (imposto sobre os produtos petrolíferos) ainda não está incluído',
+      base: 'Taxa normal; só o gasóleo colorido e marcado tem 13% (TEDB FOSSIL_FUEL). ISP e outros impostos: combustivel.ts (Oil Bulletin)',
     },
     transporte: {
       tipo: 'reduzida2',

@@ -29,11 +29,7 @@ export const MALTA: PaisFiscal = {
       base: 'Taxa normal',
       aConfirmar: 'Impostos especiais (excise duty) sobre álcool e tabaco ainda não estão incluídos',
     },
-    combustivel: {
-      tipo: 'normal',
-      base: 'Taxa normal',
-      aConfirmar: 'Impostos especiais sobre combustíveis ainda não estão incluídos',
-    },
+    combustivel: { tipo: 'normal', base: 'Taxa normal; imposto especial em combustivel.ts (Oil Bulletin)' },
     transporte: {
       tipo: 'zero',
       faixa: ['zero', 'normal'],
