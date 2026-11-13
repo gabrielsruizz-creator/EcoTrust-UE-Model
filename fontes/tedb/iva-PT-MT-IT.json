@@ -1,0 +1,2172 @@
+{
+ "fonte": "https://ec.europa.eu/taxation_customs/tedb/ws/",
+ "consultadoEm": "2026-11-13",
+ "situacaoEm": "2026-11-13",
+ "paises": [
+  "PT",
+  "MT",
+  "IT"
+ ],
+ "registros": [
+  {
+   "pais": "IT",
+   "tipo": "STANDARD",
+   "tipoTaxa": "DEFAULT",
+   "percentual": 22,
+   "versaoEm": "2026-07-01",
+   "categoria": null,
+   "comentario": null
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "ACCOMMODATION",
+   "comentario": "Services rendered to customers housed in accommodation facilities, as well as services of greater hotel comfort rendered to people hospitalized in health establishments"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "AGRICULTURAL_PRODUCTION",
+   "comentario": "Active ingredients for the preparation and feed supplements."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "AGRICULTURAL_PRODUCTION",
+   "comentario": "Bees and silkworms. The CN code 0106 49 is only for silkworms."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "AGRICULTURAL_PRODUCTION",
+   "comentario": "Plant protection products."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "AGRICULTURAL_PRODUCTION",
+   "comentario": "Semen for the artificial insemination of livestock. The CN code 0511 998510 is also included."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "AGRICULTURAL_PRODUCTION",
+   "comentario": "Services by means of agricultural machinery or aircraft rendered to single or associated agricultural enterprises"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "ANTIQUES",
+   "comentario": "works of art, antiques, collectibles referred to in letter a) of the table attached to Decree-Law of 23 February 1995, No 41, converted, with modifications, by Law 22 March 1995, No 85, Provided that the special margin scheme for second-hand goods, works of art, antiques and collectors’ items is not applied"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "CHEMICAL_FERTILISERS",
+   "comentario": "Fertilizers referred to in Law of 19 October 1984, No 748; organisms considered useful for biological control in agriculture 3101, 3102, 3103, 3104, 3105 if fertilizers or plant protection products."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "CULTURAL_EVENTS",
+   "comentario": "Theatrical performances of any kind, including operas, ballet, prose, operetta, musical comedy, magazine; vocal and instrumental concerts; circus and traveling show activities, puppet shows, marionettes and masks, including masked and costumed parades, held everywhere;"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "EXEMPTION_SUPERREDUCED",
+   "comentario": "Administration of food and beverages in company and inter-company canteens, in school canteens of all levels, as well as in canteens for the poor even if the administrations are carried out on the basis of procurement contracts or special agreement. Limited to services rendered in school and company canteens."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "EXEMPTION_SUPERREDUCED",
+   "comentario": "Provision of services dependent on procurement contracts relating to the construction of works directly aimed at overcoming or eliminating architectural barriers"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "EXEMPTION_SUPERREDUCED",
+   "comentario": "Provision of services on procurement contracts relating to the construction of buildings referred to in Article 13 of Law N 408/1949, and subsequent amendments, rendered to persons carrying out the construction of buildings for their subsequent sale, including building cooperatives and their consortia, even if under undivided ownership, or persons for which the conditions referred to in No 21) are"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "EXEMPTION_SUPERREDUCED",
+   "comentario": "Subscription fees for circular broadcasts excluding of those transmitted in codified form; broadcasting services excluding those transmitted in codified form with predominantly political trade union cultural religious sporting educational or recreational character pursuant to Art. 19 b) c) Law 103/75 The reduced rate is applied only to subscription fees for circular broadcasts and on the tax base "
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Algae"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Barley for sowing; oats, buckwheat, millet, canary seed, sorghum and other minor cereals, intended for uses other than the zootechnical one. 1004, 1007 e 1008 intended for uses other than the zootechnical one."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Beet and cane sugars, in solid form, excluding flavoured or coloured one"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Beet pulp, waste of spent sugar cane and other waste from the manufacture of sugar; leftovers from brewing and distillation of alcohol; leftovers from starch manufacture and other similar scraps and residues"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "cereal products; obtained by blowing or roasting: ''puffed-rice'', ''corn-flakes'' and the like"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Chicory roots, fresh or dried, whether or not cut, unroasted; fresh or dried carobs; fruit kernels and plant products used principally in human consumption, not elsewhere specified or included. 1212 94 excluding those roasted"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Chocolate and other food preparations containing cocoa in non-quality packaging, such as paper, cardboard, plastic, tinplate, aluminum or ordinary glass. 1806 if in non-quality packaging, such as paper, cardboard, plastic, tinplate, aluminum or ordinary glass."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Domestic rabbits, pigeons, hares, partridges, pheasants, frogs and other live animals intended for human consumption. Only if intended for human consumption"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "edible dead poultry, fresh, chilled, frozen or deep frozen (including meat, offal and parts of animals, fresh, chilled, salted or in brine, dried or smoked, frozen or deep-frozen)"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Edible offal of horses, asses, mules and hinnies, bovine animals (including the buffalo genus), swine, sheep and goats, fresh, chilled, frozen or deep-frozen, salted or in brine, dried or smoked"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "fats and oils of fish and marine mammals, whether or not refined, for human or animal consumption. 1504 10, 1504 2090 e 1504 3090 if for human or animal consumption."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fine bakery, pastry and biscuit products, whether or not with added cocoa in any proportion."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Flour from oily seeds and fruits, without oil extraction, excluding mustard flou"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Flours and powders of meat and offal, fish, crustaceans, molluscs, unsuitable for human consumption and intended exclusively for animal nutrition; greaves intended for human or animal consumption. 2301 if intended exclusively for animal feed while greaves if also intended for human consumption."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Flours of the dry legumes included in v. d. (07.05 of 1987) (current 07.13) or fruit included in chapter 8 of the Customs Tariff; flours and meal of sago and of roots and tubers included in v. d. (07.06 of 1987) (current 07.14); flour, semolina and potato flakes"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fodder beets, turnips, fodder roots; hay, alfalfa, sainfoin, clover, forage cabbage, lupine, vetch and other similar forage products"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Food preparations not elsewhere specified or included, except syrups of any kind"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "food preparations of flour, groats, meal, starch or malt extract for the feeding of infants or children, put up in sets for retail sale"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fresh citrus and melon peel, excluding frozen ones, presented immersed in salted or sulphured water or with the addition of other substances suitable for temporarily ensuring their conservation, or dried. Excluding frozen ones"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fresh fish (live or dead), chilled, frozen or deep-frozen, intended for food use"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fresh fish live or dead chilled frozen or deep-frozen intended for food use simply salted or in brine dried or smoked Crustaceans&molluscs including testaceans whether or not separated from their shells fresh chilled frozen or deep-frozen dried salted or in brine, excluding lobsters and crawfish and oysters; crustaceans in shell simply cooked in water or by steaming excluding lobsters and crawfish"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fresh milk cream, preserved, concentrated or not, sweetened or not The reduced rate of 10% applies also to the following items: 0401 401010 (fresh) 0401 409010 (fresh), 0401 501110, 0401 501910,0401 503110, 0401 503910, 0401 509110, 0401 509910. 0402 including milk creams"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Frozen fruit, with added sugar"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Frozen or deep-frozen meat, offal and edible parts of domestic rabbits, pigeons, hares, partridges and pheasants. 0208 1010, 02081090 (hares), 0208 9030 frozen or deep-frozen meat of non-domestic pigeons, partridges and pheasants."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Frozen, dried or preserved truffles immersed in salted or sulphured water or with the addition of other substances for temporarily ensuring their conservation, but not prepared for immediate consumption. The CN codes are: 0710 8095 80 if truffles are not fresh, 0711 5900 90, 0712 909090 (only dried truffles). Fresh or refrigerated truffles are at 5%."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fruit otherwise prepared or preserved, even with added sugar. 2008 91 without added alcohol"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fruit purees and pastes, jellies, jams, obtained by cooking, also with the addition of sugars"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fruit, fruit peel, plants and parts of plants, cooked in sugars or candied (drained, frozen, crystallized)"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Gluten and gluten flour, whether or not roasted"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Groats and meal of barley, oats and other minor cereals; hulled, pearled, flaked cereals; germs of cereals also flour"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Ground or powdered vegetables and edible plants, but not otherwise prepared; cassava, arrowroot and salep roots, Jerusalem artichokes, sweet potatoes and other similar roots and tubers with a high starch or inulin content, whether or not dried or cut into pieces; palm pith in sago. 0712 if ground or pulverized, excluding 0712 9011 and 0712 9019"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Guts, bladders and stomachs of animals, whole or in pieces, excluding those of fish, intended for human or animal nutrition. 0504 if for human or animal consumption."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Hop cones. 1210 20 excluding lupulin and lupulin powder"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Imitations of lard and other prepared edible fats"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Lard and other pressed or melted pork fat, goose fat and other poultry fat, pressed or melted. 1501 if pressed or melted"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "lard stearin, oleostearin, lard oil and not emulsified oleo-oil, not mixed or otherwise prepared, intended for human or animal consumption. 1503 0019 e 1503 0090 if for human or animal consumption"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "lard, including unpressed or melted pork fat, fresh, chilled, frozen or deep-frozen, salted or pickled, dried or smoked"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "lecithins intended for human or animal consumption. 2923 20 if for human or animal consumption"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Linseed and castor seeds; other oily seeds and fruits not intended for de-oiling, excluding crushed ones. The CN code 1207 992090 is included. 1205 1090, 1205 90, 1206 0091, 1206 0099, 1207 10, 1207 29, 1207 4090, 1207 5090, 1207 60, 1207 70, 1207 9190, 1207 992090, 1207 9991, 1207 9996 excluding those intended for oil extraction and those crushed."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "live bovine animals, including animals of the genus buffalo, swine, sheep and goats"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Live horses, donkeys, mules and bardots, intended for use in the preparation of food products 0101 30 00 and 0101 90 00 only if intended for slaughter"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "live poultry"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Malt extracts; preparations for feeding children, for dietary or cooking uses, based on flour, meal, starch or malt extract, whether or not with cocoa added to less than 50 per cent by weight."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Malt, whether or not roasted"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "meat and edible parts of horses, asses, mules and hinnies, bovine animals (including the buffalo genus), swine, sheep and goats, fresh, chilled, frozen or deep-frozen, salted or in brine, dried or smoked"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Meat extracts and sauces and fish extracts"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Meat, parts and offal of domestic rabbits, pigeons, hares, partridges, pheasants, frogs and other live animals intended for human consumption, fresh, chilled, salted or in brine, dried or smoked. 0208 90 10 0208 10 90 (if hare meat)."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Molasses intended for human or animal consumption, excluding flavoured or coloured ones. 1703 as long as not flavoured or coloured for human or animal consumption"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Molasses or sugared fodder; other preparations of the kind used in animal nutrition, excluding dog or cat food put up for retail sale. 2309 90 excluding simple feed of plant origin; integrated feed, containing cereals and/or related flours and/or sugar; simple compound feed containing more than 50% (4%) cereals. Dog and cat food put up for retail sale, referred to in Article 75, paragraph 6, of La"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Natural honey"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Natural yeasts, live or dead, prepared artificial yeasts"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Oat flours and flours of other minor cereals intended for uses other than the zootechnical one. 1102 9030, 1102 9050, 1102 9090 if intended for uses other than the zootechnical one"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Oil-residue, olive pomace and other residues from the extraction of olive oil, excluding sludge; oil-residue and other residues from the de-oiling of oily seeds and fruits"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Other animal fats and oils intended for animal nutrition; crude vegetable oils intended for human or animal consumption. 1506 if for human or animal consumption; 15071090, 15081090,15111090,15121191, 15121199,15122190,15131191,15131199,1532130,15132190, 15141190,15149190,151511, 15152190,15153090,15155019,15159011,15159029,15159051,15159059 raw, if for human or animal consumption."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Other prepared or preserved meat or meat offal with the exception of goose or duck liver and game"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Other sugars in solid form, excluding flavoured or coloured ones; non-flavored or colored sugar syrups; honey substitutes, whether or not mixed with natural honey; caramelized sugars and molasses, intended for human or animal consumption. 1702 11, 1702 19, 1702 2090, 1702 30, 1702 40, 1702 9030, 1702 9050, 1702 9071, 1702 9075, 1702 9079, 17029080, 17029095 as long as not flavoured or coloured, an"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Partially or totally hydrogenated animal or vegetable oils and fats and animal or vegetable oils and fats solidified or hardened by any other process, including refined, but not prepared, intended for human or animal consumption. 1516 10, 1516 20 if for human or animal consumption"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Poultry eggs and egg yolks, dried or otherwise preserved, sweetened or not, intended for food use. 04081989 excluding yolks cooked in water or steamed, molded."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Poultry eggs in shell, fresh or preserved. Excluding cooked eggs."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Poultry fat not pressed or melted, fresh, chilled, salted or in brine, dried, smoked, frozen or deep-frozen"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "powdered or liquid milk for feeding infants or young children, put up in sets for retail sale. CN 0404 90 83 10 \"Special milk, for infants, in hermetically sealed containers of a net content not exceeding 500 g of a fat content, by weight, exceeding 10 %\"."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Prepared and preserved fish, except caviar and its substitutes; crustaceans and molluscs (including testaceans), excluding lobsters, crawfish and oysters, prepared or preserved. The CN codes 1605 400020, 1605 400030,1605 400040 are included."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Prepared mustard and mustard flour"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Preserved, concentrated or sweetened milk"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Products of animal origin, not elsewhere specified or included, except tendons, nerves, trimmings and other similar waste of untanned hides and skins. The CN codes are: 0511 99 8520, 051199 8590. The edible ones referred to in 04.10 are not included."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Products of mineral and chemical-industrial origin and additives for animal consumption. 1301 20, 1301 90, 1302 20, 1302 31 if additives for animal consumption."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Products of vegetable origin of the kind used for animal nutrition, not elsewhere specified or included"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Raw beeswax"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Raw bones, defatted or simply prepared, acidulated or degelatinated, their powders and waste, intended for animal feed. 0506 if for animal feed."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Rice, oats, other minor cereals, broken or crushed, intended for uses other than the zootechnical one. 1006 20, 1006 30, 1006 40, 1007 90, 1008, 1104 1210 , 1104 1910, 1104 1930, 1104 1950, 1104 2295, 1104 2398 if not intended for zootechnical use."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "roasted chicory and other roasted coffee substitutes and extracts thereof; extracts or essences of coffee, tea, mate and chamomile; preparations based on these extracts or essence. The CN code 1211 908690 (chamomile) is also included."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Sauces; compound seasonings; preparations for soups, broths, broths; soups, broths, broths, preparations; homogenized compound food preparations."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Sausages, salamis and the like made from meat, offal or blood"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Seeds, spores and fruit for sowing"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "sevi (of bovine, ovine and caprine species), raw or processed, including sevi called \"first sauce\", intended for human or animal consumption. 1502 1090 raw or processed, intended for human or animal consumption."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Spices"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Starches and starches; inulin"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Straw and husk of cereals, flock, whether or not chopped"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Sugar beets, whether or not cut into strips, fresh or dried"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Sugar-based products not containing cocoa (candies, gum boluses, tablets, nougat and the like) in non-quality packaging, such as paper, cardboard, plastic, tinplate, aluminum or ordinary glass. 1704 as long as not in high-quality packaging"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Tapioca, including potato starch"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Tea, mate"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Unsweetened cocoa powder"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Vegetable juices and extracts of hops; manna. 1307 19 70 (manna)"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Vegetables and edible plants prepared or preserved without vinegar or acetic acid. 2005 70 (olives in brine)."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Vegetables, edible plants and fruit, prepared or preserved in vinegar or acetic acid, with or without salt, spices, mustard or sugars"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Wine grapes"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Wine lees, raw tartar"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "wine vinegar; edible non-wine vinegars and their substitutes"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Yogurt, kephir, fresh milk, curdled milk, whey, buttermilk (or beaten milk) and other types of fermented or acidified milk 0401 excluding fresh milk intended for food consumption packaged for retail sale subjected to pasteurization and other treatments required by health laws"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Animal or vegetable margarine"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Bran, sharps and other residues from the screening, milling or other processing of cereals and legumes"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "butter, cheese and dairy products"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "corn germs intended for oil extraction. If maize germ intended for oil extraction."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Edible fruit, fresh or dried or temporarily preserved; fruit, whether or not cooked, frozen or deep-frozen without added sugar. A reduced rate of 4% applies also to the following items: 0806 1010 05, 0806 1010 90"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Edible vegetables and plants (NO truffles, fresh, chilled) in salted or sulphured water or with the addition of other substances suitable for temporarily ensuring their conservation, not prepared for immediate consumption; dried, dehydrated or evaporated, whether or not cut, but not otherwise prepared. 071220,071231,071232,071233,071239,07129005,07129030,07129050 neither ground nor pulverized. 071"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Edible vegetables and plants, whether or not cooked, frozen or deep-frozen A reduced rate of 4% applies also to the following items: 0710 8095 30, 0710 8095 50, 0710 8095 60, 0710 8095 78 2004 90"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Flour and groats of wheat, maize and rye; barley flours; oat flours, rice flours and other minor cereals intended for zootechnical use. 1102 9030, 1102 9050, 1102 9090 if intended for zootechnical use. The reduced rate of 4% applies also to the following item: 1103 192090"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fresh milk, not concentrated or sweetened, intended for food consumption, packaged for retail sale, subjected to pasteurization or other treatments required by health laws. The reduced rate of 4% applies only if fresh milk intended for food consumption packaged for retail sale subjected to pasteurization and other treatments provided for by health laws. The reduced rate of 4% applies also to the f"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Leguminous vegetables, dried, shelled, whether or not skinned or split"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Oily seeds and fruits intended for oil extraction, excluding flax and castor seeds and crushed ones. If intended for oil extraction."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Olive oil, vegetable oils intended for human or animal consumption, including crude oils intended directly for refining for food use. All the items (except for 1509 and 1510 00) if vegetable oils intended for human or animal consumption, including crude oils intended directly for refining for food use."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Pasta products; crackers and rusks; bread, seafood biscuits and other ordinary bakery products, including those containing ingredients and substances permitted by Title III of Law No 580 of 4 July 1967, without added sugar, honey, eggs or cheese"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Peeled tomatoes and tomato preserves; olives in brine. 2005 70 00 if olives in brine"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Simple feed of vegetable origin; integrated feed containing cereals and/or related flours and/or sugar; simple compound feed containing, in excess of 50%, cereals included in this part of the table."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Wheat, including rye, rye; maize; rice; paddy rice; barley, excluding that intended for sowing; oats, buckwheat, millet, canary seed, sorghum and other minor cereals, intended for zootechnical use 1004 90 if intended for zootechnical use, 1006 20 (rice, not broken or crushed, intended for zootechnical use), 1006 30,1006 40, 1007 90, 1008 10, 1008 29 00, 1008 30, 100840,100850, 1008 60, 1008 90 if "
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Wheat, maize, rye and barley, broken or crushed; rice, oats and other minor cereals, broken or crushed, intended for zootechnical use. 1006 20, 1006 30, 1006 40 rice if broken or crushed, for zootechnical use; 1104 1910, 1104 1930, 1104 1950, 1104 2398, 1104 2908 if broken or crushed; 1104 1210, 1104 2295, 1104 2959, 1104 1999 if broken or crushed, intended for zootechnical use."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fresh basil, rosemary and sage, sprigs or shelled oregano, intended for food use; plants in the vegetative state of basil, rosemary and sage. CN codes: 1211908620, 1211908690"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Fresh or chilled truffles"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOSSIL_FUEL",
+   "comentario": "Administration of methane gas used for combustion for civil purposes limited to 480 m3 per year; administration, through distribution networks, of liquefied petroleum gases for domestic use in cooking food and hot water production, liquefied petroleum gases contained or intended to be placed in cylinders of 10 to 20 kg at any stage of marketing"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOSSIL_FUEL",
+   "comentario": "Crude mineral oils, fuel oils and aromatic extracts used to generate electricity, either directly or indirectly, provided that the installed power is not less than 1 Kw; crude mineral oils, fuel oils (except fluid heating oils) and filter earths remaining from the processing of lubricating oils, containing not more than 45% by weight of petroleum products, for use directly as fuels in boilers and "
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOSSIL_FUEL",
+   "comentario": "Electricity for domestic use; electricity&gas for use by mining agricultural&manufacturing enterprises including printing publishing&similar enterprises; electricity for irrigation, lifting&water drainage systems used by consorzi di bonifica&irrigation consortia; electricity supplied to wholesale customers referred LD 79/1999; gas methane gas&liquefied petroleum gases directly in pipes of distribu"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOSSIL_FUEL",
+   "comentario": "fuel oils used for direct generation of motive power with fixed engines in industrial and agricultural-industrial establishments, laboratories, construction sites; fuel oils other than special ones intended for transformation into gas to be fed into city distribution networks;"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOSSIL_FUEL",
+   "comentario": "Petroleum products for agricultural use and for inland fishing."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOSSIL_FUEL",
+   "comentario": "unrefined mineral oils from the primary distillation of crude natural oil or from the processing in establishments that transform mineral oils into chemical products of a different nature, with a flash point (closed cup test) below 55°C, in which the distillate at 225°C is less than 95% by volume and at 300°C is at least 90% by volume, intended for transformation into gas to be fed into city distr"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "HOUSING_PROVISION",
+   "comentario": "Leases of residential buildings by their construction companies or by the companies that have carried out the recovery projects for the building heritage, referred to in Article 3, paragraph 1, letters c), d) and f), of the Consolidated Building Act referred to in Presidential Decree No 380 of 6 June 2001, and leases of residential buildings intended for social housing as defined by the Decree of "
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "HOUSING_PROVISION",
+   "comentario": "Services dependent on procurement contracts relating to the construction of 1ry&2ry urbanization works metropolitan tramway transport lines and other fixed lines;production plants and heat-energy and electricity distribution networks from solar-photovoltaic-wind sources;purification plants to be connected to sewer networks including intermunicipal ones and to the relative adduction manifolds;schoo"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "HOUSING_PROVISION",
+   "comentario": "Services dependent on procurement contracts relating to the construction of non-luxury homes other than \"first homes\" and of buildings mainly for residential use and the implementation of the recovery projects referred to in Article 31 of Law No 457 of 5 August 1978, excluding those referred to in letters a) and b) of paragraph 1 of that Article"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "LIVE_EQUINES",
+   "comentario": null
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "LIVE_EQUINES",
+   "comentario": "DL 113/2024 -live horses intended for purposes other than food for sales that take place by 31 December of the year following the year of birth"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "LOAN_LIBRARIES",
+   "comentario": "Newspapers and daily newsletters, news agency dispatches, books, periodicals, including in Braille writing and on audio-magnetic media for the blind and visually impaired, with the exception of pornographic newspapers and periodicals and catalogs other than those of book information, printed musical editions and geographic maps, including printed globes; paper needed for printing them."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "Gas for therapeutic use; artificial kidneys"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "Orthopedic appliances (including medical-surgical belts); fracture objects and appliances (showers, splints and the like); objects and apparatus of dental prostheses, ophthalmology and others; apparatus to facilitate hearing for the deaf and other apparatus to be held in the hand, to be worn on the person or to be inserted into the body, to compensate for a deficiency or infirmity."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "Prostheses and aids related to permanent functional impairments. 9001 30, 9001 4020, 900190, 9001 4020, 90014080, 90015049, 90015080, 9004(corrective glasses), 9404 21 e 9404 29 if prostheses and aids related to permanent functional."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "Articles of protective clothing for health purposes such as latex, vinyl and nitrile gloves, protective goggles and visors, protective suits, footwear and overshoes, caps, waterproof gowns, surgical gowns; thermometers; disinfectant hand cleaners; wall dispenser for disinfectants; hydroalcoholic solution in liters; 3 percent peroxide in liters; emergency trolleys; RNA extractors;"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "Diagnostic instrumentation for COVID-19; swabs for clinical analyzes; sterile test tubes; equipment for the construction of field hospitals (hospital beds, tents, plastic tents)"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "FFP2 and FFP3 masks according to the EN 149 standard, made of TNT 6307 9093 11; other masks with characteristics similar to FFP2 and FFP3 in compliance with a standard similar to EN 149, made of TNT 6307 909319"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "FFP2/FFP3 masks according to the EN149 standard and other masks compliant with a similar standard, made of fabric 6307 909390; facial masks for medical use according to the EN 14683 standard, made of TNT 6307 909511; other masks for medical use conforming to a standard similar to that for facial masks for medical use, made of TNT 6307 909519; FFP2 and FFP3 masks according to EN 149 and other masks"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "Pulmonary ventilators for intensive and sub-intensive care; multi-parameter monitor also for transport; infusion pumps for drugs and peristaltic pumps for enteral feeding; endotracheal tubes; helmets for continuous positive pressure ventilation; non-invasive ventilation masks; suction systems; humidifiers; laryngoscopes; vascular access instrumentation; electric vacuum cleaner; monitoring center f"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "Baby nappies"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "Medicines ready for human or veterinary use, including homeopathic products; pharmaceutical substances and medications which pharmacies must be equipped with according to the official pharmacopoeia."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "Towels and tampons for feminine sanitary protection; menstrual cups The reduced rate of 10% applies also to the following item: 3924 9000 90."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "Vaccines against COVID-19."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "Instrumentation for in vitro diagnostics for COVID-19: 1.1) COVID-19 diagnostic and reactive kits based on immunologic reactions; 1.2) Kit for COVID-19 diagnosis consisting of: vial containing a culture medium for the maintenance of a viral sample and a swab with a cotton tip to collect the sample; 1.3) Instrumentation for sampling. The CN code 3822 19 00 10 is also included."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "Instrumentation for in vitro diagnostics for COVID-19: 1.4) Diagnostic reagents based on the polymerase chain nucleic acid (PCR) test; 1.5) Instruments used in clinical laboratories for in vitro diagnosis. The CN code 3822 19 10 is also included."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "PRIVATE_DWELLINGS",
+   "comentario": "Services relating to the implementation of extraordinary maintenance interventions on public residential buildings"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "RESTAURANT",
+   "comentario": "Administration of food and beverages, carried out also through vending machines; provision of services dependent on procurement contracts relating to the supply or administration of food and beverages. Limited to food and beverage administration and catering services."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "SOCIAL_WELLBEING",
+   "comentario": "The services referred to in Nos 18), 19), 20), 21) and 27-ter) of Article 10, paragraph 1, rendered in favour of the persons indicated in No 27-ter) by social cooperatives and their consortia; [health services, hospitalization and care services, educational services for children and youth and instruction, services of children's homes, orphanages, kindergartens, retirement homes for the elderly and"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "SPORTING_EVENTS",
+   "comentario": "Provision of courses in winter sports and mountaineering activities as identified by winter sports federations recognized by Italian National Olympic Committee by Art.2, par.1, letter e), Law 6/1989 on the regulation of the profession of mountain guide, imparted, including in organized form, by members of appropriate regional or national registers, to the extent that such courses are not exempt fr"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "STREET_CLEANING",
+   "comentario": "Management, storage and temporary storage services of urban waste and special waste (waste deriving from the recovery and disposal of waste, of sludge produced by potabilization and from other water treatments and from the purification of waste water and smoke abatement), as well as management services for sewage and purification systems."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "STREET_CLEANING",
+   "comentario": "Services of management, storage and temporary storage, excluding landfilling and incineration without efficient energy recovery, as defined by Article 183, paragraph 1, letters n), aa), bb), of Legislative Decree No. 152 of April 3, 2006, of municipal waste and special waste referred to in Article 184, paragraphs 2 and 3, letter g), of the same Legislative Decree, as well as services of management"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "SUPPLY_ELECTRICITY",
+   "comentario": "Electricity for household use; electricity for use by mining, agricultural and manufacturing companies including printing, publishing and similar businesses; electricity for the operation of irrigation, lifting and drainage systems, used by reclamation and irrigation consortia; electricity supplied to wholesale customers referred to in Article 2, paragraph 5, of Legislative Decree No 79. 2716 elec"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "SUPPLY_GAS",
+   "comentario": "Gas for use by mining, agricultural and manufacturing companies including printing, publishing and similar businesses; gas, methane gas and liquefied petroleum gas, intended to be injected directly into the pipes of the distribution networks to be subsequently supplied, or destined to companies that use them for the production of electricity. 2705 and 2711 gas for the uses indicated above."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "SUPPLY_GAS",
+   "comentario": "Supply of methane gas used for combustion for civil uses limited to 480 cubic meters per year; supply, via distribution networks, of liquefied petroleum gases for domestic purposes for cooking food and for the production of hot water, liquefied petroleum gas contained by or intended to be placed in cylinders from 10 to 20 kg at any stage of marketing."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "SUPPLY_HEATING",
+   "comentario": "Connection services to district heating networks carried out in compliance with current legislation on energy saving"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "SUPPLY_HEATING",
+   "comentario": "Services & supplies of equipment and materials relating to the supply of thermal energy for domestic use through public district heating networks or as part of the energy service contract, as defined in Interm Decree Art. 11, par. 1, of regulation referred to in Pres. Decree No 412/1993, and subsequent amendments; it includes supplies of energy produced from renewable sources or high efficiency co"
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "SUPPLY_WATER",
+   "comentario": "Water. 2201 90 excluding ice or snow. reduced rate of 10% applies also to the following items: 2202 9991 90; 2202 9995 90; 2202 9999 90. For mineral waters and beer the applicable rate is the ordinary rate."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 4,
+   "versaoEm": "2026-07-01",
+   "categoria": "TEMPORARY_EXEMPTION_RATE",
+   "comentario": "paper needed for their printing and the printing of acts and publications of the Chamber of Deputies and Senate of the Republic; printed matter and similar material relating to electoral campaigns if commissioned by candidates or their lists or by political parties or movements of political opinion;The reduced rate also applies to paper and printed matter."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "TRANSPORT_PASSENGERS",
+   "comentario": "Passenger and their luggage transport services, excluding those set out in Table A, Part II-bis, No. 1-ter), and those exempt pursuant to Article 10, No. 14), of Presidential Decree No 633 of 1972 [excluding passenger transport services provided by lake means and taxi]. Suburban passenger transport service with the exception of transport for tourism and cruises."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "TRANSPORT_PASSENGERS",
+   "comentario": "Transport services provided by the means pursuant to Law No 1110 of 23 June 1927 and Royal Decree-Law No 1696 of 7 September 1939, converted into Law No. 8 of 5 January 1939 [transport by drag lifts, sledges and other means of transport without rails]. Urban passenger transport service with the exception of transport for tourism and exempt transport."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "TRANSPORT_PASSENGERS",
+   "comentario": "Passenger transport services provided by means of transport entitled to execute sea, lake, river and lagoon transport services. Urban passenger transport service by water with the exception of transport for tourism, cruises and exempt transport."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "WOOD",
+   "comentario": "Firewood in logs, stumps, twigs or faggots; wood waste, including sawdust but excluding pellets (CN code 4401 31 00)."
+  },
+  {
+   "pais": "IT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 10,
+   "versaoEm": "2026-07-01",
+   "categoria": "WRITERS_SERVICES",
+   "comentario": "Writing contracts connected with theatrical performances, vocal and instrumental concerts, circus activities, puppet shows, etc., as well as the relative performances, rendered by intermediaries"
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "100_YEARS_OLD",
+   "comentario": "Reduced rate only applicable to antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "STANDARD",
+   "tipoTaxa": "DEFAULT",
+   "percentual": 18,
+   "versaoEm": "2026-07-01",
+   "categoria": null,
+   "comentario": null
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 7,
+   "versaoEm": "2026-07-01",
+   "categoria": "ACCOMMODATION",
+   "comentario": "The reduced rate is limited to accommodation required to be licensed in virtue of the Malta Travel and Tourism Services Act (or any Act substituted therefor)."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "PARKING_RATE",
+   "percentual": 12,
+   "versaoEm": "2026-07-01",
+   "categoria": "BODY_CARE_SERVICES",
+   "comentario": "Services consisting of the care of the human body required to be delivered by a person in the exercise of any profession regulated by the Health Care Professions Act (Cap.464), including services supplied in the course of a health studio business or similar business, but not including exempt supplies referred to in item 11 of Part Two of the Fifth Schedule."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "BROADCASTING_SERVICES",
+   "comentario": "The exemption is limited to all activities of public radio and television bodies, excluding those of a commercial nature."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "CERAMICS",
+   "comentario": "Reduced rate only applicable to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "CLOTHING_REPAIR",
+   "comentario": "Reduced rate applies to the minor repairing of clothing and household linen (including mending and alteration)."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "PARKING_RATE",
+   "percentual": 12,
+   "versaoEm": "2026-07-01",
+   "categoria": "CREDIT_MANAGEMENT",
+   "comentario": null
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "CULTURAL_EVENTS",
+   "comentario": "This reduced rate does not extend to online performances and applies only to admission to museums, art exhibitions, concerts and theatres. No applicable CPA code."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "DOMESTIC_CARE",
+   "comentario": null
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "ENAMELS",
+   "comentario": "Reduced rate only applicable to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Food for human consumption, excluding food supplied for catering, is taxed at 0% (exempt with credit) (part 2). The above exemption does not apply to items classified under the following subheadings in the First Schedule of the Import Duties Act: (1) 1207.30.90; 1207.99.91.00; 1209.30.00.00; 1209.99.10; 1209.99.91.00; 1209.99.99.00; 1211.90.30 (2) 1301.10.00.00; 1302.11.00; 1302.14.00; 1302.19.05;"
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Food for human consumption, excluding food supplied for catering, is taxed at 0% (exempt with credit) (part 3). The above exemption does not apply to items classified under the following subheadings in the First Schedule of the Import Duties Act: 1501.00.11.00; 1502.00.10.00; 1511.10.10.00; 1511.90.91.00; 1512.11.10.00; 1512.19.10.00; 1512.21.10.00; 1512.29.10.00; 1513.11.10.00; 1513.19.30.00; 151"
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Food for human consumption, excluding food supplied for catering, is taxed at 0% (exempt with credit) (part 4). The above exemption does not apply to items classified under the following subheadings in the First Schedule of the Import Duties Act: (1) 1515.90.15.00;1515.90.15.90;1515.90.21.00; 1515.90.31.00;1515.90.40.00;1515.90.60.00; 1516.20.10.00; 1517.90.93; 1521.90.10.00 (2) 2006.00.10; 2009 ("
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Food for human consumption, excluding food supplied for catering, is taxed at 0% (exempt with credit). The above exemption does not apply to items classified under the following subheadings in the First Schedule of the Import Duties Act: (1) 0101.10.10.00; 0106.11.00.00; 0106.12.00.00; 0106.19.90.00; 0106.20.00.00; 0106.31.00.00; 0106.32.00.00; 0106.39.90.00; 0106.90.00.00 (2) 0206.10.10.00; 0206."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Some confectionery & similar items are taxed at the reduced rate of 5%."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "PARKING_RATE",
+   "percentual": 12,
+   "versaoEm": "2026-07-01",
+   "categoria": "HIRING_SHORT_PERIOD",
+   "comentario": "Hiring of a pleasure boat to a person according to an agreement for any term or part of a term that, when added to the term of a previous hiring, of the same goods or of other goods of the same kind, to the said person during the previous twelve (12) months ending on the date of the beginning of the existing hiring, does not exceed five (5) weeks."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "IMPRESSIONS",
+   "comentario": "Reduced rate only applicable to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "LOAN_LIBRARIES",
+   "comentario": "(i) Not applicable to library loans, and \"production of publications of non-profit-making organisations and services related to such production\". (ii) This reduced rate has been extended to also include e-books."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_CARE",
+   "comentario": "Exemption is limited to the provision of medical care by persons in the exercise of any profession regulated by the Health Care Professions Act, the Psychology Profession Act, the Counselling Profession Act, the Psychotherapy Profession Act (or any Acts which may substitute them), the provision of care or medical/surgical treatment in a government hospital/institution approved by the Minister."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_CARE",
+   "comentario": "With effect from 01/01/2025 medical care provided by counsellors and psychotherapists are exempt (without credit). The same exemption has been extended to the supply of services by dental technicians in their professional capacity and to the supply of dental prostheses by dentists and dental technicians."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "This reduced rate applies to the following items (and CN codes) for the exclusive use of the disabled (part 1): - raised toilet seats (3924 90 00); - pressure relief cushions (4014 90, 8714 20 00 and 9404 90); - padded/inflatable toilet seats (4016 95 00 and 4016 99 98); - pressure relief mattresses (6306 41 00, 6306 49 00, 9404 21 and 9404 29); - white sticks (6602 00 00); - walking sticks and fe"
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "This reduced rate applies to the following items (and CN codes) for the exclusive use of the disabled (part 2): - hoists (8425 11 90 and 8425 19 91); - platform lift/swimming pool lifters (8428 10 91 and 8428 20 99); - chairlifts (8428 60 00); - bath tub lifters (8428 90 98); - lifts to get wheelchair into a car (8428 90 98); - braille typewriters (8469 12 00, 8469 20 00 and 8469 30 00);"
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "This reduced rate applies to the following items (and CN codes) for the exclusive use of the disabled (part 3): - amplifiers for communication devices for people with impaired hearing (8518 40 91 and 8518 40 99); - children special walkers, prone standers, wheelchairs (manual), special seats/buggies/wheelchairs (8713 10 00); - wheelchairs (electrical) (8713 90 00)"
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "This reduced rate applies to the following items (and CN codes) for the exclusive use of the disabled (part 4): - car adaptation-handcontrols, swivel seats (9401 30 10 and 9401 30 90); - toilet frames/surrounds (9401 79 00); - special feeder chairs (9402 90 00); - mouthsticks (9608 39 90)"
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "NEWSPAPERS",
+   "comentario": "This reduced rate has been extended to also include e-newspapers."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "PERIODICALS",
+   "comentario": "This reduced rate has been extended to also include periodicals provided electronically."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "Supply of pharmaceutical products taxed at 0% (exempt with credit) from VAT. Pharmaceutical products refers to the goods specified in the Customs Tariff contained in the First Schedule to the Import Duties Act classified under the CN codes listed. The exemption does not apply to items falling under sub-headings 3001 and 3002 where these items are not used for therapeutic or prophylactic purposes"
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "With effect from 01/01/2025 the supply of medical items essential to compensate and overcome cancer in humans (mastectomy undergarments, urinary incontinence management devices, vacuum constriction devices, scalp cooling systems, absorbent incontinence care products and supportive medical undergarments)."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "- Medical accessories: This reduced rate does not apply to medical accessories falling under CN codes 3001 and 3002 where such items are used for therapeutic or prophylactic purposes; - For code 3307 90 00, the reduced rate applies solely to solutions for contact lenses. - In May 2020, the reduced rate has been extended to protective face masks and visors, excluding diving equipment."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "PHOTOGRAPHS",
+   "comentario": "Reduced rate only applicable to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "PICTURES",
+   "comentario": "Reduced rate only limited to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "POSTAGE",
+   "comentario": "Reduced rate only applicable to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "SCULPTURE_CASTS",
+   "comentario": "Reduced rate only applicable to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "SCULPTURES",
+   "comentario": "Reduced rate only applicable to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "PARKING_RATE",
+   "percentual": 12,
+   "versaoEm": "2026-07-01",
+   "categoria": "SECURITY_MANAGEMENT",
+   "comentario": null
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "SHOES_REPAIR",
+   "comentario": "Reduced rate applies to the minor repairing of shoes and leather goods."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "SOCIAL_WELLBEING",
+   "comentario": "Exemption is only limited to welfare services supplied by government or by any institution or organisation recognised as a non-profit making institution or approved by the Minister for this purpose. No applicable CPA code."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "SUPPLY_WATER",
+   "comentario": "The exemption refers to the supply of water services by a public authority."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "TAPESTRIES",
+   "comentario": "Reduced rate only applicable to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "EXEMPTED",
+   "percentual": 0,
+   "versaoEm": "2026-07-01",
+   "categoria": "TRANSPORT_PASSENGERS",
+   "comentario": "The exemption applies to domestic public passenger transport on scheduled routes per regulation 68B, international air and sea passenger transport, scheduled inter-island sea transport by authorized carriers, regular sea passenger transport, and regular transport of students and workers to and from recognized educational establishments and workplaces."
+  },
+  {
+   "pais": "MT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 5,
+   "versaoEm": "2026-07-01",
+   "categoria": "ZOOLOGICAL",
+   "comentario": "Reduced rate only applicable to the importation of works of art, collector’s items and antiques as defined in the VAT Act."
+  },
+  {
+   "pais": "PT",
+   "tipo": "STANDARD",
+   "tipoTaxa": "DEFAULT",
+   "percentual": 23,
+   "versaoEm": "2026-01-01",
+   "categoria": null,
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "ACCOMMODATION",
+   "comentario": "The reduced rate applies only to accommodation including breakfast, if not separately invoiced, being equivalent to half of the full board price, or ¾ of the half board price."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "AGRICULTURAL_PRODUCTION",
+   "comentario": "Some products are taxed at 13%. The tax rate on animals applies only to live stock, agricultural labor and reproductive."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "CERAMICS",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "DOMESTIC_CARE",
+   "comentario": "Supplies of home help services to children, the elderly, drug addicts, the sick or the disabled. Assistance services by telephone to the elderly and chronic patients."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "ENAMELS",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 13,
+   "versaoEm": "2026-01-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "FOODSTUFFS",
+   "comentario": "Foodstuffs are also taxed at 0%,13% and 23%."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 13,
+   "versaoEm": "2026-01-01",
+   "categoria": "FOSSIL_FUEL",
+   "comentario": "Colored and marked diesel sold under the conditions and legally defined purposes, and fuel oil and respective mixtures."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "HOUSING_PROVISION",
+   "comentario": "Construction services on social housing or houses with controlled costs; whose promoters are cooperatives, where the dwellings fall within the scope of the social housing policy."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "IMPRESSIONS",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "LOAN_LIBRARIES",
+   "comentario": "23% rate applies to books, newspapers and periodicals containing mainly publicity, private advertisements, obscene or pornographic material."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "MEDICAL_CARE",
+   "comentario": "When not exempt under Article 132 (1) (b) to (e)"
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "MEDICAL_EQUIPMENT",
+   "comentario": "Reduced rate does not apply to parts and accessories."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "PARKING_RATE",
+   "percentual": 13,
+   "versaoEm": "2026-01-01",
+   "categoria": "NEW_PARKING_RATE",
+   "comentario": "The parking rate of 13% applies to: 1. Wine, with the exclusion of “special wines” as fortified wines, liqueur wines or sparkling wines. 2. Agricultural tools and utensils, mobile silos, tractors, pumps and other machinery designed exclusively or mainly for the purpose of agriculture, cattle breeding or forestry. 3. Diesel for agriculture."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "PHARMACEUTICAL_PRODUCTS",
+   "comentario": "A few pharmaceutical products taxed at 23% (veterinarian purposes and vitamins, per ex.)"
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "PHOTOGRAPHS",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "PICTURES",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "PRIVATE_DWELLINGS",
+   "comentario": "The reduced rate on the repairing of private dwellings excludes cleaning, garden upkeep, swimming pools, sauna, tennis court, golf or mini-golf court, or similar. Includes materials that accounts for less than 20% of the value of the service supplied."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 16,
+   "versaoEm": "2026-01-01",
+   "categoria": "REGION",
+   "comentario": "Azores Autonomous Region"
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 22,
+   "versaoEm": "2026-01-01",
+   "categoria": "REGION",
+   "comentario": "Madeira Autonomous Region"
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 13,
+   "versaoEm": "2026-01-01",
+   "categoria": "RESTAURANT",
+   "comentario": "The reduced rate excludes alcoholic beverages and soft drinks ."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "SCULPTURE_CASTS",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "SCULPTURES",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "STREET_CLEANING",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 13,
+   "versaoEm": "2026-01-01",
+   "categoria": "SUPPLY_WATER",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "SUPPLY_WATER",
+   "comentario": "Supply of bottled water is also taxed at 13%."
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "SUSTAINABLE_ENERGY",
+   "comentario": "6% for the fixed component of electricity supplies in power contracts 3.45 kVA and for the supply of electricity for consumption, excluding its fixed components, in power contracts 6.90 kVA, and with limits in kWh consumption per 30 days; 6% for the fixed component of natural gas supplies in lower pressure contracts (10 000 m3); supply and installation of highly efficient low emissions heating sys"
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "TAPESTRIES",
+   "comentario": null
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "SUPER_REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "TEMPORARY_EXEMPTION_RATE",
+   "comentario": "newsprint"
+  },
+  {
+   "pais": "PT",
+   "tipo": "REDUCED",
+   "tipoTaxa": "REDUCED_RATE",
+   "percentual": 6,
+   "versaoEm": "2026-01-01",
+   "categoria": "TRANSPORT_PASSENGERS",
+   "comentario": "International transport of passengers is subject to a zero rate."
+  }
+ ]
+}
