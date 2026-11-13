@@ -11,8 +11,13 @@
  *   do n.º 2 se encontram sem salto, L = VR − LDG/(T1 × 3,6) + Lim1/3,6 (os testes conferem a continuidade).
  * - Dependentes: CIRS art. 78.º-A (600 € cada, mais 126 € até 3 anos). Despesas gerais: art. 78.º-B (35%, até 250 €).
  * - Regime simplificado (independentes): CIRS art. 31.º (coeficiente 0,75 nas atividades da tabela do art. 151.º).
- * - Segurança Social: 11% a cargo do trabalhador por conta de outrem (guia prático do ISS, 2026);
- *   independentes 21,4% sobre 70% do rendimento de prestação de serviços (Código Contributivo) — A CONFIRMAR.
+ * - Segurança Social: 11% a cargo do trabalhador por conta de outrem (guia prático do ISS, 2026).
+ *   Independentes (Código dos Regimes Contributivos, versão consolidada de 9/12/2025, conferida no PDF do
+ *   Diário da República enviado pelo utilizador): 21,4% (art. 168.º, n.º 1) sobre o rendimento relevante de
+ *   70% da prestação de serviços (art. 162.º, n.º 1, a)); base mensal de 1/3 do trimestre, com máximo de
+ *   12 × IAS por mês, e contribuição mínima de € 20 por mês (art. 163.º, n.os 1, 2 e 5).
+ *   Não modelados: empresários em nome individual (25,2%), venda de bens (20%), contabilidade organizada,
+ *   acumulação com trabalho por conta de outrem e isenção do primeiro ano.
  * Não incluídos ainda: IRS Jovem, tabelas regionais dos Açores e da Madeira, tributação conjunta.
  */
 
@@ -57,6 +62,15 @@ const ACRESCIMO_ATE_3_ANOS = 12_600;
 const TAXA_SS_DEPENDENTE = 11;
 const TAXA_SS_INDEPENDENTE = 21.4;
 const BASE_SS_INDEPENDENTE = 0.7;
+const BASE_MAXIMA_MENSAL_INDEPENDENTE = 12 * IAS_2026;
+const CONTRIBUICAO_MINIMA_MENSAL_INDEPENDENTE = 2_000;
+
+/** Contribuição anual do trabalhador independente (prestação de serviços), mês a mês. */
+export function contribuicaoIndependente(brutoAnual: number): number {
+  if (brutoAnual <= 0) return CONTRIBUICAO_MINIMA_MENSAL_INDEPENDENTE * 12;
+  const baseMensal = Math.min((brutoAnual * BASE_SS_INDEPENDENTE) / 12, BASE_MAXIMA_MENSAL_INDEPENDENTE);
+  return Math.max((baseMensal * TAXA_SS_INDEPENDENTE) / 100, CONTRIBUICAO_MINIMA_MENSAL_INDEPENDENTE) * 12;
+}
 const COEFICIENTE_PROFISSIONAL = 0.75;
 
 /**
@@ -90,8 +104,8 @@ export function calcularRendaPortugal(e: EntradaRenda): ResultadoRenda | SemRegr
     deducoesEspecificas = Math.min(bruto, Math.max(DEDUCAO_ESPECIFICA_2026, contribuicoes));
     tributavel = bruto - deducoesEspecificas;
   } else {
-    contribuicoes = (bruto * BASE_SS_INDEPENDENTE * TAXA_SS_INDEPENDENTE) / 100;
-    avisos.push('contribuicoes-a-confirmar', 'despesas-profissionais-nao-incluidas');
+    contribuicoes = contribuicaoIndependente(bruto);
+    avisos.push('despesas-profissionais-nao-incluidas');
     tributavel = bruto * COEFICIENTE_PROFISSIONAL;
     // A parte do rendimento que o coeficiente deixa de fora conta como dedução específica (art. 70.º, n.º 5, b)).
     deducoesEspecificas = bruto - tributavel;

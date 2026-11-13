@@ -3,7 +3,7 @@ import { describe, expect, it } from '@jest/globals';
 import { calcularImpostosDaRenda, impostoPorEscaloes, temRegras, type EntradaRenda, type ResultadoRenda } from '@/data/renda';
 import { contribuicaoInps, detracaoTrabalho, ESCALOES_IRPEF_2026, sommaEsente } from '@/data/renda/it';
 import { contribuicaoClass1, contribuicaoClass2, impostoMalta, TABELAS_MALTA_2026 } from '@/data/renda/mt';
-import { abatimentoMinimoExistencia, DEDUCAO_ESPECIFICA_2026, ESCALOES_IRS_2026 } from '@/data/renda/pt';
+import { abatimentoMinimoExistencia, contribuicaoIndependente, DEDUCAO_ESPECIFICA_2026, ESCALOES_IRS_2026 } from '@/data/renda/pt';
 import type { CodigoPais } from '@/data/paises';
 
 const base: EntradaRenda = { ano: 2026, brutoAnualCentavos: 0, situacao: 'dependente', dependentes: 0 };
@@ -75,6 +75,16 @@ describe('Portugal — IRS 2026', () => {
       Math.round(impostoPorEscaloes(coletavel, ESCALOES_IRS_2026) + (coletavel - 8_000_000) * 0.025),
     );
     expect(semSolidariedade).toBeGreaterThan(0);
+  });
+
+  it('independentes: 21,4% sobre 70% dos serviços, com mínimo de € 20/mês e teto de 12 × IAS', () => {
+    // € 30 000 → base mensal € 1 750 → € 374,50/mês
+    expect(contribuicaoIndependente(3_000_000)).toBeCloseTo(37_450 * 12, 6);
+    expect(contribuicaoIndependente(100_000)).toBe(2_000 * 12);
+    expect(contribuicaoIndependente(50_000_000)).toBeCloseTo(((12 * 53_713 * 21.4) / 100) * 12, 6);
+    const r = calcular('PT', { brutoAnualCentavos: 3_000_000, situacao: 'independente' });
+    expect(r.contribuicoesCentavos).toBe(449_400);
+    expect(r.avisos).not.toContain('contribuicoes-a-confirmar');
   });
 
   it('Açores e Madeira avisam que ainda usam a tabela nacional', () => {
