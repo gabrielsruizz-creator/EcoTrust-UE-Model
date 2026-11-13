@@ -6,6 +6,7 @@ import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useUltimoBackup } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { escolherBackup, exportarBackup, restaurarBackup, resumirBackup } from '@/services/backup-service';
 import { ErroValidacao } from '@/services/erros';
@@ -14,13 +15,14 @@ import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
 
 /** Backup em arquivo: guardar todos os dados fora do celular e trazê-los de volta. */
 export default function BackupScreen() {
+  const t = useT();
   const theme = useTheme();
   const ultimo = useUltimoBackup();
   const [ocupado, setOcupado] = useState(false);
 
   function erro(e: unknown, titulo: string) {
     vibrarErro();
-    Alert.alert(titulo, e instanceof ErroValidacao ? e.message : 'Tente novamente.');
+    Alert.alert(titulo, e instanceof ErroValidacao ? e.message : t('comum.tenteNovamente'));
   }
 
   async function exportar() {
@@ -29,7 +31,7 @@ export default function BackupScreen() {
       await exportarBackup();
       vibrarSucesso();
     } catch (e) {
-      erro(e, 'Não foi possível fazer o backup');
+      erro(e, t('bk.erroFazer'));
     } finally {
       setOcupado(false);
     }
@@ -42,61 +44,62 @@ export default function BackupScreen() {
       if (!backup) return;
       const r = resumirBackup(backup);
       Alert.alert(
-        'Restaurar backup?',
-        `Backup de ${formatarData(paraDataLocal(new Date(r.criadoEm)))}, com ${r.lancamentos} lançamentos, ${r.metas} metas e ${r.notas} notas fiscais.\n\nTODOS os dados atuais deste aparelho serão substituídos pelos do backup.`,
+        t('bk.restaurar.titulo'),
+        t('bk.restaurar.texto', {
+          data: formatarData(paraDataLocal(new Date(r.criadoEm))),
+          lancamentos: t('bk.lancamentos', { n: r.lancamentos }),
+          metas: t('bk.metas', { n: r.metas }),
+        }),
         [
-          { text: 'Cancelar', style: 'cancel' },
+          { text: t('comum.cancelar'), style: 'cancel' },
           {
-            text: 'Restaurar',
+            text: t('bk.restaurar'),
             style: 'destructive',
             onPress: () => {
               try {
                 restaurarBackup(backup);
                 vibrarSucesso();
-                Alert.alert('Backup restaurado', 'Seus dados foram recuperados.');
+                Alert.alert(t('bk.restaurado'), t('bk.restaurado.texto'));
               } catch (e) {
-                erro(e, 'Não foi possível restaurar');
+                erro(e, t('bk.erroRestaurar'));
               }
             },
           },
         ],
       );
     } catch (e) {
-      erro(e, 'Não foi possível abrir o backup');
+      erro(e, t('bk.erroAbrir'));
     } finally {
       setOcupado(false);
     }
   }
 
   return (
-    <TelaSecundaria titulo="Backup dos dados">
+    <TelaSecundaria titulo={t('pf.backup')}>
       <Cartao style={styles.linha}>
         <IconeCirculo icone="escudo" cor={theme.brand} />
         <View style={styles.flex}>
-          <ThemedText type="smallBold">Seus dados ficam só neste celular</ThemedText>
+          <ThemedText type="smallBold">{t('bk.soNeste')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Se ele for perdido ou trocado, o backup é o que traz tudo de volta: lançamentos, notas e
-            itens, metas, orçamentos e configurações dos impostos.
+            {t('bk.soNeste.texto')}
           </ThemedText>
         </View>
       </Cartao>
 
       <ThemedText type="small" themeColor="textSecondary" accessibilityLiveRegion="polite">
-        {ultimo ? `Último backup: ${tempoRelativo(ultimo)}.` : 'Você ainda não fez nenhum backup.'}
+        {ultimo ? t('bk.ultimo', { quando: tempoRelativo(ultimo) }) : t('bk.nunca')}
       </ThemedText>
 
       {ocupado && <ActivityIndicator color={theme.accent} />}
 
-      <Botao texto="Fazer backup agora" icone="escudo" disabled={ocupado} onPress={exportar} />
+      <Botao texto={t('bk.fazer')} icone="escudo" disabled={ocupado} onPress={exportar} />
       <ThemedText type="small" themeColor="textSecondary">
-        O app cria um arquivo e abre as opções do celular para guardá-lo: Arquivos/iCloud, Google Drive,
-        e-mail ou WhatsApp. Sua senha não vai no arquivo.
+        {t('bk.fazer.texto')}
       </ThemedText>
 
-      <Botao texto="Restaurar de um arquivo" variante="secundario" disabled={ocupado} onPress={importar} />
+      <Botao texto={t('bk.deArquivo')} variante="secundario" disabled={ocupado} onPress={importar} />
       <ThemedText type="small" themeColor="textSecondary">
-        Escolha um arquivo de backup do EcoTrust. Antes de substituir qualquer coisa, o app mostra o que
-        tem nele e pede confirmação.
+        {t('bk.deArquivo.texto')}
       </ThemedText>
     </TelaSecundaria>
   );

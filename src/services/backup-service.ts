@@ -15,6 +15,7 @@ import {
   type Tabelas,
   type ValorSimples,
 } from '@/repositories/backup-repository';
+import { t } from '@/i18n';
 import { lerConfiguracao, salvarConfiguracao } from '@/repositories/configuracoes-repository';
 import { ErroValidacao } from '@/services/erros';
 import { hoje } from '@/utils/datas';
@@ -53,23 +54,23 @@ export function lerArquivoBackup(texto: string, versaoAtual: number): ArquivoBac
   try {
     dados = JSON.parse(texto);
   } catch {
-    throw new ErroValidacao('Este arquivo não é um backup do EcoTrust.');
+    throw new ErroValidacao(t('bk.e.naoBackup'));
   }
   const b = dados as Partial<ArquivoBackup>;
   if (!b || b.app !== 'EcoTrust' || typeof b.tabelas !== 'object' || b.tabelas === null || Array.isArray(b.tabelas)) {
-    throw new ErroValidacao('Este arquivo não é um backup do EcoTrust.');
+    throw new ErroValidacao(t('bk.e.naoBackup'));
   }
   if (b.formato !== FORMATO || typeof b.versaoBanco !== 'number') {
-    throw new ErroValidacao('Formato de backup desconhecido.');
+    throw new ErroValidacao(t('bk.e.formato'));
   }
   if (b.versaoBanco > versaoAtual) {
-    throw new ErroValidacao('Este backup foi feito numa versão mais nova do EcoTrust. Atualize o app e tente de novo.');
+    throw new ErroValidacao(t('bk.e.versao'));
   }
   for (const linhas of Object.values(b.tabelas)) {
     const valido =
       Array.isArray(linhas) &&
       linhas.every((l) => l && typeof l === 'object' && !Array.isArray(l) && Object.values(l).every(valorSimples));
-    if (!valido) throw new ErroValidacao('O backup está corrompido.');
+    if (!valido) throw new ErroValidacao(t('bk.e.corrompido'));
   }
   return b as ArquivoBackup;
 }
@@ -85,7 +86,7 @@ export function resumirBackup(b: ArquivoBackup): ResumoBackup {
 
 /** Gera o arquivo e abre a janela de compartilhar do sistema para o usuário escolher onde guardar. */
 export async function exportarBackup() {
-  if (!(await isAvailableAsync())) throw new ErroValidacao('Este aparelho não permite compartilhar arquivos.');
+  if (!(await isAvailableAsync())) throw new ErroValidacao(t('bk.e.partilhar'));
   const backup = montarBackup(lerTodasAsTabelas(), versaoDoBanco());
   const arquivo = new File(Paths.cache, `ecotrust-backup-${hoje()}.json`);
   if (arquivo.exists) arquivo.delete();
@@ -94,7 +95,7 @@ export async function exportarBackup() {
   await shareAsync(arquivo.uri, {
     mimeType: 'application/json',
     UTI: 'public.json',
-    dialogTitle: 'Guardar backup do EcoTrust',
+    dialogTitle: t('bk.dialogo'),
   });
   salvarConfiguracao(CHAVE_ULTIMO_BACKUP, new Date().toISOString());
 }
@@ -109,7 +110,7 @@ export async function escolherBackup(): Promise<ArquivoBackup | null> {
   const resultado = await getDocumentAsync({ type: ['application/json', 'text/plain', '*/*'], copyToCacheDirectory: true });
   if (resultado.canceled || !resultado.assets[0]) return null;
   const asset = resultado.assets[0];
-  if (asset.size !== undefined && asset.size > TAMANHO_MAXIMO) throw new ErroValidacao('Arquivo grande demais para ser um backup.');
+  if (asset.size !== undefined && asset.size > TAMANHO_MAXIMO) throw new ErroValidacao(t('bk.e.grande'));
   const texto = await new File(asset.uri).text();
   return lerArquivoBackup(texto, versaoDoBanco());
 }

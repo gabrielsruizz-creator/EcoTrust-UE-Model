@@ -8,11 +8,13 @@ import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useSituacao } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { ErroValidacao } from '@/services/erros';
 import { DIVIDAS, INVESTIMENTOS, MORADIAS, RESERVAS, salvarSituacao } from '@/services/perfil-pessoal-service';
 import type { Moradia, SituacaoDividas, SituacaoInvestimentos, SituacaoReserva } from '@/types/financas';
 
 export default function EditarSituacaoScreen() {
+  const t = useT();
   const inicial = useSituacao();
   const [moradia, setMoradia] = useState<Moradia | null>(inicial?.moradia ?? null);
   const [dividas, setDividas] = useState<SituacaoDividas | null>(inicial?.dividas ?? null);
@@ -28,42 +30,42 @@ export default function EditarSituacaoScreen() {
       salvarSituacao({ dividas, reserva, investe, moradia, rendaExtra });
       router.back();
     } catch (e) {
-      Alert.alert('Não foi possível salvar', e instanceof ErroValidacao ? e.message : 'Tente novamente.');
+      Alert.alert(t('comum.erroGuardar'), e instanceof ErroValidacao ? e.message : t('comum.tenteNovamente'));
     }
   }
 
   return (
     <TelaSecundaria
-      titulo="Situação financeira"
-      textoVoltar="Cancelar"
-      rodape={<Botao texto="Salvar" disabled={!completo} onPress={salvar} />}>
-      <Grupo titulo="Onde você mora?">
+      titulo={t('pf.situacao')}
+      textoVoltar={t('comum.cancelar')}
+      rodape={<Botao texto={t('comum.guardar')} disabled={!completo} onPress={salvar} />}>
+      <Grupo titulo={t('sit.moradia')}>
         {MORADIAS.map((o) => (
           <Chip key={o.valor} texto={o.rotulo} ativo={moradia === o.valor} aoTocar={() => setMoradia(o.valor)} />
         ))}
       </Grupo>
-      <Grupo titulo="Dívidas">
+      <Grupo titulo={t('pf.dividas')}>
         {DIVIDAS.map((o) => (
           <Chip key={o.valor} texto={o.rotulo} ativo={dividas === o.valor} aoTocar={() => setDividas(o.valor)} />
         ))}
       </Grupo>
-      <Grupo titulo="Reserva de emergência">
+      <Grupo titulo={t('sit.reserva')}>
         {RESERVAS.map((o) => (
           <Chip key={o.valor} texto={o.rotulo} ativo={reserva === o.valor} aoTocar={() => setReserva(o.valor)} />
         ))}
       </Grupo>
-      <Grupo titulo="Investimentos">
+      <Grupo titulo={t('sit.investimentos')}>
         {INVESTIMENTOS.map((o) => (
           <Chip key={o.valor} texto={o.rotulo} ativo={investe === o.valor} aoTocar={() => setInveste(o.valor)} />
         ))}
       </Grupo>
-      <Grupo titulo="Você tem alguma renda extra?">
-        <Chip texto="Sim" ativo={rendaExtra === true} aoTocar={() => setRendaExtra(true)} />
-        <Chip texto="Não" ativo={rendaExtra === false} aoTocar={() => setRendaExtra(false)} />
+      <Grupo titulo={t('sit.rendaExtra')}>
+        <Chip texto={t('comum.sim')} ativo={rendaExtra === true} aoTocar={() => setRendaExtra(true)} />
+        <Chip texto={t('comum.nao')} ativo={rendaExtra === false} aoTocar={() => setRendaExtra(false)} />
       </Grupo>
       {!completo && (
         <ThemedText type="small" themeColor="textSecondary">
-          Responda dívidas, reserva e investimentos para salvar.
+          {t('sit.falta')}
         </ThemedText>
       )}
     </TelaSecundaria>

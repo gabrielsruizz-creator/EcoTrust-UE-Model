@@ -1,4 +1,6 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { beforeAll, describe, expect, it, jest } from '@jest/globals';
+
+import { definirIdioma } from '@/i18n';
 
 import { lerArquivoBackup, montarBackup, resumirBackup } from '@/services/backup-service';
 
@@ -12,6 +14,8 @@ const tabelas = {
 };
 
 describe('arquivo de backup', () => {
+  beforeAll(() => definirIdioma('pt-PT'));
+
   it('ida e volta', () => {
     const texto = JSON.stringify(montarBackup(tabelas, 14, new Date('2026-10-20T12:00:00Z')));
     const lido = lerArquivoBackup(texto, 14);
@@ -24,12 +28,12 @@ describe('arquivo de backup', () => {
   });
 
   it.each([
-    ['texto qualquer', 'não é um backup'],
-    [JSON.stringify({ app: 'Outro', tabelas: {} }), 'não é um backup'],
+    ['texto qualquer', 'não é uma cópia'],
+    [JSON.stringify({ app: 'Outro', tabelas: {} }), 'não é uma cópia'],
     [JSON.stringify({ app: 'EcoTrust', formato: 99, versaoBanco: 1, tabelas: {} }), 'Formato'],
-    [JSON.stringify(montarBackup({}, 15)), 'versão mais nova'],
-    [JSON.stringify(montarBackup({ transacoes: [{ id: { malicioso: true } }] } as never, 14)), 'corrompido'],
-    [JSON.stringify(montarBackup({ transacoes: 'x' } as never, 14)), 'corrompido'],
+    [JSON.stringify(montarBackup({}, 15)), 'versão mais recente'],
+    [JSON.stringify(montarBackup({ transacoes: [{ id: { malicioso: true } }] } as never, 14)), 'corrompida'],
+    [JSON.stringify(montarBackup({ transacoes: 'x' } as never, 14)), 'corrompida'],
   ])('recusa arquivos inválidos (%#)', (texto, mensagem) => {
     expect(() => lerArquivoBackup(texto, 14)).toThrow(mensagem);
   });
