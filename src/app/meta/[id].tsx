@@ -1,4 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useT } from '@/hooks/use-idioma';
+import type { Chave } from '@/i18n';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,10 +16,10 @@ import type { TipoMovimentoMeta } from '@/types/financas';
 import { formatarData, nomeDoMes } from '@/utils/datas';
 import { formatarCentavos } from '@/utils/moeda';
 
-const ROTULO_MOVIMENTO: Record<TipoMovimentoMeta, string> = {
-  inicial: 'Valor inicial',
-  deposito: 'Guardado',
-  retirada: 'Retirado',
+const ROTULO_MOVIMENTO: Record<TipoMovimentoMeta, Chave> = {
+  inicial: 'metas.mov.inicial',
+  deposito: 'metas.mov.deposito',
+  retirada: 'metas.mov.retirada',
 };
 
 function abrirMovimento(id: number, tipo: 'guardar' | 'retirar') {
@@ -26,18 +28,19 @@ function abrirMovimento(id: number, tipo: 'guardar' | 'retirar') {
 
 export default function DetalheMetaScreen() {
   const theme = useTheme();
+  const t = useT();
   const { id } = useLocalSearchParams<{ id: string }>();
   const dados = useMeta(Number(id));
 
   function confirmarExclusao() {
     if (!dados) return;
     Alert.alert(
-      'Excluir meta',
-      `Excluir "${dados.meta.nome}" e todo o histórico dela? Isso não pode ser desfeito.`,
+      t('metas.excluir'),
+      t('metas.excluir.texto', { nome: dados.meta.nome }),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('comum.cancelar'), style: 'cancel' },
         {
-          text: 'Excluir',
+          text: t('comum.eliminar'),
           style: 'destructive',
           onPress: () => {
             excluirMeta(dados.meta.id);
@@ -54,19 +57,19 @@ export default function DetalheMetaScreen() {
         <View style={styles.topo}>
           <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12}>
             <ThemedText type="smallBold" themeColor="textSecondary">
-              ‹ Voltar
+              {t('comum.voltar')}
             </ThemedText>
           </Pressable>
           <ThemedText type="smallBold" accessibilityRole="header">
-            Meta
+            {t('metas.meta')}
           </ThemedText>
           <View style={styles.espacoTopo} />
         </View>
 
         {!dados ? (
           <View style={styles.conteudo}>
-            <ThemedText themeColor="textSecondary">Esta meta não existe mais.</ThemedText>
-            <Botao texto="Voltar" onPress={() => router.back()} />
+            <ThemedText themeColor="textSecondary">{t('metas.erro.naoExiste')}</ThemedText>
+            <Botao texto={t('comum.voltar')} onPress={() => router.back()} />
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.conteudo}>
@@ -83,35 +86,35 @@ export default function DetalheMetaScreen() {
                     </ThemedText>
                     <ThemedText style={styles.valor}>{formatarCentavos(meta.atualCentavos)}</ThemedText>
                     <ThemedText themeColor="textSecondary">
-                      de {formatarCentavos(meta.objetivoCentavos)}
+                      {t('metas.de', { valor: formatarCentavos(meta.objetivoCentavos) })}
                     </ThemedText>
                     {meta.concluida && (
                       <ThemedText type="smallBold" style={{ color: theme.positive }}>
-                        Meta alcançada! Parabéns.
+                        {t('metas.alcancada')}
                       </ThemedText>
                     )}
                   </View>
 
                   <Cartao>
-                    {!meta.concluida && <Linha rotulo="Falta" valor={formatarCentavos(meta.faltaCentavos)} />}
+                    {!meta.concluida && <Linha rotulo={t('metas.falta')} valor={formatarCentavos(meta.faltaCentavos)} />}
                     <Linha
-                      rotulo="Prazo"
+                      rotulo={t('metas.prazo')}
                       valor={
                         meta.prazo
-                          ? `${formatarData(meta.prazo)}${meta.prazoVencido ? ' (passou)' : ''}`
-                          : 'Sem prazo'
+                          ? `${formatarData(meta.prazo)}${meta.prazoVencido ? ` ${t('metas.passou')}` : ''}`
+                          : t('metas.semPrazo')
                       }
                     />
                     {meta.porMesNecessarioCentavos !== null && meta.prazo && (
                       <Linha
-                        rotulo={`Guardar por mês até ${nomeDoMes(meta.prazo.slice(0, 7))}`}
+                        rotulo={t('metas.guardarPorMesAte', { mes: nomeDoMes(meta.prazo.slice(0, 7)) })}
                         valor={formatarCentavos(meta.porMesNecessarioCentavos)}
                       />
                     )}
                     {meta.ritmoMensalCentavos !== null && (
                       <Linha
-                        rotulo="Seu ritmo recente"
-                        valor={`${formatarCentavos(meta.ritmoMensalCentavos)}/mês`}
+                        rotulo={t('metas.ritmoRecente')}
+                        valor={t('metas.porMesCurto', { valor: formatarCentavos(meta.ritmoMensalCentavos) })}
                       />
                     )}
                   </Cartao>
@@ -123,16 +126,16 @@ export default function DetalheMetaScreen() {
                   )}
 
                   <View style={styles.botoes}>
-                    <Botao texto="Guardar dinheiro" onPress={() => abrirMovimento(meta.id, 'guardar')} />
+                    <Botao texto={t('metas.guardarDinheiro')} onPress={() => abrirMovimento(meta.id, 'guardar')} />
                     {meta.atualCentavos > 0 && (
                       <Botao
-                        texto="Retirar"
+                        texto={t('metas.retirar')}
                         variante="secundario"
                         onPress={() => abrirMovimento(meta.id, 'retirar')}
                       />
                     )}
                     <Botao
-                      texto="Editar meta"
+                      texto={t('metas.editar')}
                       variante="secundario"
                       onPress={() =>
                         router.push({ pathname: '/editar-meta/[id]', params: { id: String(meta.id) } })
@@ -141,11 +144,11 @@ export default function DetalheMetaScreen() {
                   </View>
 
                   <ThemedText type="smallBold" accessibilityRole="header">
-                    Histórico
+                    {t('metas.historico')}
                   </ThemedText>
                   {movimentos.length === 0 ? (
                     <ThemedText type="small" themeColor="textSecondary">
-                      Nenhum valor guardado ainda. Toque em &quot;Guardar dinheiro&quot; para começar.
+                      {t('metas.historicoVazio')}
                     </ThemedText>
                   ) : (
                     <Cartao>
@@ -156,9 +159,9 @@ export default function DetalheMetaScreen() {
                             key={m.id}
                             style={styles.linha}
                             accessible
-                            accessibilityLabel={`${ROTULO_MOVIMENTO[m.tipo]} em ${formatarData(m.data)}: ${formatarCentavos(m.valorCentavos)}`}>
+                            accessibilityLabel={`${t(ROTULO_MOVIMENTO[m.tipo])} · ${formatarData(m.data)}: ${formatarCentavos(m.valorCentavos)}`}>
                             <View>
-                              <ThemedText type="small">{ROTULO_MOVIMENTO[m.tipo]}</ThemedText>
+                              <ThemedText type="small">{t(ROTULO_MOVIMENTO[m.tipo])}</ThemedText>
                               <ThemedText type="small" themeColor="textSecondary">
                                 {formatarData(m.data)}
                               </ThemedText>
@@ -174,7 +177,7 @@ export default function DetalheMetaScreen() {
                     </Cartao>
                   )}
 
-                  <Botao texto="Excluir meta" variante="perigo" onPress={confirmarExclusao} />
+                  <Botao texto={t('metas.excluir')} variante="perigo" onPress={confirmarExclusao} />
                 </>
               );
             })()}

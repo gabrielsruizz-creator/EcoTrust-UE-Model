@@ -3,6 +3,7 @@
  * `calcularProgresso` é puro; as demais funções usam o banco.
  */
 
+import { t } from '@/i18n';
 import {
   atualizarMeta,
   buscarMeta,
@@ -16,7 +17,7 @@ import { obterPerfilFinanceiro } from '@/repositories/perfil-financeiro-reposito
 import { ErroValidacao } from '@/services/erros';
 import type { Meta, MovimentoMeta, ProgressoMeta } from '@/types/financas';
 import { dataValida, diasEntre, formatarData, hoje, nomeDoMes, paraDataLocal } from '@/utils/datas';
-import { formatarCentavos } from '@/utils/moeda';
+import { formatarCentavos, formatarSemCentimos } from '@/utils/moeda';
 
 const MAX_NOME = 40;
 const MAX_VALOR_CENTAVOS = 10_000_000_000;
@@ -57,25 +58,22 @@ export function calcularProgresso(meta: Meta, movimentos: MovimentoMeta[], dataH
   };
 }
 
-function meses(n: number) {
-  return `${n} ${n === 1 ? 'mês' : 'meses'}`;
-}
 
 /** Frase de previsão pelo ritmo atual (a mesma usada pela futura EcoTrust IA), ou null. */
 export function textoRitmo(meta: ProgressoMeta): string | null {
   if (meta.previsaoMeses === null) return null;
-  return `Se continuar nesse ritmo, sua meta será alcançada em aproximadamente ${meses(meta.previsaoMeses)}.`;
+  return t('metas.ritmo', { n: meta.previsaoMeses });
 }
 
 /** Resumo de uma linha do que a pessoa precisa saber sobre a meta. */
 export function descreverMeta(meta: ProgressoMeta): string {
-  if (meta.concluida) return 'Meta alcançada! Parabéns.';
+  if (meta.concluida) return t('metas.alcancada');
   const falta = formatarCentavos(meta.faltaCentavos);
-  if (meta.prazoVencido && meta.prazo) return `O prazo era ${formatarData(meta.prazo)}. Faltam ${falta}.`;
+  if (meta.prazoVencido && meta.prazo) return t('metas.prazoVencido', { data: formatarData(meta.prazo), falta });
   if (meta.porMesNecessarioCentavos !== null && meta.prazo) {
-    return `Guarde ${formatarCentavos(meta.porMesNecessarioCentavos)} por mês até ${nomeDoMes(meta.prazo.slice(0, 7))} para chegar lá.`;
+    return t('metas.porMes', { valor: formatarCentavos(meta.porMesNecessarioCentavos), mes: nomeDoMes(meta.prazo.slice(0, 7)) });
   }
-  return textoRitmo(meta) ?? `Faltam ${falta}.`;
+  return textoRitmo(meta) ?? t('metas.faltam', { falta });
 }
 
 /** Prévia no formulário: quanto guardar por mês para juntar o que falta até o prazo. */
@@ -103,20 +101,20 @@ export type DadosMeta = { nome: string; objetivoCentavos: number; prazo: string 
 function validarValor(centavos: number, mensagem: string) {
   if (!Number.isInteger(centavos) || centavos <= 0) throw new ErroValidacao(mensagem);
   if (centavos > MAX_VALOR_CENTAVOS) {
-    throw new ErroValidacao('Esse valor parece alto demais. Confira o número digitado.');
+    throw new ErroValidacao(t('metas.erro.alto'));
   }
 }
 
 function validarDados(dados: DadosMeta, prazoAnterior?: string | null): DadosMeta {
   const nome = dados.nome.trim().replace(/\s+/g, ' ');
-  if (!nome) throw new ErroValidacao('Dê um nome para a meta.');
-  if (nome.length > MAX_NOME) throw new ErroValidacao(`Use no máximo ${MAX_NOME} letras no nome.`);
-  validarValor(dados.objetivoCentavos, 'Informe quanto você quer juntar.');
+  if (!nome) throw new ErroValidacao(t('metas.erro.nome'));
+  if (nome.length > MAX_NOME) throw new ErroValidacao(t('metas.erro.nomeLongo', { n: MAX_NOME }));
+  validarValor(dados.objetivoCentavos, t('metas.erro.objetivo'));
   if (dados.prazo !== null) {
-    if (!dataValida(dados.prazo)) throw new ErroValidacao('Prazo inválido.');
+    if (!dataValida(dados.prazo)) throw new ErroValidacao(t('metas.erro.prazo'));
     // Um prazo novo precisa ser no futuro; ao editar, manter o prazo antigo é permitido.
     if (dados.prazo !== prazoAnterior && dados.prazo <= hoje()) {
-      throw new ErroValidacao('O prazo precisa ser uma data no futuro.');
+      throw new ErroValidacao(t('metas.erro.prazoFuturo'));
     }
   }
   return { ...dados, nome };
@@ -125,17 +123,17 @@ function validarDados(dados: DadosMeta, prazoAnterior?: string | null): DadosMet
 export function adicionarMeta(dados: DadosMeta, valorInicialCentavos = 0): number {
   const validos = validarDados(dados);
   if (!Number.isInteger(valorInicialCentavos) || valorInicialCentavos < 0) {
-    throw new ErroValidacao('Valor já guardado inválido.');
+    throw new ErroValidacao(t('metas.erro.inicial'));
   }
   if (valorInicialCentavos > MAX_VALOR_CENTAVOS) {
-    throw new ErroValidacao('Esse valor parece alto demais. Confira o número digitado.');
+    throw new ErroValidacao(t('metas.erro.alto'));
   }
   return criarMeta(validos, valorInicialCentavos, hoje());
 }
 
 export function editarMeta(id: number, dados: DadosMeta) {
   const atual = buscarMeta(id);
-  if (!atual) throw new ErroValidacao('Esta meta não existe mais.');
+  if (!atual) throw new ErroValidacao(t('metas.erro.naoExiste'));
   atualizarMeta(id, validarDados(dados, atual.prazo));
 }
 
@@ -144,17 +142,17 @@ export function excluirMeta(id: number) {
 }
 
 export function guardarNaMeta(id: number, valorCentavos: number) {
-  if (!buscarMeta(id)) throw new ErroValidacao('Esta meta não existe mais.');
-  validarValor(valorCentavos, 'Informe um valor maior que zero.');
+  if (!buscarMeta(id)) throw new ErroValidacao(t('metas.erro.naoExiste'));
+  validarValor(valorCentavos, t('metas.erro.valor'));
   criarMovimento(id, 'deposito', valorCentavos, hoje());
 }
 
 export function retirarDaMeta(id: number, valorCentavos: number) {
   const meta = buscarMeta(id);
-  if (!meta) throw new ErroValidacao('Esta meta não existe mais.');
-  validarValor(valorCentavos, 'Informe um valor maior que zero.');
+  if (!meta) throw new ErroValidacao(t('metas.erro.naoExiste'));
+  validarValor(valorCentavos, t('metas.erro.valor'));
   if (valorCentavos > meta.atualCentavos) {
-    throw new ErroValidacao('Você não pode retirar mais do que já guardou nesta meta.');
+    throw new ErroValidacao(t('metas.erro.retirarMais'));
   }
   criarMovimento(id, 'retirada', valorCentavos, hoje());
 }
@@ -163,9 +161,9 @@ export function retirarDaMeta(id: number, valorCentavos: number) {
 export function modelosDeMeta(): { nome: string; objetivoCentavos: number | null }[] {
   const fixas = obterPerfilFinanceiro()?.despesasFixasCentavos ?? 0;
   return [
-    { nome: 'Reserva de emergência', objetivoCentavos: fixas > 0 ? fixas * 6 : null },
-    { nome: 'Viagem', objetivoCentavos: null },
-    { nome: 'Comprar um carro', objetivoCentavos: null },
-    { nome: 'Guardar R$ 10.000', objetivoCentavos: 1_000_000 },
+    { nome: t('metas.modelo.reserva'), objetivoCentavos: fixas > 0 ? fixas * 6 : null },
+    { nome: t('metas.modelo.viagem'), objetivoCentavos: null },
+    { nome: t('metas.modelo.carro'), objetivoCentavos: null },
+    { nome: t('metas.modelo.guardar', { valor: formatarSemCentimos(1_000_000) }), objetivoCentavos: 1_000_000 },
   ];
 }

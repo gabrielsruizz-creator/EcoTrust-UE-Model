@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useT } from '@/hooks/use-idioma';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { BarraProgresso } from '@/components/barra-progresso';
@@ -16,6 +17,7 @@ import { iconeMeta } from '@/utils/visual';
 /** Lista de metas (aba Metas). */
 export function PainelMetas() {
   const theme = useTheme();
+  const t = useT();
   const metas = useMetas();
   const ativas = metas.filter((m) => !m.concluida);
   const alcancadas = metas.filter((m) => m.concluida);
@@ -24,12 +26,11 @@ export function PainelMetas() {
     <>
       {metas.length === 0 ? (
         <Cartao>
-          <ThemedText type="smallBold">Transforme economia em conquistas</ThemedText>
+          <ThemedText type="smallBold">{t('metas.vazio.titulo')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Crie metas como uma reserva de emergência, uma viagem ou um carro. O EcoTrust mostra seu
-            progresso e quanto guardar por mês para chegar lá.
+            {t('metas.vazio.texto')}
           </ThemedText>
-          <Botao texto="Criar minha primeira meta" icone="mais" onPress={() => router.push('/nova-meta')} />
+          <Botao texto={t('metas.primeira')} icone="mais" onPress={() => router.push('/nova-meta')} />
         </Cartao>
       ) : (
         ativas.map((m) => <CartaoMeta key={m.id} meta={m} />)
@@ -38,7 +39,7 @@ export function PainelMetas() {
       {alcancadas.length > 0 && (
         <>
           <ThemedText type="smallBold" accessibilityRole="header" style={styles.secao}>
-            Metas alcançadas
+            {t('metas.alcancadas')}
           </ThemedText>
           {alcancadas.map((m) => (
             <CartaoMeta key={m.id} meta={m} />
@@ -49,16 +50,16 @@ export function PainelMetas() {
       <Pressable
         onPress={() => router.push('/conquistas')}
         accessibilityRole="button"
-        accessibilityLabel="Conquiste mais! Veja suas conquistas e ganhe XP."
+        accessibilityLabel={`${t('metas.conquiste')} ${t('metas.conquiste.texto')}`}
         style={({ pressed }) => pressed && styles.pressionado}>
         <Cartao style={styles.conquistas}>
           <View style={[styles.trofeu, { backgroundColor: theme.accentSoft }]}>
             <Icone nome="trofeu" cor={theme.accentText} tamanho={26} />
           </View>
           <View style={styles.flex}>
-            <ThemedText type="smallBold">Conquiste mais!</ThemedText>
+            <ThemedText type="smallBold">{t('metas.conquiste')}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              Complete desafios da sua jornada e ganhe XP.
+              {t('metas.conquiste.texto')}
             </ThemedText>
           </View>
           <Icone nome="avancar" cor={theme.textSecondary} tamanho={16} />
@@ -70,6 +71,7 @@ export function PainelMetas() {
 
 function CartaoMeta({ meta }: { meta: ProgressoMeta }) {
   const theme = useTheme();
+  const t = useT();
   const degrade = useDegrade();
   const percentual = Math.floor(meta.percentual);
   const descricao = descreverMeta(meta);
@@ -78,8 +80,8 @@ function CartaoMeta({ meta }: { meta: ProgressoMeta }) {
     <Pressable
       onPress={() => router.push({ pathname: '/meta/[id]', params: { id: String(meta.id) } })}
       accessibilityRole="button"
-      accessibilityLabel={`Meta ${meta.nome}: ${formatarCentavos(meta.atualCentavos)} de ${formatarCentavos(meta.objetivoCentavos)}, ${percentual}%. ${descricao}`}
-      accessibilityHint="Abre os detalhes da meta"
+      accessibilityLabel={`${meta.nome}: ${formatarCentavos(meta.atualCentavos)} / ${formatarCentavos(meta.objetivoCentavos)}, ${percentual}%. ${descricao}`}
+      accessibilityHint={t('metas.abreDetalhes')}
       style={({ pressed }) => pressed && styles.pressionado}>
       <Cartao style={styles.meta}>
         <View

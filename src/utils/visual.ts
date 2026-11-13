@@ -42,14 +42,15 @@ export function visualCategoria(nome: string, id: number): { icone: NomeIcone; c
   return (chave && POR_CHAVE[chave]) || { icone: 'etiqueta', cor: Math.abs(id) % 8 };
 }
 
+/** Palavras no nome da meta (8 idiomas, sem acentos) → ícone. */
 const METAS: [RegExp, NomeIcone][] = [
-  [/reserva|emergencia/, 'escudo'],
-  [/viagem|ferias|viajar/, 'viagem'],
-  [/carro|moto|veiculo/, 'transporte'],
-  [/casa|apartamento|imovel|reforma/, 'moradia'],
-  [/estudo|curso|faculdade|educacao/, 'educacao'],
-  [/divida|quitar/, 'carteira'],
-  [/investi|aposentadoria/, 'investimentos'],
+  [/reserva|emergen|notfall|rucklage|fondo|poduszk|buffer|nood|epargne de precaution/, 'escudo'],
+  [/viage|viaje|ferias|vacan|holiday|travel|reise|urlaub|viagg|wakacj|podroz|voyage/, 'viagem'],
+  [/carro|coche|\bcar\b|voiture|\bauto\b|samochod|moto|veicul|vehic|fahrzeug/, 'transporte'],
+  [/casa|\bhouse|\bhome\b|maison|\bhaus\b|\bhuis\b|\bdom\b|mieszk|apartament|wohnung|piso|imovel|reforma|renov/, 'moradia'],
+  [/estud|curso|course|\bkurs|faculd|universi|educa|studi|formation|szkol/, 'educacao'],
+  [/divida|deuda|\bdebt|dette|schulden|debit|\bschuld|dlug|quitar/, 'carteira'],
+  [/investi|anlage|beleg|aposentad|jubilac|retire|pension|rente|retraite|emerytur/, 'investimentos'],
 ];
 
 export function iconeMeta(nome: string): NomeIcone {

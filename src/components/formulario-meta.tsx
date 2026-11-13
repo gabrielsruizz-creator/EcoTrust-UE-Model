@@ -1,4 +1,6 @@
 import { router } from 'expo-router';
+import { useT } from '@/hooks/use-idioma';
+import type { Chave } from '@/i18n';
 import { useMemo, useState, type ReactNode } from 'react';
 import {
   Alert,
@@ -29,12 +31,12 @@ import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
 
 type OpcaoPrazo = 'sem' | '6' | '12' | '24' | 'outra';
 
-const PRAZOS: { valor: OpcaoPrazo; rotulo: string }[] = [
-  { valor: 'sem', rotulo: 'Sem prazo' },
-  { valor: '6', rotulo: 'Em 6 meses' },
-  { valor: '12', rotulo: 'Em 1 ano' },
-  { valor: '24', rotulo: 'Em 2 anos' },
-  { valor: 'outra', rotulo: 'Outra data' },
+const PRAZOS: { valor: OpcaoPrazo; rotulo: Chave }[] = [
+  { valor: 'sem', rotulo: 'metas.semPrazo' },
+  { valor: '6', rotulo: 'metas.prazo6' },
+  { valor: '12', rotulo: 'metas.prazo12' },
+  { valor: '24', rotulo: 'metas.prazo24' },
+  { valor: 'outra', rotulo: 'lanc.form.outraData' },
 ];
 
 type Props = {
@@ -46,6 +48,7 @@ type Props = {
 
 export function FormularioMeta({ titulo, inicial, aoSalvar }: Props) {
   const theme = useTheme();
+  const t = useT();
   const modelos = useMemo(() => (inicial ? [] : modelosDeMeta()), [inicial]);
   const [nome, setNome] = useState(inicial?.nome ?? '');
   const [objetivoTexto, setObjetivoTexto] = useState(
@@ -79,10 +82,7 @@ export function FormularioMeta({ titulo, inicial, aoSalvar }: Props) {
       router.back();
     } catch (erro) {
       vibrarErro();
-      Alert.alert(
-        'Não foi possível salvar',
-        erro instanceof ErroValidacao ? erro.message : 'Tente novamente.',
-      );
+      Alert.alert(t('comum.erroGuardar'), erro instanceof ErroValidacao ? erro.message : t('comum.tenteNovamente'));
     }
   }
 
@@ -97,7 +97,7 @@ export function FormularioMeta({ titulo, inicial, aoSalvar }: Props) {
           <View style={styles.topo}>
             <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12}>
               <ThemedText type="smallBold" themeColor="textSecondary">
-                Cancelar
+                {t('comum.cancelar')}
               </ThemedText>
             </Pressable>
             <ThemedText type="smallBold" accessibilityRole="header">
@@ -108,7 +108,7 @@ export function FormularioMeta({ titulo, inicial, aoSalvar }: Props) {
 
           <ScrollView contentContainerStyle={styles.conteudo} keyboardShouldPersistTaps="handled">
             {modelos.length > 0 && (
-              <Secao titulo="Ideias">
+              <Secao titulo={t('metas.ideias')}>
                 <View style={styles.chips}>
                   {modelos.map((m) => (
                     <Chip
@@ -125,42 +125,42 @@ export function FormularioMeta({ titulo, inicial, aoSalvar }: Props) {
               </Secao>
             )}
 
-            <Secao titulo="Nome da meta">
+            <Secao titulo={t('metas.nome')}>
               <TextInput
                 style={estiloCampo}
                 value={nome}
                 onChangeText={setNome}
-                placeholder="Ex.: Viagem para a praia"
+                placeholder={t('metas.nome.ex')}
                 placeholderTextColor={theme.textSecondary}
-                accessibilityLabel="Nome da meta"
+                accessibilityLabel={t('metas.nome')}
                 maxLength={40}
                 autoCapitalize="sentences"
               />
             </Secao>
 
-            <Secao titulo="Quanto você quer juntar?">
-              <CampoValor valor={objetivoTexto} aoMudar={setObjetivoTexto} rotulo="Valor da meta em reais" />
-              {nome === 'Reserva de emergência' && (
-                <Dica>O ideal é ter guardado cerca de 6 meses das suas contas fixas.</Dica>
+            <Secao titulo={t('metas.quanto')}>
+              <CampoValor valor={objetivoTexto} aoMudar={setObjetivoTexto} rotulo={t('metas.valorMeta')} />
+              {nome === t('metas.modelo.reserva') && (
+                <Dica>{t('metas.dicaReserva')}</Dica>
               )}
             </Secao>
 
             {!inicial && (
-              <Secao titulo="Quanto você já tem guardado? (opcional)">
+              <Secao titulo={t('metas.jaTem')}>
                 <CampoValor
                   valor={guardadoTexto}
                   aoMudar={setGuardadoTexto}
-                  rotulo="Valor já guardado para esta meta, em reais"
+                  rotulo={t('metas.valorJaGuardado')}
                 />
               </Secao>
             )}
 
-            <Secao titulo="Prazo">
+            <Secao titulo={t('metas.prazo')}>
               <View style={styles.chips} accessibilityRole="radiogroup">
                 {PRAZOS.map((p) => (
                   <Chip
                     key={p.valor}
-                    texto={p.rotulo}
+                    texto={t(p.rotulo)}
                     ativo={opcaoPrazo === p.valor}
                     aoTocar={() => setOpcaoPrazo(p.valor)}
                   />
@@ -168,7 +168,7 @@ export function FormularioMeta({ titulo, inicial, aoSalvar }: Props) {
               </View>
               {opcaoPrazo === 'outra' && (
                 <CampoData
-                  rotulo="Prazo da meta"
+                  rotulo={t('metas.prazoDa')}
                   valor={outroPrazo}
                   aoMudar={setOutroPrazo}
                   min={somarDias(hoje(), 1)}
@@ -177,27 +177,25 @@ export function FormularioMeta({ titulo, inicial, aoSalvar }: Props) {
               )}
               {prazoInvalido && outroPrazo !== null && (
                 <ThemedText type="small" style={{ color: theme.negative }} accessibilityLiveRegion="polite">
-                  O prazo precisa ser uma data no futuro.
+                  {t('metas.erro.prazoFuturo')}
                 </ThemedText>
               )}
               {prazo !== null && !prazoInvalido && opcaoPrazo !== 'outra' && (
-                <Dica>Até {formatarData(prazo)}.</Dica>
+                <Dica>{t('metas.ate', { data: formatarData(prazo) })}</Dica>
               )}
             </Secao>
 
             {porMes !== null && porMes > 0 && prazo && (
               <View style={[styles.previa, { backgroundColor: theme.accentSoft }]}>
                 <ThemedText type="small">
-                  Para chegar lá, guarde cerca de{' '}
-                  <ThemedText type="smallBold">{formatarCentavos(porMes)} por mês</ThemedText> até{' '}
-                  {nomeDoMes(prazo.slice(0, 7))}.
+                  {t('metas.previa', { valor: formatarCentavos(porMes), mes: nomeDoMes(prazo.slice(0, 7)) })}
                 </ThemedText>
               </View>
             )}
           </ScrollView>
 
           <View style={styles.rodape}>
-            <Botao texto={inicial ? 'Salvar alterações' : 'Criar meta'} disabled={!podeSalvar} onPress={salvar} />
+            <Botao texto={inicial ? t('lanc.form.guardarAlteracoes') : t('metas.criar')} disabled={!podeSalvar} onPress={salvar} />
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

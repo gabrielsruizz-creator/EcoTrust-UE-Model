@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useT } from '@/hooks/use-idioma';
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,6 +19,7 @@ import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
 /** Guardar ou retirar dinheiro de uma meta (parâmetro tipo = "guardar" | "retirar"). */
 export default function MovimentarMetaScreen() {
   const theme = useTheme();
+  const t = useT();
   const { id, tipo } = useLocalSearchParams<{ id: string; tipo?: string }>();
   const retirando = tipo === 'retirar';
   const dados = useMeta(Number(id));
@@ -38,10 +40,7 @@ export default function MovimentarMetaScreen() {
       router.back();
     } catch (erro) {
       vibrarErro();
-      Alert.alert(
-        'Não foi possível salvar',
-        erro instanceof ErroValidacao ? erro.message : 'Tente novamente.',
-      );
+      Alert.alert(t('comum.erroGuardar'), erro instanceof ErroValidacao ? erro.message : t('comum.tenteNovamente'));
     }
   }
 
@@ -52,46 +51,47 @@ export default function MovimentarMetaScreen() {
           <View style={styles.topo}>
             <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12}>
               <ThemedText type="smallBold" themeColor="textSecondary">
-                Cancelar
+                {t('comum.cancelar')}
               </ThemedText>
             </Pressable>
             <ThemedText type="smallBold" accessibilityRole="header">
-              {retirando ? 'Retirar da meta' : 'Guardar na meta'}
+              {retirando ? t('metas.retirarDa') : t('metas.guardarNa')}
             </ThemedText>
             <View style={styles.espacoTopo} />
           </View>
 
           <View style={styles.conteudo}>
             {!meta ? (
-              <ThemedText themeColor="textSecondary">Esta meta não existe mais.</ThemedText>
+              <ThemedText themeColor="textSecondary">{t('metas.erro.naoExiste')}</ThemedText>
             ) : (
               <>
                 <ThemedText style={styles.nome}>{meta.nome}</ThemedText>
                 <ThemedText themeColor="textSecondary">
-                  Guardado até agora: {formatarCentavos(meta.atualCentavos)} de{' '}
-                  {formatarCentavos(meta.objetivoCentavos)}
+                  {t('metas.guardadoAte', { atual: formatarCentavos(meta.atualCentavos), objetivo: formatarCentavos(meta.objetivoCentavos) })}
                 </ThemedText>
                 <CampoValor
                   valor={valorTexto}
                   aoMudar={setValorTexto}
-                  rotulo={retirando ? 'Valor a retirar em reais' : 'Valor a guardar em reais'}
+                  rotulo={retirando ? t('metas.valorRetirar') : t('metas.valorGuardar')}
                   autoFocus
                   aoConfirmar={confirmar}
                 />
                 {excedeRetirada ? (
                   <ThemedText type="small" style={{ color: theme.negative }} accessibilityLiveRegion="polite">
-                    Você só tem {formatarCentavos(meta.atualCentavos)} guardados nesta meta.
+                    {t('metas.soTem', { valor: formatarCentavos(meta.atualCentavos) })}
                   </ThemedText>
                 ) : (
                   novoTotal !== null && (
                     <ThemedText type="small" themeColor="textSecondary" accessibilityLiveRegion="polite">
-                      Com isso, a meta fica com {formatarCentavos(novoTotal)} (
-                      {Math.min(100, Math.floor((novoTotal / meta.objetivoCentavos) * 100))}%).
+                      {t('metas.ficaCom', {
+                        valor: formatarCentavos(novoTotal),
+                        percentual: Math.min(100, Math.floor((novoTotal / meta.objetivoCentavos) * 100)),
+                      })}
                     </ThemedText>
                   )
                 )}
                 <ThemedText type="small" themeColor="textSecondary">
-                  Este valor fica só na meta: ele não entra como receita nem como despesa.
+                  {t('metas.soNaMeta')}
                 </ThemedText>
               </>
             )}
@@ -99,7 +99,7 @@ export default function MovimentarMetaScreen() {
 
           <View style={styles.rodape}>
             <Botao
-              texto={retirando ? 'Retirar' : 'Guardar'}
+              texto={retirando ? t('metas.retirar') : t('metas.guardar')}
               variante={retirando ? 'perigo' : 'primario'}
               disabled={!podeSalvar}
               onPress={confirmar}

@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useT } from '@/hooks/use-idioma';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -11,6 +12,7 @@ import { useMeta } from '@/hooks/use-dados';
 import { editarMeta } from '@/services/metas-service';
 
 export default function EditarMetaScreen() {
+  const t = useT();
   const { id } = useLocalSearchParams<{ id: string }>();
   const dados = useMeta(Number(id));
 
@@ -18,8 +20,8 @@ export default function EditarMetaScreen() {
     return (
       <ThemedView style={styles.container}>
         <SafeAreaView style={styles.vazio}>
-          <ThemedText themeColor="textSecondary">Esta meta não existe mais.</ThemedText>
-          <Botao texto="Voltar" onPress={() => router.back()} />
+          <ThemedText themeColor="textSecondary">{t('metas.erro.naoExiste')}</ThemedText>
+          <Botao texto={t('comum.voltar')} onPress={() => router.back()} />
         </SafeAreaView>
       </ThemedView>
     );
@@ -27,7 +29,7 @@ export default function EditarMetaScreen() {
 
   return (
     <FormularioMeta
-      titulo="Editar meta"
+      titulo={t('metas.editar')}
       inicial={dados.meta}
       aoSalvar={(novos) => editarMeta(dados.meta.id, novos)}
     />
