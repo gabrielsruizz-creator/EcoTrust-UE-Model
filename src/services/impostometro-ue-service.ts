@@ -11,14 +11,14 @@
  * Cálculos em centavos fracionados, arredondados só no fim.
  */
 
-import type { PerfilTributarioId } from '@/data/carga-tributaria';
+import type { PerfilTributarioId } from '@/data/perfis-consumo';
 import type { CodigoPais } from '@/data/paises';
 import { calcularImpostosDaRenda, temRegras, type AvisoRenda } from '@/data/renda';
 import { listarCategorias } from '@/repositories/categorias-repository';
 import { listarTransacoes } from '@/repositories/transacoes-repository';
 import { perfilTributarioDaCategoria } from '@/services/categorias-service';
-import { calcularDiaDaLiberdade } from '@/services/impostometro-service';
 import { estimarImpostosDaCompra, type AvisoConsumo } from '@/services/impostos-consumo-ue-service';
+import type { ResumoImpostosInsight } from '@/services/insights-service';
 import { obterImpostosFixos } from '@/services/impostos-renda-service';
 import { obterPerfilFiscal } from '@/services/perfil-fiscal-service';
 import type { ImpostosFixos, PerfilFiscal, Transacao } from '@/types/financas';
@@ -26,6 +26,9 @@ import { mesAtual, somarMeses } from '@/utils/datas';
 import { variacaoPercentual } from '@/utils/percentual';
 
 export type OrigemImpostoUE = 'identificado' | 'estimado' | 'semRegras';
+
+/** Origem do imposto nas listas: 'nota' = identificado no recibo. */
+export type OrigemImposto = 'nota' | 'estimado';
 
 export type ImpostoDaDespesaUE = {
   origem: OrigemImpostoUE;
@@ -82,6 +85,17 @@ export type ImpostometroUE = {
 
 const MAX_LANCAMENTOS = 5;
 const umaCasa = (n: number) => Math.round(n * 10) / 10;
+
+/** "Dia da Libertação de Impostos": até que dia do ano o rendimento foi só para pagar impostos. */
+export function calcularDiaDaLiberdade(ano: number, cargaAno: number, rendaAno: number) {
+  if (rendaAno <= 0 || cargaAno <= 0) return null;
+  const diasNoAno = new Date(ano, 1, 29).getMonth() === 1 ? 366 : 365;
+  const percentual = Math.min(1, cargaAno / rendaAno);
+  const dias = Math.round(percentual * diasNoAno);
+  const d = new Date(ano, 0, 1 + dias);
+  const data = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return { percentual: umaCasa(percentual * 100), dias, data };
+}
 
 /** Imposto de uma despesa (sem arredondar), pelo país onde a compra aconteceu. */
 export function impostoDaDespesa(t: Transacao, perfil: PerfilTributarioId, fiscal: PerfilFiscal): ImpostoDaDespesaUE {
@@ -313,9 +327,9 @@ export function obterImpostometroUE(mes: string): ImpostometroUE {
  * Imposto de cada despesa de um mês, pelo id do lançamento (lista de Transações e Início).
  * A origem usa os nomes das telas: 'nota' = identificado no recibo; despesas sem regras ficam de fora.
  */
-export function obterImpostosDosLancamentosUE(mes: string): Map<number, { centavos: number; origem: 'nota' | 'estimado' }> {
+export function obterImpostosDosLancamentosUE(mes: string): Map<number, { centavos: number; origem: OrigemImposto }> {
   const fiscal = obterPerfilFiscal();
-  const resultado = new Map<number, { centavos: number; origem: 'nota' | 'estimado' }>();
+  const resultado = new Map<number, { centavos: number; origem: OrigemImposto }>();
   if (!fiscal) return resultado;
   const perfis = perfisDasCategorias();
   for (const t of listarTransacoes({ mes, tipo: 'despesa' })) {
@@ -349,5 +363,22 @@ export function obterImpostosDoLancamentoUE(t: Transacao | null): (ImpostoDaDesp
     especiaisCentavos: Math.round(imp.especiaisCentavos),
     totalCentavos: Math.round(imp.totalCentavos),
     percentual: t.valorCentavos > 0 ? umaCasa((imp.totalCentavos / t.valorCentavos) * 100) : 0,
+  };
+}
+
+/** Resumo leve para os insights do Início (só o consumo do mês). null sem despesas estimáveis. */
+export function obterResumoImpostosUE(mes: string): ResumoImpostosInsight | null {
+  const imp = calcularImpostometroUE({
+    mes,
+    transacoes: listarTransacoes({ mes, tipo: 'despesa' }),
+    perfis: perfisDasCategorias(),
+    fiscal: obterPerfilFiscal(),
+  });
+  if (imp.percentualDosGastos === null) return null;
+  const maior = imp.porCategoria[0];
+  return {
+    impostosCentavos: imp.identificadosCentavos + imp.estimadosCentavos,
+    percentualDosGastos: imp.percentualDosGastos,
+    maiorCategoria: maior && maior.impostosCentavos > 0 ? { nome: maior.categoria, impostosCentavos: maior.impostosCentavos } : null,
   };
 }

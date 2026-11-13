@@ -4,7 +4,7 @@
  * Datas são strings "AAAA-MM-DD" e meses são "AAAA-MM", no fuso do celular.
  */
 
-import type { PerfilTributarioId } from '@/data/carga-tributaria';
+import type { PerfilTributarioId } from '@/data/perfis-consumo';
 
 export type TipoTransacao = 'receita' | 'despesa';
 

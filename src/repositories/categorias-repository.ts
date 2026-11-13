@@ -1,4 +1,4 @@
-import { perfilTributarioValido, type PerfilTributarioId } from '@/data/carga-tributaria';
+import { perfilTributarioValido, type PerfilTributarioId } from '@/data/perfis-consumo';
 import { getBanco, notificarMudanca } from '@/data/database';
 import type { Categoria, TipoTransacao } from '@/types/financas';
 

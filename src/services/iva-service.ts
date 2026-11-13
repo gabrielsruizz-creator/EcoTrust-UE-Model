@@ -8,7 +8,7 @@
  * A taxa aplicável é a do país onde a compra aconteceu (país de consumo), não a do país de residência.
  */
 
-import type { PerfilTributarioId } from '@/data/carga-tributaria';
+import type { PerfilTributarioId } from '@/data/perfis-consumo';
 import { paisFiscal, type CodigoPais, type PaisFiscal, type TabelaTaxas, type TipoTaxaIva, type Vigencia } from '@/data/paises';
 
 export type LocalCompra = {

@@ -9,27 +9,30 @@ import { Botao } from '@/components/tela';
 import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
-import { useImpostometro } from '@/hooks/use-dados';
+import { useImpostometroUE } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
+import { localeAtual, type Chave } from '@/i18n';
 import { mesAtual, nomeDoMes } from '@/utils/datas';
 import { formatarCentavos } from '@/utils/moeda';
 import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
 
 function numero(n: number) {
-  return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  return n.toLocaleString(localeAtual(), { maximumFractionDigits: 1 });
 }
 
 function diaEMes(data: string) {
   const [ano, mes, dia] = data.split('-').map(Number);
-  return new Date(ano, mes - 1, dia).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+  return new Date(ano, mes - 1, dia).toLocaleDateString(localeAtual(), { day: 'numeric', month: 'long' });
 }
 
-/** Cartão do Impostômetro do mês em imagem, para mandar no WhatsApp ou postar. */
+/** Cartão do Impostómetro do mês em imagem, para enviar a amigos ou publicar. */
 export default function CompartilharImpostosScreen() {
   const theme = useTheme();
+  const t = useT();
   const params = useLocalSearchParams<{ mes?: string }>();
   const mes = params.mes && /^\d{4}-\d{2}$/.test(params.mes) ? params.mes : mesAtual();
-  const imp = useImpostometro(mes);
+  const imp = useImpostometroUE(mes);
   const [mostrarValores, setMostrarValores] = useState(true);
   const [gerando, setGerando] = useState(false);
   const cartao = useRef<HostInstance>(null);
@@ -40,11 +43,11 @@ export default function CompartilharImpostosScreen() {
     try {
       if (!(await isAvailableAsync())) throw new Error('indisponível');
       const uri = await captureRef(cartao, { format: 'png', quality: 1, fileName: 'meu-impostometro' });
-      await shareAsync(uri, { mimeType: 'image/png', UTI: 'public.png', dialogTitle: 'Compartilhar meu Impostômetro' });
+      await shareAsync(uri, { mimeType: 'image/png', UTI: 'public.png', dialogTitle: t('partilhar.dialogo') });
       vibrarSucesso();
     } catch {
       vibrarErro();
-      Alert.alert('Não foi possível compartilhar', 'Tente novamente.');
+      Alert.alert(t('partilhar.erro'), t('comum.tenteNovamente'));
     } finally {
       setGerando(false);
     }
@@ -52,14 +55,14 @@ export default function CompartilharImpostosScreen() {
 
   return (
     <TelaSecundaria
-      titulo="Compartilhar"
-      textoVoltar="Fechar"
-      rodape={<Botao texto="Compartilhar imagem" icone="compartilhar" disabled={gerando} onPress={compartilhar} />}>
+      titulo={t('partilhar.titulo')}
+      textoVoltar={t('comum.fechar')}
+      rodape={<Botao texto={t('partilhar.imagem')} icone="compartilhar" disabled={gerando} onPress={compartilhar} />}>
       {/* O que está dentro deste View vira a imagem */}
       <View ref={cartao} collapsable={false} style={styles.cartao}>
         <View style={styles.decoracao} />
         <ThemedText type="small" style={styles.claro}>
-          Meu Impostômetro · {nomeMes}
+          {t('partilhar.meu', { mes: nomeMes })}
         </ThemedText>
         {mostrarValores ? (
           <ThemedText style={styles.grande} numberOfLines={1} adjustsFontSizeToFit>
@@ -72,30 +75,32 @@ export default function CompartilharImpostosScreen() {
         )}
         <ThemedText style={styles.branco}>
           {mostrarValores
-            ? 'foram para o governo em impostos este mês.'
+            ? t('partilhar.frase.valor')
             : imp.percentualDaRenda !== null
-              ? 'da minha renda foi para o governo em impostos.'
-              : 'do que gastei foi imposto.'}
+              ? t('partilhar.frase.renda')
+              : t('partilhar.frase.gastos')}
         </ThemedText>
 
         <View style={styles.numeros}>
           {imp.percentualDosGastos !== null && (
-            <Numero valor={`${numero(imp.percentualDosGastos)}%`} rotulo="do que gastei era imposto" />
+            <Numero valor={`${numero(imp.percentualDosGastos)}%`} rotulo={t('partilhar.gastos')} />
           )}
           {imp.diasTrabalhados !== null && (
-            <Numero valor={`${numero(imp.diasTrabalhados)} dias`} rotulo="de trabalho para o governo" />
+            <Numero valor={t('comum.dias', { n: Math.round(imp.diasTrabalhados) })} rotulo={t('partilhar.dias')} />
           )}
         </View>
 
-        {imp.porEsfera.length > 0 && (
+        {imp.porPais.length > 0 && (
           <View style={styles.esferas}>
-            {imp.porEsfera.map((e) => (
-              <View key={e.esfera} style={styles.esfera}>
+            {imp.porPais.slice(0, 4).map((p) => (
+              <View key={p.pais} style={styles.esfera}>
                 <ThemedText type="small" style={[styles.claro, styles.flex]}>
-                  {e.nome}
+                  {t(`pais.${p.pais}` as Chave)}
                 </ThemedText>
                 <ThemedText type="smallBold" style={styles.branco}>
-                  {mostrarValores ? formatarCentavos(e.centavos) : `${numero(e.percentual)}%`}
+                  {mostrarValores
+                    ? formatarCentavos(p.impostosCentavos)
+                    : `${numero(p.gastoCentavos > 0 ? (p.impostosCentavos / p.gastoCentavos) * 100 : 0)}%`}
                 </ThemedText>
               </View>
             ))}
@@ -104,30 +109,30 @@ export default function CompartilharImpostosScreen() {
 
         {imp.liberdade && (
           <ThemedText type="small" style={styles.claro}>
-            Meu Dia da Liberdade de Impostos em {mes.slice(0, 4)}: {diaEMes(imp.liberdade.data)}
+            {t('partilhar.liberdade', { ano: mes.slice(0, 4), data: diaEMes(imp.liberdade.data) })}
           </ThemedText>
         )}
 
         <View style={styles.rodapeCartao}>
           <LogoEcoTrust tamanho={20} cor="#F3EEE4" />
           <ThemedText type="smallBold" style={styles.branco}>
-            EcoTrust · seu impostômetro pessoal
+            {t('partilhar.marca')}
           </ThemedText>
         </View>
       </View>
 
       <View style={[styles.opcao, { backgroundColor: theme.backgroundElement }]}>
         <View style={styles.flex}>
-          <ThemedText type="smallBold">Mostrar valores em reais</ThemedText>
+          <ThemedText type="smallBold">{t('partilhar.mostrarValores')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Desligue para mostrar só percentuais.
+            {t('partilhar.mostrarValores.ajuda')}
           </ThemedText>
         </View>
         <Switch
           value={mostrarValores}
           onValueChange={setMostrarValores}
           trackColor={{ true: theme.positive }}
-          accessibilityLabel="Mostrar valores em reais na imagem"
+          accessibilityLabel={t('partilhar.mostrarValores')}
         />
       </View>
     </TelaSecundaria>

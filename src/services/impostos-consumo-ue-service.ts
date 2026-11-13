@@ -10,7 +10,7 @@
  *   quantidade comprada (leitura do recibo).
  */
 
-import type { PerfilTributarioId } from '@/data/carga-tributaria';
+import type { PerfilTributarioId } from '@/data/perfis-consumo';
 import { percentualEspecialCombustivel, type TipoCombustivel } from '@/data/paises/combustivel';
 import { estimarTaxaDoPerfil, ivaContidoNoPreco, type LocalCompra } from '@/services/iva-service';
 

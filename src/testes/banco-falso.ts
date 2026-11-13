@@ -75,16 +75,6 @@ export const transacoesRepository = {
   },
 };
 
-export const notasRepository = {
-  buscarNotaDaTransacao: (id: number) => banco.notas.get(id) ?? null,
-  gravarNotaDaTransacao: (id: number, nota: NotaSalva) => banco.notas.set(id, nota),
-  listarItensDoMes: (mes: string) =>
-    new Map(
-      [...banco.notas.entries()]
-        .filter(([id]) => banco.transacoes.find((t) => t.id === id)?.data.startsWith(mes))
-        .map(([id, nota]) => [id, nota.itens]),
-    ),
-};
 
 export const impostosFixosRepository = {
   buscarImpostosFixos: () => banco.fixos,
@@ -96,17 +86,6 @@ export const impostosFixosRepository = {
   },
 };
 
-export const classificacaoRepository = {
-  listarClassificacoes: () => new Map(banco.classificacoes),
-  gravarClassificacao: (nome: string, tipo: string) => {
-    banco.classificacoes.set(nome, tipo);
-    jest.requireActual<typeof import('@/data/database')>('@/data/database').notificarMudanca();
-  },
-  removerClassificacao: (nome: string) => {
-    banco.classificacoes.delete(nome);
-    jest.requireActual<typeof import('@/data/database')>('@/data/database').notificarMudanca();
-  },
-};
 
 export const perfilFinanceiroService = {
   obterPerfil: () => banco.perfil,

@@ -4,7 +4,7 @@
 
 import { obterPerfilFinanceiro } from '@/repositories/perfil-financeiro-repository';
 import { somarTotaisGerais } from '@/repositories/transacoes-repository';
-import { obterResumoImpostos } from '@/services/impostometro-service';
+import { obterResumoImpostosUE } from '@/services/impostometro-ue-service';
 import { gerarInsights, type ResumoImpostosInsight } from '@/services/insights-service';
 import { obterOrcamentos, type ResumoOrcamentos } from '@/services/orcamento-service';
 import { obterResumoDoMes } from '@/services/resumo-service';
@@ -87,6 +87,6 @@ export function obterDashboard(mes: string): Dashboard {
     totaisGerais: somarTotaisGerais(),
     perfil: obterPerfilFinanceiro(),
     orcamentos: obterOrcamentos(mes),
-    impostos: obterResumoImpostos(mes),
+    impostos: obterResumoImpostosUE(mes),
   });
 }

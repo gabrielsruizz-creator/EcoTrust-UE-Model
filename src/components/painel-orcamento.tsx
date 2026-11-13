@@ -8,7 +8,7 @@ import { EtiquetaSituacao, useCorSituacao } from '@/components/situacao-orcament
 import { Botao, Cartao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
-import { useImpostometro, useOrcamentos } from '@/hooks/use-dados';
+import { useImpostometroUE, useOrcamentos } from '@/hooks/use-dados';
 import type { StatusOrcamento } from '@/services/orcamento-service';
 import { mesAtual, nomeDoMes } from '@/utils/datas';
 import { formatarCentavos } from '@/utils/moeda';
@@ -25,7 +25,7 @@ function abrirEdicao(categoria?: number | 'geral') {
 export function PainelOrcamento() {
   const mes = mesAtual();
   const orcamentos = useOrcamentos(mes);
-  const impostometro = useImpostometro(mes);
+  const impostometro = useImpostometroUE(mes);
   const impostosPorCategoria = new Map(impostometro.porCategoria.map((c) => [c.categoriaId, c.impostosCentavos]));
   const [selecionadoId, setSelecionadoId] = useState<number | null>(null);
   // Se a categoria escolhida perdeu o orçamento, volta a mostrar o total.

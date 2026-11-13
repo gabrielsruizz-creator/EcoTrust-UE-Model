@@ -2,7 +2,7 @@
  * Categorias: as padrão do EcoTrust são fixas; o usuário pode criar, renomear e excluir as próprias.
  */
 
-import { perfilPorNome, perfilTributarioValido, type PerfilTributarioId } from '@/data/carga-tributaria';
+import { perfilPorNome, perfilTributarioValido, type PerfilTributarioId } from '@/data/perfis-consumo';
 import {
   buscarCategoria,
   contarTransacoesDaCategoria,

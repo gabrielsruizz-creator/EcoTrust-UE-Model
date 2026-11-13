@@ -13,9 +13,7 @@ import type { PerfilFiscal } from '@/types/financas';
 
 jest.mock('@/repositories/categorias-repository', () => jest.requireActual<typeof import('./banco-falso')>('./banco-falso').categoriasRepository);
 jest.mock('@/repositories/transacoes-repository', () => jest.requireActual<typeof import('./banco-falso')>('./banco-falso').transacoesRepository);
-jest.mock('@/repositories/notas-repository', () => jest.requireActual<typeof import('./banco-falso')>('./banco-falso').notasRepository);
 jest.mock('@/repositories/impostos-fixos-repository', () => jest.requireActual<typeof import('./banco-falso')>('./banco-falso').impostosFixosRepository);
-jest.mock('@/repositories/classificacao-repository', () => jest.requireActual<typeof import('./banco-falso')>('./banco-falso').classificacaoRepository);
 jest.mock('@/repositories/perfil-fiscal-repository', () => jest.requireActual<typeof import('./banco-falso')>('./banco-falso').perfilFiscalRepository);
 jest.mock('@/services/perfil-financeiro-service', () => jest.requireActual<typeof import('./banco-falso')>('./banco-falso').perfilFinanceiroService);
 

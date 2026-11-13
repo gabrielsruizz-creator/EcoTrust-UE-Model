@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
-import type { OrigemImposto } from '@/services/impostometro-service';
+import type { OrigemImposto } from '@/services/impostometro-ue-service';
 import type { Transacao } from '@/types/financas';
 
 export type TomSelo = 'verde' | 'ambar' | 'rosa';

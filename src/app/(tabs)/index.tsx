@@ -22,7 +22,7 @@ import {
 import { useConta } from '@/hooks/use-sessao';
 import { useTheme } from '@/hooks/use-theme';
 import { localeAtual } from '@/i18n';
-import type { OrigemImposto } from '@/services/impostometro-service';
+import type { OrigemImposto } from '@/services/impostometro-ue-service';
 import { primeiroNome, saudacao } from '@/services/perfil-financeiro-service';
 import type { Transacao } from '@/types/financas';
 import { diasEntre, formatarDataCurta, hoje, mesAtual, nomeDoMes } from '@/utils/datas';

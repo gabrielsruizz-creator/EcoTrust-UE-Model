@@ -7,7 +7,7 @@ import { Chip } from '@/components/chip';
 import { Icone } from '@/components/icone';
 import { Selo, seloDoLancamento } from '@/components/selo';
 import { Valor } from '@/components/valor';
-import type { OrigemImposto } from '@/services/impostometro-service';
+import type { OrigemImposto } from '@/services/impostometro-ue-service';
 import { Botao, Cartao, Segmentado, Tela } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { SeriesColors, Spacing } from '@/constants/theme';

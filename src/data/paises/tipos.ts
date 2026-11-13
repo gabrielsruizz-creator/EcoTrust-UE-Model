@@ -1,4 +1,4 @@
-import type { PerfilTributarioId } from '@/data/carga-tributaria';
+import type { PerfilTributarioId } from '@/data/perfis-consumo';
 
 /** Países da UE (ISO 3166-1). A Grécia é GR aqui; na TEDB e no IVA europeu ela aparece como EL. */
 export type CodigoPais =

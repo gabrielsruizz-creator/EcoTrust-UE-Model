@@ -11,7 +11,7 @@ import {
 } from '@/services/perfil-financeiro-service';
 import { DESCRICAO_PERFIL, obterPerfil, PERGUNTAS } from '@/services/perfil-investidor-service';
 import { obterAnalise } from '@/services/analise-service';
-import { obterImpostometro } from '@/services/impostometro-service';
+import { obterImpostometroUE } from '@/services/impostometro-ue-service';
 import { descreverMeta, obterMetas } from '@/services/metas-service';
 import { obterOrcamentos } from '@/services/orcamento-service';
 import { obterResumoDoMes } from '@/services/resumo-service';
@@ -25,11 +25,10 @@ export function montarContextoIA() {
   const linhas: string[] = [];
   const perfil = obterPerfil();
 
-  linhas.push(`Data de hoje: ${new Date().toLocaleDateString('pt-BR')}`);
+  linhas.push(`Data de hoje: ${new Date().toISOString().slice(0, 10)}`);
 
   const financeiro = obterPerfilFinanceiro();
   if (financeiro) {
-    linhas.push(`Nome: ${financeiro.nome}`);
     linhas.push(
       `Renda mensal informada: ${formatarCentavos(financeiro.rendaMensalCentavos)} (${rotuloFonteRenda(financeiro.fonteRenda)})`,
     );
@@ -78,29 +77,31 @@ export function montarContextoIA() {
     linhas.push(`Nenhuma receita ou despesa registrada nos últimos ${MESES_HISTORICO} meses.`);
   }
 
-  const impostos = obterImpostometro(mesAtual());
+  const impostos = obterImpostometroUE(mesAtual());
+  if (impostos.residencia) linhas.push('', `Residência fiscal: ${impostos.residencia} (código ISO do país).`);
   if (impostos.despesas > 0) {
     linhas.push('');
     linhas.push(
-      `Impostômetro do mês atual (impostos sobre consumo embutidos nas despesas): ${formatarCentavos(impostos.impostosCentavos)}, ${impostos.percentualDosGastos}% dos gastos` +
-        (impostos.diasTrabalhados !== null ? `, equivalente a ${impostos.diasTrabalhados} dias de trabalho` : '') +
-        `. ${impostos.despesasComNota} de ${impostos.despesas} despesas com valor da nota fiscal; o resto é estimado.`,
+      `Impostómetro do mês atual (IVA e impostos especiais nas compras, pelo país de cada compra): ` +
+        `identificados nos recibos ${formatarCentavos(impostos.identificadosCentavos)}, estimados ${formatarCentavos(impostos.estimadosCentavos)}` +
+        (impostos.percentualDosGastos !== null ? `, ${impostos.percentualDosGastos}% dos gastos` : '') +
+        (impostos.semRegras.despesas > 0 ? `. ${impostos.semRegras.despesas} despesas em países ainda sem regras no app não foram estimadas` : '') +
+        '.',
     );
-    linhas.push(
-      `- Por imposto: ${impostos.porTributo.map((t) => `${t.tributo.sigla} ${formatarCentavos(t.centavos)}`).join('; ')}`,
-    );
+    linhas.push(`- Por imposto: IVA ${formatarCentavos(impostos.ivaCentavos)}; impostos especiais ${formatarCentavos(impostos.especiaisCentavos)}`);
+    linhas.push(`- Por país: ${impostos.porPais.map((p) => `${p.pais} ${formatarCentavos(p.impostosCentavos)}`).join('; ')}`);
     linhas.push(
       `- Por categoria: ${impostos.porCategoria.map((c) => `${c.categoria} ${formatarCentavos(c.impostosCentavos)} (${c.carga}%)`).join('; ')}`,
     );
     linhas.push(`- Acumulado no ano: ${formatarCentavos(impostos.acumuladoAnoCentavos)}`);
   }
-  if (impostos.fixos) {
-    const f = impostos.fixos;
+  if (impostos.renda) {
     linhas.push(
-      `Impostos da renda e do patrimônio por mês: INSS ${formatarCentavos(f.inssCentavos)}, IR ${formatarCentavos(f.irCentavos)}${f.descontadosNaFonte ? ' (descontados no holerite, calculados pelo salário bruto)' : ''}, IPVA ${formatarCentavos(f.ipvaCentavos)}, IPTU ${formatarCentavos(f.iptuCentavos)}, outros ${formatarCentavos(f.outrosCentavos)}. Carga total do mês: ${formatarCentavos(impostos.cargaTotalCentavos)}` +
-        (impostos.percentualDaRenda !== null ? ` (${impostos.percentualDaRenda}% da renda bruta).` : '.'),
+      `Rendimento do trabalho por mês (estimativa pela residência fiscal): imposto sobre o rendimento ${formatarCentavos(impostos.renda.impostoCentavos)}, contribuições sociais ${formatarCentavos(impostos.renda.contribuicoesCentavos)}. Carga total do mês: ${formatarCentavos(impostos.cargaTotalCentavos)}` +
+        (impostos.percentualDaRenda !== null ? ` (${impostos.percentualDaRenda}% do rendimento bruto).` : '.'),
     );
   }
+  linhas.push('Todos os valores de impostos são estimativas do app, não valores oficiais.');
 
   const orcamentos = obterOrcamentos(mesAtual());
   if (orcamentos.geral || orcamentos.categorias.length > 0) {
