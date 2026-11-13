@@ -21,13 +21,13 @@ import { Botao, Cartao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { ErroValidacao } from '@/services/erros';
 import {
   calcularSobraEstimada,
   FONTES_RENDA,
   OBJETIVOS,
-  primeiroNome,
   rotuloFonteRenda,
   rotuloObjetivo,
   salvarPerfil,
@@ -37,13 +37,14 @@ import type { FonteRenda, ObjetivoFinanceiro, PerfilFinanceiro } from '@/types/f
 import { centavosParaTexto, formatarCentavos, lerValorEmCentavos } from '@/utils/moeda';
 
 type Props = {
-  modo: 'onboarding' | 'edicao';
   inicial?: PerfilFinanceiro | null;
 };
 
 const TOTAL_PERGUNTAS = 5;
 
-export function FluxoPerfil({ modo, inicial }: Props) {
+/** Edição do perfil financeiro em 5 passos (o primeiro acesso usa a conversa do ChatCadastro). */
+export function FluxoPerfil({ inicial }: Props) {
+  const t = useT();
   const theme = useTheme();
   const [passo, setPasso] = useState(0);
   const [nome, setNome] = useState(inicial?.nome ?? '');
@@ -63,7 +64,6 @@ export function FluxoPerfil({ modo, inicial }: Props) {
   const fixas = lerValorEmCentavos(fixasTexto, true);
   const meta = lerValorEmCentavos(metaTexto, true);
   const sobra = renda !== null && fixas !== null ? calcularSobraEstimada(renda, fixas) : null;
-  const nomeCurto = primeiroNome(nome);
 
   const passoValido = [
     nome.trim().length > 0,
@@ -76,7 +76,7 @@ export function FluxoPerfil({ modo, inicial }: Props) {
 
   function voltar() {
     if (passo > 0) setPasso(passo - 1);
-    else if (modo === 'edicao') router.back();
+    else router.back();
   }
 
   function concluir() {
@@ -90,12 +90,11 @@ export function FluxoPerfil({ modo, inicial }: Props) {
         objetivo,
         metaEconomiaCentavos: meta,
       });
-      // No onboarding, salvar o perfil libera as abas e o app troca de tela sozinho.
-      if (modo === 'edicao') router.back();
+      router.back();
     } catch (erro) {
       Alert.alert(
-        'Não foi possível salvar',
-        erro instanceof ErroValidacao ? erro.message : 'Tente novamente.',
+        t('comum.erroGuardar'),
+        erro instanceof ErroValidacao ? erro.message : t('comum.tenteNovamente'),
       );
     }
   }
@@ -115,20 +114,14 @@ export function FluxoPerfil({ modo, inicial }: Props) {
     case 0:
       conteudo = (
         <>
-          {modo === 'onboarding' && (
-            <ThemedText themeColor="textSecondary">
-              Olá! Eu sou o EcoTrust, seu assistente financeiro. Vou te fazer 5 perguntas rápidas
-              para entender sua vida financeira.
-            </ThemedText>
-          )}
-          <Pergunta>Como podemos te chamar?</Pergunta>
+          <Pergunta>{t('fp.nome')}</Pergunta>
           <TextInput
             style={[styles.inputTexto, { color: theme.text, backgroundColor: theme.backgroundElement }]}
             value={nome}
             onChangeText={setNome}
-            placeholder="Seu nome"
+            placeholder={t('acesso.nome')}
             placeholderTextColor={theme.textSecondary}
-            accessibilityLabel="Seu nome"
+            accessibilityLabel={t('acesso.nome')}
             autoCapitalize="words"
             autoComplete="given-name"
             maxLength={40}
@@ -143,11 +136,11 @@ export function FluxoPerfil({ modo, inicial }: Props) {
     case 1:
       conteudo = (
         <>
-          <Pergunta>{nomeCurto ? `${nomeCurto}, quanto` : 'Quanto'} você recebe por mês?</Pergunta>
-          {campoValor(rendaTexto, setRendaTexto, 'Renda mensal em reais')}
-          <Dica>Se a sua renda varia, use uma média dos últimos meses.</Dica>
+          <Pergunta>{t('fp.renda')}</Pergunta>
+          {campoValor(rendaTexto, setRendaTexto, t('fp.renda.rotulo'))}
+          <Dica>{t('fp.renda.dica')}</Dica>
           <ThemedText type="smallBold" style={styles.subpergunta}>
-            De onde vem a maior parte?
+            {t('fp.fonte')}
           </ThemedText>
           <Opcoes
             opcoes={FONTES_RENDA.map((f) => ({ valor: f.valor, rotulo: f.rotulo }))}
@@ -161,26 +154,20 @@ export function FluxoPerfil({ modo, inicial }: Props) {
     case 2:
       conteudo = (
         <>
-          <Pergunta>Quanto você gasta por mês com contas fixas?</Pergunta>
-          {campoValor(fixasTexto, setFixasTexto, 'Despesas fixas mensais em reais')}
-          <Dica>
-            Some o que se repete todo mês: aluguel ou financiamento, condomínio, luz, água, internet,
-            celular, escola, planos e assinaturas. Um valor aproximado já ajuda.
-          </Dica>
+          <Pergunta>{t('chat.fixas1')}</Pergunta>
+          {campoValor(fixasTexto, setFixasTexto, t('fp.fixas.rotulo'))}
+          <Dica>{t('chat.fixas2')}</Dica>
           {sobra !== null && (
             <Cartao>
               <ThemedText type="small" themeColor="textSecondary">
-                Sobra estimada depois das contas fixas
+                {t('fp.sobra')}
               </ThemedText>
               <ThemedText
                 style={[styles.destaque, { color: sobra >= 0 ? theme.positive : theme.negative }]}>
                 {formatarCentavos(sobra)}
               </ThemedText>
               {sobra < 0 && (
-                <ThemedText type="small">
-                  Suas contas fixas passam da sua renda. O EcoTrust vai te ajudar a encontrar onde
-                  ajustar.
-                </ThemedText>
+                <ThemedText type="small">{t('fp.passou')}</ThemedText>
               )}
             </Cartao>
           )}
@@ -191,7 +178,7 @@ export function FluxoPerfil({ modo, inicial }: Props) {
     case 3:
       conteudo = (
         <>
-          <Pergunta>Qual é o seu principal objetivo agora?</Pergunta>
+          <Pergunta>{t('fp.objetivo')}</Pergunta>
           <Opcoes
             opcoes={OBJETIVOS.map((o) => ({ valor: o.valor, rotulo: o.rotulo, descricao: o.descricao }))}
             selecionada={objetivo}
@@ -206,11 +193,11 @@ export function FluxoPerfil({ modo, inicial }: Props) {
       const sugestoes = renda !== null && fixas !== null ? sugerirMetasEconomia(renda, fixas) : [];
       conteudo = (
         <>
-          <Pergunta>Quanto você quer guardar por mês?</Pergunta>
-          {campoValor(metaTexto, setMetaTexto, 'Meta de economia mensal em reais')}
+          <Pergunta>{t('chat.economia')}</Pergunta>
+          {campoValor(metaTexto, setMetaTexto, t('fp.meta.rotulo'))}
           {sugestoes.length > 0 && (
             <>
-              <Dica>Sugestões com base na sua renda:</Dica>
+              <Dica>{t('fp.sugestoes')}</Dica>
               <View style={styles.linhaOpcoes}>
                 {sugestoes.map((s) => (
                   <Botao
@@ -222,7 +209,7 @@ export function FluxoPerfil({ modo, inicial }: Props) {
                   />
                 ))}
                 <Botao
-                  texto="Ainda não sei"
+                  texto={t('chat.naoSei')}
                   variante="secundario"
                   selecionado={meta === 0}
                   onPress={() => setMetaTexto('0')}
@@ -232,11 +219,10 @@ export function FluxoPerfil({ modo, inicial }: Props) {
           )}
           {meta !== null && sobra !== null && meta > Math.max(sobra, 0) && (
             <ThemedText type="small" style={{ color: theme.negative }}>
-              Essa meta é maior do que a sobra estimada ({formatarCentavos(Math.max(sobra, 0))}). Você
-              pode manter, mas vai precisar reduzir outros gastos.
+              {t('fp.metaAlta', { valor: formatarCentavos(Math.max(sobra, 0)) })}
             </ThemedText>
           )}
-          {meta === 0 && <Dica>Sem problemas. Você pode definir uma meta depois.</Dica>}
+          {meta === 0 && <Dica>{t('fp.depois')}</Dica>}
         </>
       );
       break;
@@ -245,33 +231,21 @@ export function FluxoPerfil({ modo, inicial }: Props) {
     default:
       conteudo = (
         <>
-          <Pergunta>
-            {modo === 'onboarding' ? `Tudo pronto, ${nomeCurto}!` : 'Confira seus dados'}
-          </Pergunta>
+          <Pergunta>{t('fp.confira')}</Pergunta>
           <Cartao>
-            <LinhaResumo rotulo="Renda mensal" valor={formatarCentavos(renda ?? 0)} />
-            <LinhaResumo rotulo="Fonte de renda" valor={fonteRenda ? rotuloFonteRenda(fonteRenda) : '-'} />
-            <LinhaResumo rotulo="Contas fixas" valor={formatarCentavos(fixas ?? 0)} />
-            <LinhaResumo rotulo="Sobra estimada" valor={formatarCentavos(sobra ?? 0)} />
-            <LinhaResumo rotulo="Objetivo" valor={objetivo ? rotuloObjetivo(objetivo) : '-'} />
-            <LinhaResumo rotulo="Meta por mês" valor={formatarCentavos(meta ?? 0)} />
+            <LinhaResumo rotulo={t('fp.renda.rotulo')} valor={formatarCentavos(renda ?? 0)} />
+            <LinhaResumo rotulo={t('fp.fonte.rotulo')} valor={fonteRenda ? rotuloFonteRenda(fonteRenda) : '-'} />
+            <LinhaResumo rotulo={t('fp.fixas.rotulo')} valor={formatarCentavos(fixas ?? 0)} />
+            <LinhaResumo rotulo={t('fp.sobra.rotulo')} valor={formatarCentavos(sobra ?? 0)} />
+            <LinhaResumo rotulo={t('fp.objetivo.rotulo')} valor={objetivo ? rotuloObjetivo(objetivo) : '-'} />
+            <LinhaResumo rotulo={t('fp.metaMes')} valor={formatarCentavos(meta ?? 0)} />
           </Cartao>
-          {modo === 'onboarding' && (
-            <Dica>
-              Agora registre suas receitas e despesas para o EcoTrust analisar sua vida financeira.
-              Você pode mudar esses dados quando quiser, na aba Perfil.
-            </Dica>
-          )}
         </>
       );
   }
 
   const ultimoPasso = passo === TOTAL_PERGUNTAS;
-  const textoBotao = ultimoPasso
-    ? modo === 'onboarding'
-      ? 'Ir para o Dashboard'
-      : 'Salvar alterações'
-    : 'Continuar';
+  const textoBotao = ultimoPasso ? t('fp.guardarAlteracoes') : t('comum.continuar');
 
   return (
     <ThemedView style={styles.container}>
@@ -280,17 +254,13 @@ export function FluxoPerfil({ modo, inicial }: Props) {
           style={styles.flex}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <View style={styles.topo}>
-            {passo > 0 || modo === 'edicao' ? (
-              <Pressable onPress={voltar} accessibilityRole="button" hitSlop={12}>
-                <ThemedText type="smallBold" themeColor="textSecondary">
-                  {passo === 0 ? 'Cancelar' : '‹ Voltar'}
-                </ThemedText>
-              </Pressable>
-            ) : (
-              <View />
-            )}
+            <Pressable onPress={voltar} accessibilityRole="button" hitSlop={12}>
+              <ThemedText type="smallBold" themeColor="textSecondary">
+                {passo === 0 ? t('comum.cancelar') : t('comum.voltar')}
+              </ThemedText>
+            </Pressable>
             <ThemedText type="small" themeColor="textSecondary">
-              {ultimoPasso ? 'Resumo' : `${passo + 1} de ${TOTAL_PERGUNTAS}`}
+              {ultimoPasso ? t('fp.resumo') : t('fp.passo', { n: passo + 1, total: TOTAL_PERGUNTAS })}
             </ThemedText>
           </View>
           <View
