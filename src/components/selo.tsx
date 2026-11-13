@@ -2,12 +2,13 @@ import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
+import { t as traduzir } from '@/i18n';
 import type { OrigemImposto } from '@/services/impostometro-ue-service';
 import type { Transacao } from '@/types/financas';
 
 export type TomSelo = 'verde' | 'ambar' | 'rosa';
 
-/** Etiqueta de status em pílula com contorno (ex.: "Nota", "Estimado", "Recorrente"). */
+/** Etiqueta de status em pílula com contorno (ex.: "Recibo", "Estimado", "Recorrente"). */
 export function Selo({ texto, tom }: { texto: string; tom: TomSelo }) {
   const theme = useTheme();
   const cores = {
@@ -26,10 +27,10 @@ export function Selo({ texto, tom }: { texto: string; tom: TomSelo }) {
 
 /** Selo de um lançamento: receita, recorrente, ou de onde veio o imposto (nota ou estimativa). */
 export function seloDoLancamento(t: Pick<Transacao, 'tipo' | 'recorrente'>, origem: OrigemImposto | null): { texto: string; tom: TomSelo } {
-  if (t.tipo === 'receita') return { texto: 'Recebido', tom: 'verde' };
-  if (t.recorrente) return { texto: 'Recorrente', tom: 'rosa' };
-  if (origem === 'nota') return { texto: 'Nota', tom: 'verde' };
-  return { texto: 'Estimado', tom: 'ambar' };
+  if (t.tipo === 'receita') return { texto: traduzir('selo.recebido'), tom: 'verde' };
+  if (t.recorrente) return { texto: traduzir('selo.recorrente'), tom: 'rosa' };
+  if (origem === 'nota') return { texto: traduzir('selo.recibo'), tom: 'verde' };
+  return { texto: traduzir('selo.estimado'), tom: 'ambar' };
 }
 
 const styles = StyleSheet.create({

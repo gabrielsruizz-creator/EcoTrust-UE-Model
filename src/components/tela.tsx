@@ -1,4 +1,6 @@
 import { GlassView } from 'expo-glass-effect';
+import { useIdioma } from '@/hooks/use-idioma';
+import { t } from '@/i18n';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import {
@@ -39,6 +41,7 @@ export function Tela({
   topo?: ReactNode;
   children: ReactNode;
 }) {
+  useIdioma();
   return (
     <ThemedView style={styles.container}>
       <FundoDaTela />
@@ -47,7 +50,7 @@ export function Tela({
           {voltar && (
             <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12} style={styles.voltar}>
               <ThemedText type="smallBold" themeColor="textSecondary">
-                ‹ Voltar
+                {t('comum.voltar')}
               </ThemedText>
             </Pressable>
           )}

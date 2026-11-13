@@ -2,6 +2,7 @@
  * Perfil financeiro do onboarding: opções, validação e cálculos simples usados nas telas.
  */
 
+import { t } from '@/i18n';
 import {
   obterPerfilFinanceiro,
   salvarPerfilFinanceiro,
@@ -91,9 +92,9 @@ export function sugerirMetasEconomia(rendaCentavos: number, despesasFixasCentavo
 
 export function saudacao(agora = new Date()) {
   const hora = agora.getHours();
-  if (hora >= 5 && hora < 12) return 'Bom dia';
-  if (hora >= 12 && hora < 18) return 'Boa tarde';
-  return 'Boa noite';
+  if (hora >= 5 && hora < 12) return t('inicio.bomDia');
+  if (hora >= 12 && hora < 18) return t('inicio.boaTarde');
+  return t('inicio.boaNoite');
 }
 
 export function primeiroNome(nome: string) {

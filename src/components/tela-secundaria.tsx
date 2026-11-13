@@ -1,4 +1,6 @@
 import { router } from 'expo-router';
+import { useIdioma } from '@/hooks/use-idioma';
+import { t } from '@/i18n';
 import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,7 +22,8 @@ type Props = {
 };
 
 /** Tela aberta por cima das abas: cabeçalho com voltar, conteúdo rolável e rodapé opcional. */
-export function TelaSecundaria({ titulo, children, rodape, textoVoltar = '‹ Voltar', semVoltar }: Props) {
+export function TelaSecundaria({ titulo, children, rodape, textoVoltar, semVoltar }: Props) {
+  useIdioma();
   return (
     <ThemedView style={styles.container}>
       <FundoDaTela />
@@ -32,7 +35,7 @@ export function TelaSecundaria({ titulo, children, rodape, textoVoltar = '‹ Vo
             ) : (
               <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12} style={styles.lado}>
                 <ThemedText type="smallBold" themeColor="textSecondary">
-                  {textoVoltar}
+                  {textoVoltar ?? t('comum.voltar')}
                 </ThemedText>
               </Pressable>
             )}

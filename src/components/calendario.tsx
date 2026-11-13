@@ -6,6 +6,7 @@
  */
 
 import { useState } from 'react';
+import { localeAtual, t } from '@/i18n';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,7 +15,6 @@ import { ThemedText } from '@/components/themed-text';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useIdioma } from '@/hooks/use-idioma';
-import { localeAtual } from '@/i18n';
 import {
   diasDaSemana,
   formatarDataPorExtenso,
@@ -70,21 +70,21 @@ export function Calendario({ valor, aoEscolher, min, max, marcados, mesInicial, 
 
   // Setas: na visão de dias trocam o mês; na de meses, o ano; na de anos, a página de anos.
   const anterior = {
-    dias: { pode: !mesMin || somarMeses(mes, -1) >= mesMin, ir: () => setMes(somarMeses(mes, -1)), rotulo: 'Mês anterior' },
-    meses: { pode: ano - 1 >= anoMin, ir: () => setMes(`${ano - 1}${mes.slice(4)}`), rotulo: 'Ano anterior' },
+    dias: { pode: !mesMin || somarMeses(mes, -1) >= mesMin, ir: () => setMes(somarMeses(mes, -1)), rotulo: t('imp.mesAnterior') },
+    meses: { pode: ano - 1 >= anoMin, ir: () => setMes(`${ano - 1}${mes.slice(4)}`), rotulo: t('cal.anoAnterior') },
     anos: {
       pode: inicioPaginaAnos - 1 >= anoMin,
       ir: () => setInicioPaginaAnos(inicioPaginaAnos - ANOS_POR_PAGINA),
-      rotulo: 'Anos anteriores',
+      rotulo: t('cal.anosAnteriores'),
     },
   }[visao];
   const proximo = {
-    dias: { pode: !mesMax || somarMeses(mes, 1) <= mesMax, ir: () => setMes(somarMeses(mes, 1)), rotulo: 'Próximo mês' },
-    meses: { pode: ano + 1 <= anoMax, ir: () => setMes(`${ano + 1}${mes.slice(4)}`), rotulo: 'Próximo ano' },
+    dias: { pode: !mesMax || somarMeses(mes, 1) <= mesMax, ir: () => setMes(somarMeses(mes, 1)), rotulo: t('imp.proximoMes') },
+    meses: { pode: ano + 1 <= anoMax, ir: () => setMes(`${ano + 1}${mes.slice(4)}`), rotulo: t('cal.proximoAno') },
     anos: {
       pode: inicioPaginaAnos + ANOS_POR_PAGINA <= anoMax,
       ir: () => setInicioPaginaAnos(inicioPaginaAnos + ANOS_POR_PAGINA),
-      rotulo: 'Próximos anos',
+      rotulo: t('cal.proximosAnos'),
     },
   }[visao];
 
@@ -130,7 +130,7 @@ export function Calendario({ valor, aoEscolher, min, max, marcados, mesInicial, 
         <Pressable
           onPress={tocarTitulo}
           accessibilityRole="button"
-          accessibilityLabel={`${titulo}. ${visao === 'anos' ? 'Voltar para os dias' : 'Escolher outro ano'}`}
+          accessibilityLabel={`${titulo}. ${visao === 'anos' ? t('cal.voltarDias') : t('cal.outroAno')}`}
           hitSlop={8}
           style={({ pressed }) => [styles.titulo, pressed && styles.pressionado]}>
           <ThemedText type="smallBold" style={styles.tituloTexto}>
@@ -167,7 +167,7 @@ export function Calendario({ valor, aoEscolher, min, max, marcados, mesInicial, 
                     disabled={fora}
                     accessibilityRole="button"
                     accessibilityState={{ selected: selecionado, disabled: fora }}
-                    accessibilityLabel={`${formatarDataPorExtenso(data)}${ehHoje ? ', hoje' : ''}${marcado ? ', com lançamentos' : ''}`}
+                    accessibilityLabel={`${formatarDataPorExtenso(data)}${ehHoje ? `, ${t('lanc.form.hoje').toLocaleLowerCase(localeAtual())}` : ''}${marcado ? `, ${t('cal.comMovimentos')}` : ''}`}
                     style={styles.celula}>
                     {({ pressed }) => (
                       <View
@@ -322,7 +322,7 @@ export function FolhaCalendario({ visivel, titulo, aoEscolher, aoFechar, acaoExt
           style={styles.areaFechar}
           onPress={aoFechar}
           accessibilityRole="button"
-          accessibilityLabel="Fechar calendário"
+          accessibilityLabel={t('cal.fechar')}
         />
         <View
           style={[
@@ -337,7 +337,7 @@ export function FolhaCalendario({ visivel, titulo, aoEscolher, aoFechar, acaoExt
             </ThemedText>
             <Pressable onPress={aoFechar} accessibilityRole="button" hitSlop={12}>
               <ThemedText type="smallBold" themeColor="textSecondary">
-                Cancelar
+                {t('comum.cancelar')}
               </ThemedText>
             </Pressable>
           </View>
@@ -345,7 +345,7 @@ export function FolhaCalendario({ visivel, titulo, aoEscolher, aoFechar, acaoExt
           {visivel && <Calendario {...calendario} aoEscolher={escolher} />}
           <View style={styles.rodapeFolha}>
             {hojePermitido && calendario.visaoInicial !== 'anos' && (
-              <Botao texto="Hoje" variante="secundario" onPress={() => escolher(dataHoje)} style={styles.flex} />
+              <Botao texto={t('lanc.form.hoje')} variante="secundario" onPress={() => escolher(dataHoje)} style={styles.flex} />
             )}
             {acaoExtra && (
               <Botao
@@ -383,7 +383,7 @@ export function CampoData({
   valor,
   aoMudar,
   rotulo,
-  placeholder = 'Escolher no calendário',
+  placeholder,
   permitirLimpar,
   formatar = formatarDataPorExtenso,
   abrirAoAparecer = false,
@@ -391,15 +391,15 @@ export function CampoData({
 }: PropsCampo) {
   const theme = useTheme();
   const [aberto, setAberto] = useState(abrirAoAparecer);
-  const texto = valor ? formatar(valor) : placeholder;
+  const texto = valor ? formatar(valor) : (placeholder ?? t('cal.escolherNoCalendario'));
 
   return (
     <>
       <Pressable
         onPress={() => setAberto(true)}
         accessibilityRole="button"
-        accessibilityLabel={`${rotulo}: ${valor ? texto : 'nenhuma data escolhida'}`}
-        accessibilityHint="Abre o calendário"
+        accessibilityLabel={`${rotulo}: ${valor ? texto : t('cal.nenhuma')}`}
+        accessibilityHint={t('cal.abre')}
         style={({ pressed }) => [
           styles.campo,
           { backgroundColor: theme.backgroundElement, borderColor: valor ? theme.accent : theme.border },
@@ -410,7 +410,7 @@ export function CampoData({
           {texto.charAt(0).toLocaleUpperCase(localeAtual()) + texto.slice(1)}
         </ThemedText>
         <ThemedText type="small" style={{ color: theme.accentText }}>
-          {valor ? 'Alterar' : 'Escolher'}
+          {valor ? t('cal.alterar') : t('cal.escolher')}
         </ThemedText>
       </Pressable>
       <FolhaCalendario
@@ -420,7 +420,7 @@ export function CampoData({
         valor={valor}
         aoEscolher={aoMudar}
         aoFechar={() => setAberto(false)}
-        acaoExtra={permitirLimpar && valor ? { texto: 'Limpar data', aoTocar: () => aoMudar(null) } : undefined}
+        acaoExtra={permitirLimpar && valor ? { texto: t('cal.limpar'), aoTocar: () => aoMudar(null) } : undefined}
       />
     </>
   );

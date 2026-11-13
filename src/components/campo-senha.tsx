@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useIdioma } from '@/hooks/use-idioma';
+import { t } from '@/i18n';
 import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -9,6 +11,7 @@ type Props = Omit<TextInputProps, 'secureTextEntry' | 'style'> & { rotulo: strin
 
 /** Campo de senha com botão "Mostrar/Ocultar". */
 export function CampoSenha({ rotulo, ...rest }: Props) {
+  useIdioma();
   const theme = useTheme();
   const [visivel, setVisivel] = useState(false);
   return (
@@ -25,10 +28,10 @@ export function CampoSenha({ rotulo, ...rest }: Props) {
       <Pressable
         onPress={() => setVisivel(!visivel)}
         accessibilityRole="button"
-        accessibilityLabel={visivel ? 'Ocultar senha' : 'Mostrar senha'}
+        accessibilityLabel={visivel ? t('senha.ocultarRotulo') : t('senha.mostrarRotulo')}
         hitSlop={8}>
         <ThemedText type="smallBold" themeColor="textSecondary">
-          {visivel ? 'Ocultar' : 'Mostrar'}
+          {visivel ? t('senha.ocultar') : t('senha.mostrar')}
         </ThemedText>
       </Pressable>
     </View>

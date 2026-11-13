@@ -21,25 +21,27 @@ import {
 } from '@/hooks/use-dados';
 import { useConta } from '@/hooks/use-sessao';
 import { useTheme } from '@/hooks/use-theme';
-import { localeAtual } from '@/i18n';
+import { localeAtual, type Chave } from '@/i18n';
+import { useT } from '@/hooks/use-idioma';
 import type { OrigemImposto } from '@/services/impostometro-ue-service';
 import { primeiroNome, saudacao } from '@/services/perfil-financeiro-service';
 import type { Transacao } from '@/types/financas';
 import { diasEntre, formatarDataCurta, hoje, mesAtual, nomeDoMes } from '@/utils/datas';
-import { formatarCentavos } from '@/utils/moeda';
+import { formatarCentavos, formatarSemCentimos } from '@/utils/moeda';
 import { visualCategoria } from '@/utils/visual';
 
 const RECENTES = 5;
 
 /** Barra única de ações; a primeira é a principal (destaque em rosa cheio). */
-const ACOES: { icone: NomeIcone; texto: string; destino: Href }[] = [
-  { icone: 'mais', texto: 'Despesa', destino: { pathname: '/novo-lancamento', params: { tipo: 'despesa' } } },
-  { icone: 'entrada', texto: 'Receita', destino: { pathname: '/novo-lancamento', params: { tipo: 'receita' } } },
-  { icone: 'compartilhar', texto: 'Compartilhar', destino: '/compartilhar-impostos' },
+const ACOES: { icone: NomeIcone; texto: Chave; destino: Href }[] = [
+  { icone: 'mais', texto: 'lanc.despesa', destino: { pathname: '/novo-lancamento', params: { tipo: 'despesa' } } },
+  { icone: 'entrada', texto: 'lanc.receita', destino: { pathname: '/novo-lancamento', params: { tipo: 'receita' } } },
+  { icone: 'compartilhar', texto: 'partilhar.titulo', destino: '/compartilhar-impostos' },
 ];
 
 export default function InicioScreen() {
   const theme = useTheme();
+  const t = useT();
   const mes = mesAtual();
   const dashboard = useDashboard(mes);
   const impostos = useImpostometroUE(mes);
@@ -64,37 +66,42 @@ export default function InicioScreen() {
       <Pressable
         onPress={() => router.navigate('/perfil')}
         accessibilityRole="button"
-        accessibilityLabel="Abrir o perfil e o mascote"
+        accessibilityLabel={t('inicio.abrirPerfil')}
         style={[styles.mascote, { backgroundColor: theme.accentSoft }]}>
-        <PetEco humor="feliz" estagio="adulto" tamanho={44} corTinta={theme.brand} corFundo={theme.accentSoft} rotuloAcessivel="Mascote do EcoTrust" />
+        <PetEco humor="feliz" estagio="adulto" tamanho={44} corTinta={theme.brand} corFundo={theme.accentSoft} rotuloAcessivel={t('inicio.mascote')} />
       </Pressable>
       <View style={styles.flex}>
         <ThemedText type="small" themeColor="textSecondary">
           {saudacao()},
         </ThemedText>
         <ThemedText style={styles.nome} accessibilityRole="header" numberOfLines={1}>
-          {nome || 'que bom te ver'}
+          {nome || t('inicio.semNome')}
         </ThemedText>
       </View>
-      <BotaoIcone icone="ia" rotulo="Insights financeiros" aoTocar={() => router.push('/insights')} />
-      <BotaoIcone icone="mais" rotulo="Novo lançamento" aoTocar={() => router.push('/novo-lancamento')} />
+      <BotaoIcone icone="ia" rotulo={t('inicio.insights')} aoTocar={() => router.push('/insights')} />
+      <BotaoIcone icone="mais" rotulo={t('lanc.novo')} aoTocar={() => router.push('/novo-lancamento')} />
     </View>
   );
 
   return (
-    <Tela titulo="Início" topo={topo}>
+    <Tela titulo={t('abas.inicio')} topo={topo}>
       {/* Saldo, entradas e saídas do mês — e, junto, quanto das saídas foi imposto */}
       <Cartao>
         <View
           accessible
-          accessibilityLabel={`Saldo disponível: ${formatarCentavos(saldo)}. Em ${nomeMes}: entradas ${formatarCentavos(dashboard.receitasCentavos)}, saídas ${formatarCentavos(dashboard.despesasCentavos)}.`}>
+          accessibilityLabel={t('inicio.saldo.rotulo', {
+            saldo: formatarCentavos(saldo),
+            mes: nomeMes,
+            entradas: formatarCentavos(dashboard.receitasCentavos),
+            saidas: formatarCentavos(dashboard.despesasCentavos),
+          })}>
           <View style={styles.linhaTopo}>
             <ThemedText type="small" themeColor="textSecondary" style={styles.flex}>
-              Saldo disponível
+              {t('inicio.saldo')}
             </ThemedText>
             {dashboard.variacaoDespesas !== null && (
               <Selo
-                texto={`Saídas ${dashboard.variacaoDespesas > 0 ? '+' : ''}${dashboard.variacaoDespesas}% vs mês passado`}
+                texto={t('inicio.variacaoSaidas', { valor: `${dashboard.variacaoDespesas > 0 ? '+' : ''}${dashboard.variacaoDespesas}` })}
                 tom={dashboard.variacaoDespesas > 0 ? 'ambar' : 'verde'}
               />
             )}
@@ -105,8 +112,8 @@ export default function InicioScreen() {
             style={[styles.valorGrande, saldo < 0 ? { color: theme.negative } : {}]}
           />
           <View style={[styles.tres, { borderTopColor: theme.border }]}>
-            <Parte rotulo={`Entradas · ${nomeMes}`} cor={theme.positive} centavos={dashboard.receitasCentavos} />
-            <Parte rotulo={`Saídas · ${nomeMes}`} cor={theme.text} centavos={dashboard.despesasCentavos} separador />
+            <Parte rotulo={`${t('inicio.entradas')} · ${nomeMes}`} cor={theme.positive} centavos={dashboard.receitasCentavos} />
+            <Parte rotulo={`${t('inicio.saidas')} · ${nomeMes}`} cor={theme.text} centavos={dashboard.despesasCentavos} separador />
           </View>
         </View>
 
@@ -114,7 +121,7 @@ export default function InicioScreen() {
         <Pressable
           onPress={() => router.push('/impostos')}
           accessibilityRole="button"
-          accessibilityLabel={`Impostômetro: ${formatarCentavos(impostos.cargaTotalCentavos)} em impostos em ${nomeMes}${impostos.percentualDosGastos !== null ? `, ${impostos.percentualDosGastos}% das suas despesas` : ''}. Ver detalhes`}
+          accessibilityLabel={`${t('imp.titulo')}: ${formatarCentavos(impostos.cargaTotalCentavos)} ${t('inicio.emImpostos')}${impostos.percentualDosGastos !== null ? ` · ${t('inicio.dasSaidas', { percentual: impostos.percentualDosGastos.toLocaleString(localeAtual()) })}` : ''}. ${t('inicio.verDetalhes')}`}
           style={({ pressed }) => [styles.faixaImpostos, { backgroundColor: theme.accentSoft }, pressed && styles.pressionado]}>
           <View style={styles.linhaTopo}>
             <Icone nome="impostos" cor={theme.accentText} tamanho={16} />
@@ -122,9 +129,9 @@ export default function InicioScreen() {
               <ThemedText type="smallBold" style={{ color: theme.accentText }}>
                 {formatarCentavos(impostos.cargaTotalCentavos)}
               </ThemedText>
-              {' em impostos'}
+              {` ${t('inicio.emImpostos')}`}
               {impostos.percentualDosGastos !== null
-                ? ` · ${impostos.percentualDosGastos.toLocaleString(localeAtual())}% das saídas`
+                ? ` · ${t('inicio.dasSaidas', { percentual: impostos.percentualDosGastos.toLocaleString(localeAtual()) })}`
                 : ''}
             </ThemedText>
             <Minigrafico valores={historico.map((h) => h.centavos)} largura={56} altura={22} />
@@ -143,7 +150,7 @@ export default function InicioScreen() {
             key={a.texto}
             onPress={() => router.push(a.destino)}
             accessibilityRole="button"
-            accessibilityLabel={a.texto}
+            accessibilityLabel={t(a.texto)}
             style={({ pressed }) => [
               styles.acao,
               i > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: theme.border },
@@ -153,7 +160,7 @@ export default function InicioScreen() {
               <Icone nome={a.icone} cor={i === 0 ? theme.onAccent : theme.accentText} tamanho={17} />
             </View>
             <ThemedText type="small" style={styles.textoAcao} numberOfLines={1}>
-              {a.texto}
+              {t(a.texto)}
             </ThemedText>
           </Pressable>
         ))}
@@ -168,22 +175,22 @@ export default function InicioScreen() {
             </View>
             <View style={styles.flex}>
               <ThemedText type="smallBold" style={styles.tituloAlerta}>
-                {estourados.length === 1 ? '1 orçamento estourado' : `${estourados.length} orçamentos estourados`}
+                {t('inicio.estourados', { n: estourados.length })}
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
                 <ThemedText type="small" style={{ color: theme.accentText }}>
-                  {formatarCentavos(excesso)} acima
+                  {t('inicio.acima', { valor: formatarCentavos(excesso) })}
                 </ThemedText>
                 {' · '}
-                {estourados.map((o) => o.nome).join(' e ')}
+                {estourados.map((o) => o.nome).join(', ')}
               </ThemedText>
             </View>
           </View>
           <View style={styles.linhaTopo}>
             <ThemedText type="small" themeColor="textSecondary" style={styles.flex}>
-              {diasRestantes > 0 ? `Ainda dá tempo: faltam ${diasRestantes} dias` : 'Último dia do mês'}
+              {diasRestantes > 0 ? t('inicio.faltamDias', { n: diasRestantes }) : t('inicio.ultimoDia')}
             </ThemedText>
-            <BotaoPilula texto="Revisar" aoTocar={() => router.push('/orcamento')} />
+            <BotaoPilula texto={t('inicio.revisar')} aoTocar={() => router.push('/orcamento')} />
           </View>
         </Cartao>
       ) : (
@@ -191,7 +198,7 @@ export default function InicioScreen() {
           <Pressable
             onPress={() => router.push('/insights')}
             accessibilityRole="button"
-            accessibilityLabel={`Dica: ${dashboard.insights[0].texto}. Ver insights.`}
+            accessibilityLabel={`${t('inicio.dica')}: ${dashboard.insights[0].texto}. ${t('inicio.insights')}.`}
             style={({ pressed }) => pressed && styles.pressionado}>
             <Cartao style={styles.alerta}>
               <View style={[styles.quadrado, { borderColor: theme.border }]}>
@@ -208,20 +215,20 @@ export default function InicioScreen() {
       {/* Últimos lançamentos */}
       <View style={styles.secao}>
         <ThemedText type="smallBold" style={styles.tituloSecao} accessibilityRole="header">
-          Últimos lançamentos
+          {t('inicio.ultimos')}
         </ThemedText>
         <Pressable
           onPress={() => router.navigate('/transacoes')}
           accessibilityRole="link"
           hitSlop={8}
           style={[styles.verTudo, { backgroundColor: theme.backgroundElement, boxShadow: `0 4px 12px ${theme.brilho}` }]}>
-          <ThemedText type="small">Ver tudo ▸</ThemedText>
+          <ThemedText type="small">{t('inicio.verTudo')}</ThemedText>
         </Pressable>
       </View>
       <Cartao style={styles.lista}>
         {recentes.length === 0 ? (
           <ThemedText type="small" themeColor="textSecondary" style={styles.vazio}>
-            Nada registrado neste mês ainda. Que tal ler o QR Code da sua última nota?
+            {t('inicio.vazio')}
           </ThemedText>
         ) : (
           recentes.map((t, i) => {
@@ -248,7 +255,7 @@ function Parte({ rotulo, cor, centavos, separador }: { rotulo: string; cor: stri
         </ThemedText>
       </View>
       <ThemedText type="smallBold" style={styles.valorParte} numberOfLines={1}>
-        {formatarCentavos(centavos).replace(/,\d\d$/, '')}
+        {formatarSemCentimos(centavos)}
       </ThemedText>
     </View>
   );
@@ -280,6 +287,7 @@ function LinhaLancamento({
   separador: boolean;
 }) {
   const theme = useTheme();
+  const tr = useT();
   const receita = t.tipo === 'receita';
   const titulo = t.descricao || t.categoriaNome;
   const selo = seloDoLancamento(t, origem);
@@ -287,7 +295,7 @@ function LinhaLancamento({
     <Pressable
       onPress={() => router.push({ pathname: '/lancamento/[id]', params: { id: String(t.id) } })}
       accessibilityRole="button"
-      accessibilityLabel={`${titulo}, ${receita ? 'receita' : 'despesa'} de ${formatarCentavos(t.valorCentavos)}, ${formatarDataCurta(t.data)}${impostosCentavos > 0 ? `, ${formatarCentavos(impostosCentavos)} de impostos` : ''}. ${selo.texto}`}
+      accessibilityLabel={`${titulo}, ${tr(receita ? 'lanc.receita' : 'lanc.despesa')} ${formatarCentavos(t.valorCentavos)}, ${formatarDataCurta(t.data)}${impostosCentavos > 0 ? `, ${tr('inicio.impostosDe', { valor: formatarCentavos(impostosCentavos) })}` : ''}. ${selo.texto}`}
       style={({ pressed }) => [
         styles.item,
         separador && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.border },
@@ -302,7 +310,7 @@ function LinhaLancamento({
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
           {formatarDataCurta(t.data)}
-          {impostosCentavos > 0 ? ` · ${formatarCentavos(impostosCentavos)} imp.` : ''}
+          {impostosCentavos > 0 ? ` · ${tr('inicio.impAbrev', { valor: formatarCentavos(impostosCentavos) })}` : ''}
         </ThemedText>
       </View>
       <View style={styles.direita}>

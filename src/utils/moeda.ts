@@ -34,6 +34,13 @@ export function formatarCentavos(centavos: number, moeda: CodigoMoeda = moedaPri
   return formatador(localeAtual(), moeda).format(centavos / 100);
 }
 
+/** Valor arredondado ao euro, sem cêntimos ("1234 €", "€1,234"), para resumos. */
+export function formatarSemCentimos(centavos: number, moeda: CodigoMoeda = moedaPrincipal) {
+  return new Intl.NumberFormat(localeAtual(), { style: 'currency', currency: moeda, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(
+    Math.round(centavos / 100),
+  );
+}
+
 /** Separador decimal do idioma atual ("," em pt-PT/de/fr..., "." em inglês). */
 export function separadorDecimal(locale = localeAtual()) {
   const texto = new Intl.NumberFormat(locale, { minimumFractionDigits: 1 }).format(1.5);

@@ -3,11 +3,11 @@
  * Funções puras: recebem a lista já buscada (por mês e tipo) e filtram/organizam em memória.
  */
 
+import { localeAtual, t as traduzir } from '@/i18n';
 import type { TipoTransacao, Transacao } from '@/types/financas';
 import { hoje, ontem } from '@/utils/datas';
 import { normalizar } from '@/utils/visual';
 
-const MESES_ABREVIADOS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
 
 export type GrupoDia = {
   data: string;
@@ -31,8 +31,9 @@ export type Historico = {
 
 /** "2026-10-06" → "06 OUT" */
 export function rotuloDia(data: string) {
-  const [, mes, dia] = data.split('-');
-  return `${dia} ${MESES_ABREVIADOS[Number(mes) - 1]}`;
+  const [ano, mes, dia] = data.split('-').map(Number);
+  const nomeMes = new Date(ano, mes - 1, dia).toLocaleDateString(localeAtual(), { month: 'short' }).replace('.', '');
+  return `${String(dia).padStart(2, '0')} ${nomeMes.toLocaleUpperCase(localeAtual())}`;
 }
 
 /**
@@ -49,7 +50,7 @@ export function montarHistorico(
   for (const t of transacoes) {
     if (!porId.has(t.categoriaId)) porId.set(t.categoriaId, { id: t.categoriaId, nome: t.categoriaNome, tipo: t.tipo });
   }
-  const categorias = [...porId.values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  const categorias = [...porId.values()].sort((a, b) => a.nome.localeCompare(b.nome, localeAtual()));
   const categoriaAplicada = categoriaId !== null && porId.has(categoriaId) ? categoriaId : null;
 
   const termo = normalizar(busca);
@@ -76,7 +77,7 @@ export function montarHistorico(
       grupo = {
         data: t.data,
         rotulo: rotuloDia(t.data),
-        destaque: t.data === dataHoje ? 'Hoje' : t.data === dataOntem ? 'Ontem' : null,
+        destaque: t.data === dataHoje ? traduzir('lanc.form.hoje') : t.data === dataOntem ? traduzir('lanc.form.ontem') : null,
         transacoes: [],
       };
       grupos.push(grupo);
@@ -101,5 +102,5 @@ export function montarHistorico(
 export function rotuloCategoriaFiltro(categoria: OpcaoCategoriaFiltro, todas: OpcaoCategoriaFiltro[]) {
   const repetido = todas.some((c) => c.id !== categoria.id && c.nome === categoria.nome);
   if (!repetido) return categoria.nome;
-  return `${categoria.nome} (${categoria.tipo === 'receita' ? 'receita' : 'despesa'})`;
+  return `${categoria.nome} (${traduzir(categoria.tipo === 'receita' ? 'lanc.receita' : 'lanc.despesa').toLocaleLowerCase(localeAtual())})`;
 }
