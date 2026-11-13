@@ -7,12 +7,13 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAssinatura } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import {
   ativarPlusSimulado,
   cancelarPlus,
   NOME_PLANO_PLUS,
-  RECURSOS_GRATUITOS,
+  recursosGratuitos,
   RECURSOS_PREMIUM,
   type RecursoPremium,
 } from '@/services/assinatura-service';
@@ -20,6 +21,7 @@ import { formatarData, paraDataLocal } from '@/utils/datas';
 
 /** Tela do EcoTrust Plus (paywall). Parâmetro opcional "recurso": de onde a pessoa veio. */
 export default function AssinaturaScreen() {
+  const t = useT();
   const theme = useTheme();
   const { recurso } = useLocalSearchParams<{ recurso?: string }>();
   const assinatura = useAssinatura();
@@ -28,12 +30,12 @@ export default function AssinaturaScreen() {
 
   function assinar() {
     Alert.alert(
-      'Versão de teste',
-      `Nesta versão do EcoTrust a assinatura é simulada: o ${NOME_PLANO_PLUS} será ativado e nada será cobrado.`,
+      t('plus.teste'),
+      t('plus.teste.texto', { plano: NOME_PLANO_PLUS }),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('comum.cancelar'), style: 'cancel' },
         {
-          text: 'Ativar',
+          text: t('plus.ativar'),
           onPress: () => {
             ativarPlusSimulado();
             router.back();
@@ -44,9 +46,9 @@ export default function AssinaturaScreen() {
   }
 
   function cancelar() {
-    Alert.alert('Cancelar assinatura', `Você volta para o plano Gratuito. Seus dados continuam salvos.`, [
-      { text: 'Manter', style: 'cancel' },
-      { text: 'Cancelar assinatura', style: 'destructive', onPress: cancelarPlus },
+    Alert.alert(t('plus.cancelar'), t('plus.cancelar.texto'), [
+      { text: t('plus.manter'), style: 'cancel' },
+      { text: t('plus.cancelar'), style: 'destructive', onPress: cancelarPlus },
     ]);
   }
 
@@ -56,7 +58,7 @@ export default function AssinaturaScreen() {
         <View style={styles.topo}>
           <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12}>
             <ThemedText type="smallBold" themeColor="textSecondary">
-              Fechar
+              {t('comum.fechar')}
             </ThemedText>
           </Pressable>
         </View>
@@ -73,13 +75,13 @@ export default function AssinaturaScreen() {
             </ThemedText>
             <ThemedText themeColor="textSecondary" style={styles.subtitulo}>
               {ehPlus
-                ? 'Sua assinatura está ativa. Aproveite todos os recursos.'
-                : 'Entenda sua vida financeira a fundo, com análises e orientação feitas para você.'}
+                ? t('plus.ativa')
+                : t('plus.convite')}
             </ThemedText>
           </View>
 
           <Cartao>
-            <ThemedText type="smallBold">O que está incluído</ThemedText>
+            <ThemedText type="smallBold">{t('plus.incluido')}</ThemedText>
             {recursos.map(([id, r]) => (
               <View
                 key={id}
@@ -100,8 +102,8 @@ export default function AssinaturaScreen() {
           </Cartao>
 
           <Cartao>
-            <ThemedText type="smallBold">Continua grátis</ThemedText>
-            {RECURSOS_GRATUITOS.map((r) => (
+            <ThemedText type="smallBold">{t('plus.gratis')}</ThemedText>
+            {recursosGratuitos().map((r) => (
               <ThemedText key={r} type="small" themeColor="textSecondary">
                 • {r}
               </ThemedText>
@@ -112,17 +114,18 @@ export default function AssinaturaScreen() {
             <>
               {assinatura.ativadoEm && (
                 <ThemedText type="small" themeColor="textSecondary" style={styles.centralizado}>
-                  Ativa desde {formatarData(paraDataLocal(new Date(assinatura.ativadoEm)))}
-                  {assinatura.simulada ? ' (assinatura simulada)' : ''}.
+                  {t(assinatura.simulada ? 'plus.ativaDesdeSimulada' : 'plus.ativaDesde', {
+                    data: formatarData(paraDataLocal(new Date(assinatura.ativadoEm))),
+                  })}
                 </ThemedText>
               )}
-              <Botao texto="Cancelar assinatura" variante="perigo" onPress={cancelar} />
+              <Botao texto={t('plus.cancelar')} variante="perigo" onPress={cancelar} />
             </>
           ) : (
             <>
-              <Botao texto={`Assinar o ${NOME_PLANO_PLUS}`} onPress={assinar} />
+              <Botao texto={t('plus.assinar', { plano: NOME_PLANO_PLUS })} onPress={assinar} />
               <ThemedText type="small" themeColor="textSecondary" style={styles.centralizado}>
-                Versão de teste: a assinatura é simulada e nenhum valor é cobrado.
+                {t('plus.teste.rodape')}
               </ThemedText>
             </>
           )}

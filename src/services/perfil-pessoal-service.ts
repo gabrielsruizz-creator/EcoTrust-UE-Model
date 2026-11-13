@@ -145,7 +145,7 @@ export const TOTAL_CAMPOS_PESSOAIS = 5;
 function textoOpcional(valor: string | null, campo: string, max = 40) {
   const limpo = (valor ?? '').trim().replace(/\s+/g, ' ');
   if (!limpo) return null;
-  if (limpo.length > max) throw new ErroValidacao(`Use no máximo ${max} letras em ${campo}.`);
+  if (limpo.length > max) throw new ErroValidacao(t('val.maxLetras', { max, campo }));
   return limpo;
 }
 
@@ -153,28 +153,28 @@ export function salvarDadosPessoais(p: PerfilPessoal, anoAtual = new Date().getF
   const dataNascimento = p.dataNascimento ?? null;
   if (dataNascimento !== null) {
     const anos = dataValida(dataNascimento) ? idadeEm(dataNascimento, dataHoje) : -1;
-    if (anos < 10 || anos > 110) throw new ErroValidacao('Confira a data de nascimento.');
+    if (anos < 10 || anos > 110) throw new ErroValidacao(t('val.nascimento'));
   }
   const anoNascimento = dataNascimento !== null ? Number(dataNascimento.slice(0, 4)) : p.anoNascimento;
   if (dataNascimento === null && anoNascimento !== null) {
     if (!Number.isInteger(anoNascimento) || anoNascimento < anoAtual - 110 || anoNascimento > anoAtual - 10) {
-      throw new ErroValidacao('Confira o ano de nascimento.');
+      throw new ErroValidacao(t('val.anoNascimento'));
     }
   }
   if (p.dependentes !== null && (!Number.isInteger(p.dependentes) || p.dependentes < 0 || p.dependentes > 20)) {
-    throw new ErroValidacao('Número de dependentes inválido.');
+    throw new ErroValidacao(t('val.dependentes'));
   }
   if (p.estadoCivil !== null && !ESTADOS_CIVIS.some((e) => e.valor === p.estadoCivil)) {
-    throw new ErroValidacao('Escolha um estado civil válido.');
+    throw new ErroValidacao(t('val.estadoCivil'));
   }
-  if (p.avatar !== null && !AVATARES.includes(p.avatar)) throw new ErroValidacao('Escolha um avatar da lista.');
+  if (p.avatar !== null && !AVATARES.includes(p.avatar)) throw new ErroValidacao(t('val.avatar'));
   salvarPerfilPessoal({
     ...p,
     dataNascimento,
     anoNascimento,
     corAvatar: Math.abs(Math.trunc(p.corAvatar)) % QUANTIDADE_CORES_AVATAR,
-    cidade: textoOpcional(p.cidade, 'cidade'),
-    profissao: textoOpcional(p.profissao, 'profissão'),
+    cidade: textoOpcional(p.cidade, t('dp.cidade')),
+    profissao: textoOpcional(p.profissao, t('dp.profissao')),
   });
 }
 
@@ -183,9 +183,9 @@ export function obterSituacao(): SituacaoFinanceira | null {
 }
 
 export function salvarSituacao(s: SituacaoFinanceira) {
-  if (!DIVIDAS.some((o) => o.valor === s.dividas)) throw new ErroValidacao('Informe sua situação de dívidas.');
-  if (!RESERVAS.some((o) => o.valor === s.reserva)) throw new ErroValidacao('Informe se tem reserva.');
-  if (!INVESTIMENTOS.some((o) => o.valor === s.investe)) throw new ErroValidacao('Informe se investe.');
-  if (s.moradia && !MORADIAS.some((o) => o.valor === s.moradia)) throw new ErroValidacao('Escolha uma moradia válida.');
+  if (!DIVIDAS.some((o) => o.valor === s.dividas)) throw new ErroValidacao(t('val.dividas'));
+  if (!RESERVAS.some((o) => o.valor === s.reserva)) throw new ErroValidacao(t('val.reserva'));
+  if (!INVESTIMENTOS.some((o) => o.valor === s.investe)) throw new ErroValidacao(t('val.investe'));
+  if (s.moradia && !MORADIAS.some((o) => o.valor === s.moradia)) throw new ErroValidacao(t('val.moradia'));
   salvarSituacaoFinanceira(s);
 }

@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { Botao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { NOME_PLANO_PLUS, RECURSOS_PREMIUM, type RecursoPremium } from '@/services/assinatura-service';
 
@@ -18,6 +19,7 @@ type Props = {
 
 /** Convite para o EcoTrust Plus no lugar de um recurso pago. */
 export function BloqueioPremium({ recurso, previa, compacto }: Props) {
+  const t = useT();
   const theme = useTheme();
   const info = RECURSOS_PREMIUM[recurso];
 
@@ -39,11 +41,11 @@ export function BloqueioPremium({ recurso, previa, compacto }: Props) {
       <ThemedText type="small">{info.descricao}</ThemedText>
       {!compacto && (
         <ThemedText type="small" themeColor="textSecondary">
-          Disponível no {NOME_PLANO_PLUS}.
+          {t('plus.disponivel', { plano: NOME_PLANO_PLUS })}
         </ThemedText>
       )}
       <Botao
-        texto={`Conhecer o ${NOME_PLANO_PLUS}`}
+        texto={t('pf.conhecer', { plano: NOME_PLANO_PLUS })}
         onPress={() => router.push({ pathname: '/assinatura', params: { recurso } })}
       />
     </View>

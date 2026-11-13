@@ -10,6 +10,7 @@ import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { AvatarColors, Spacing } from '@/constants/theme';
 import { useDadosPessoais } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useConta } from '@/hooks/use-sessao';
 import { useTheme } from '@/hooks/use-theme';
 import { ErroValidacao } from '@/services/erros';
@@ -18,6 +19,7 @@ import type { EstadoCivil } from '@/types/financas';
 import { formatarData, hoje, idadeEm, somarMesesNaData } from '@/utils/datas';
 
 export default function EditarDadosPessoaisScreen() {
+  const t = useT();
   const theme = useTheme();
   const conta = useConta();
   const inicial = useDadosPessoais();
@@ -46,22 +48,22 @@ export default function EditarDadosPessoaisScreen() {
       });
       router.back();
     } catch (e) {
-      Alert.alert('Não foi possível salvar', e instanceof ErroValidacao ? e.message : 'Tente novamente.');
+      Alert.alert(t('comum.erroGuardar'), e instanceof ErroValidacao ? e.message : t('comum.tenteNovamente'));
     }
   }
 
   return (
     <TelaSecundaria
-      titulo="Dados pessoais"
-      textoVoltar="Cancelar"
-      rodape={<Botao texto="Salvar" onPress={salvar} />}>
+      titulo={t('dp.titulo')}
+      textoVoltar={t('comum.cancelar')}
+      rodape={<Botao texto={t('comum.guardar')} onPress={salvar} />}>
       <View style={styles.centro}>
         <Avatar nome={conta?.nome ?? ''} avatar={avatar} cor={cor} tamanho={88} />
       </View>
 
-      <Secao titulo="Avatar">
+      <Secao titulo={t('dp.avatar')}>
         <View style={styles.grade} accessibilityRole="radiogroup">
-          <Chip texto="Iniciais" ativo={avatar === null} aoTocar={() => setAvatar(null)} />
+          <Chip texto={t('dp.iniciais')} ativo={avatar === null} aoTocar={() => setAvatar(null)} />
           {AVATARES.map((a) => (
             <Chip key={a} texto={a} ativo={avatar === a} aoTocar={() => setAvatar(a)} />
           ))}
@@ -73,7 +75,7 @@ export default function EditarDadosPessoaisScreen() {
               onPress={() => setCor(i)}
               accessibilityRole="radio"
               accessibilityState={{ checked: cor === i }}
-              accessibilityLabel={`Cor ${i + 1}`}
+              accessibilityLabel={t('dp.cor', { n: i + 1 })}
               hitSlop={4}
               style={[styles.cor, { backgroundColor: c }, cor === i && { borderColor: theme.text }]}
             />
@@ -81,9 +83,9 @@ export default function EditarDadosPessoaisScreen() {
         </View>
       </Secao>
 
-      <Secao titulo="Data de nascimento">
+      <Secao titulo={t('dp.nascimento')}>
         <CampoData
-          rotulo="Data de nascimento"
+          rotulo={t('dp.nascimento')}
           valor={dataNascimento}
           aoMudar={setDataNascimento}
           min={somarMesesNaData(hoje(), -110 * 12)}
@@ -91,41 +93,43 @@ export default function EditarDadosPessoaisScreen() {
           mesInicial={`${inicial.anoNascimento ?? Number(hoje().slice(0, 4)) - 30}-01`}
           visaoInicial={dataNascimento ? 'dias' : 'anos'}
           permitirLimpar
-          formatar={(d) => `${formatarData(d)} · ${idadeEm(d)} anos`}
-          placeholder={inicial.anoNascimento ? `Ano informado: ${inicial.anoNascimento}` : 'Escolher no calendário'}
+          formatar={(d) => t('dp.idade', { data: formatarData(d), idade: t('pf.anos', { n: idadeEm(d) }) })}
+          placeholder={
+            inicial.anoNascimento ? t('dp.anoInformado', { ano: inicial.anoNascimento }) : t('dp.escolherCalendario')
+          }
         />
         {!dataNascimento && inicial.anoNascimento !== null && (
           <ThemedText type="small" themeColor="textSecondary">
-            Escolha o dia e o mês para o EcoTrust saber a sua idade exata.
+            {t('dp.diaMes')}
           </ThemedText>
         )}
       </Secao>
 
-      <Secao titulo="Cidade">
+      <Secao titulo={t('dp.cidade')}>
         <TextInput
           style={estiloCampo}
           value={cidade}
           onChangeText={setCidade}
-          placeholder="Ex.: São Paulo"
+          placeholder={t('dp.cidade.ex')}
           placeholderTextColor={theme.textSecondary}
-          accessibilityLabel="Cidade"
+          accessibilityLabel={t('dp.cidade')}
           maxLength={40}
         />
       </Secao>
 
-      <Secao titulo="Profissão">
+      <Secao titulo={t('dp.profissao')}>
         <TextInput
           style={estiloCampo}
           value={profissao}
           onChangeText={setProfissao}
-          placeholder="Ex.: Designer"
+          placeholder={t('dp.profissao.ex')}
           placeholderTextColor={theme.textSecondary}
-          accessibilityLabel="Profissão"
+          accessibilityLabel={t('dp.profissao')}
           maxLength={40}
         />
       </Secao>
 
-      <Secao titulo="Estado civil">
+      <Secao titulo={t('dp.estadoCivil')}>
         <View style={styles.grade} accessibilityRole="radiogroup">
           {ESTADOS_CIVIS.map((e) => (
             <Chip
@@ -138,14 +142,14 @@ export default function EditarDadosPessoaisScreen() {
         </View>
       </Secao>
 
-      <Secao titulo="Dependentes (filhos ou outras pessoas que dependem da sua renda)">
+      <Secao titulo={t('dp.dependentes')}>
         <View style={styles.contador}>
           <Botao
             texto="−"
             variante="secundario"
             disabled={!dependentes}
             onPress={() => setDependentes(Math.max(0, (dependentes ?? 0) - 1))}
-            accessibilityLabel="Diminuir dependentes"
+            accessibilityLabel={t('dp.menos')}
             style={styles.botaoContador}
           />
           <ThemedText style={styles.numero} accessibilityLiveRegion="polite">
@@ -155,15 +159,14 @@ export default function EditarDadosPessoaisScreen() {
             texto="+"
             variante="secundario"
             onPress={() => setDependentes(Math.min(20, (dependentes ?? 0) + 1))}
-            accessibilityLabel="Aumentar dependentes"
+            accessibilityLabel={t('dp.mais')}
             style={styles.botaoContador}
           />
         </View>
       </Secao>
 
       <ThemedText type="small" themeColor="textSecondary">
-        Todos os campos são opcionais e ficam só neste celular. Eles ajudam o EcoTrust a entender sua
-        realidade.
+        {t('dp.opcionais')}
       </ThemedText>
     </TelaSecundaria>
   );

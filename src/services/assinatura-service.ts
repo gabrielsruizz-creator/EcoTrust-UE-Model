@@ -6,6 +6,7 @@
  * do plano no servidor, para proteger a rota do chat) fica para uma etapa futura.
  */
 
+import { t } from '@/i18n';
 import { lerConfiguracao, salvarConfiguracao } from '@/repositories/configuracoes-repository';
 
 export type Plano = 'gratuito' | 'plus';
@@ -14,33 +15,30 @@ export type RecursoPremium = 'analise' | 'saude' | 'chat' | 'academy';
 
 export const NOME_PLANO_PLUS = 'EcoTrust Plus';
 
-/** O que a assinatura inclui (usado no paywall e nos bloqueios). */
-export const RECURSOS_PREMIUM: Record<RecursoPremium, { nome: string; descricao: string }> = {
+/** O que a assinatura inclui (usado no paywall e nos bloqueios). Textos no idioma atual. */
+export const RECURSOS_PREMIUM: Record<RecursoPremium, { readonly nome: string; readonly descricao: string }> = {
   analise: {
-    nome: 'Análise completa da EcoTrust IA',
-    descricao: 'Todos os pontos de atenção, boas notícias, projeção do mês e onde reduzir gastos.',
+    get nome() { return t('plus.analise.nome'); },
+    get descricao() { return t('plus.analise.desc'); },
   },
   saude: {
-    nome: 'Saúde financeira',
-    descricao: 'Sua nota de 0 a 100, com cada fator explicado e o que fazer para melhorar.',
+    get nome() { return t('plus.saude.nome'); },
+    get descricao() { return t('plus.saude.desc'); },
   },
   chat: {
-    nome: 'Perguntas ao EcoTrust',
-    descricao: 'Converse com o assistente sobre os seus números, metas e próximos passos.',
+    get nome() { return t('plus.chat.nome'); },
+    get descricao() { return t('plus.chat.desc'); },
   },
   academy: {
-    nome: 'Trust Academy',
-    descricao: 'Cursos curtos com quiz, conteúdos novos e o fórum da comunidade, com sugestões para a sua situação.',
+    get nome() { return t('plus.academy.nome'); },
+    get descricao() { return t('plus.academy.desc'); },
   },
 };
 
 /** O que continua grátis (mostrado no paywall para deixar claro). */
-export const RECURSOS_GRATUITOS = [
-  'Lançamentos e histórico',
-  'Resumo do mês e insight do dia',
-  'Orçamentos e metas',
-  'Categorias personalizadas',
-];
+export function recursosGratuitos() {
+  return [t('plus.gratis.1'), t('plus.gratis.2'), t('plus.gratis.3'), t('plus.gratis.4')];
+}
 
 const CHAVE_PLANO = 'plano';
 const CHAVE_ATIVADO_EM = 'plano_ativado_em';

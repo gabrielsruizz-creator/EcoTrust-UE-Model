@@ -63,7 +63,7 @@ export const OBJETIVOS: { valor: ObjetivoFinanceiro; rotulo: string; descricao: 
 ];
 
 export function rotuloFonteRenda(fonte: FonteRenda) {
-  return FONTES_RENDA.find((f) => f.valor === fonte)?.rotulo ?? 'Outra';
+  return FONTES_RENDA.find((f) => f.valor === fonte)?.rotulo ?? t('val.outra');
 }
 
 export function rotuloObjetivo(objetivo: ObjetivoFinanceiro) {
@@ -72,25 +72,25 @@ export function rotuloObjetivo(objetivo: ObjetivoFinanceiro) {
 
 function validarValor(centavos: number, campo: string) {
   if (!Number.isInteger(centavos) || centavos < 0) {
-    throw new ErroValidacao(`Informe um valor válido para ${campo}.`);
+    throw new ErroValidacao(t('val.valor', { campo }));
   }
   if (centavos > MAX_VALOR_CENTAVOS) {
-    throw new ErroValidacao(`O valor de ${campo} parece alto demais. Confira o número digitado.`);
+    throw new ErroValidacao(t('val.valorAlto', { campo }));
   }
 }
 
 export function validarPerfilFinanceiro(perfil: PerfilFinanceiro): PerfilFinanceiro {
   const nome = perfil.nome.trim().replace(/\s+/g, ' ');
-  if (!nome) throw new ErroValidacao('Digite como podemos te chamar.');
-  if (nome.length > MAX_NOME) throw new ErroValidacao(`Use no máximo ${MAX_NOME} letras no nome.`);
-  validarValor(perfil.rendaMensalCentavos, 'renda mensal');
-  validarValor(perfil.despesasFixasCentavos, 'despesas fixas');
-  validarValor(perfil.metaEconomiaCentavos, 'meta de economia');
+  if (!nome) throw new ErroValidacao(t('val.nome'));
+  if (nome.length > MAX_NOME) throw new ErroValidacao(t('val.nomeMax', { max: MAX_NOME }));
+  validarValor(perfil.rendaMensalCentavos, t('val.campo.rendaMensal'));
+  validarValor(perfil.despesasFixasCentavos, t('val.campo.despesasFixas'));
+  validarValor(perfil.metaEconomiaCentavos, t('val.campo.metaEconomia'));
   if (!FONTES_RENDA.some((f) => f.valor === perfil.fonteRenda)) {
-    throw new ErroValidacao('Escolha sua principal fonte de renda.');
+    throw new ErroValidacao(t('val.fonteRenda'));
   }
   if (!OBJETIVOS.some((o) => o.valor === perfil.objetivo)) {
-    throw new ErroValidacao('Escolha seu objetivo financeiro.');
+    throw new ErroValidacao(t('val.objetivo'));
   }
   return { ...perfil, nome };
 }
