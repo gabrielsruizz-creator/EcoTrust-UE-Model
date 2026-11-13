@@ -22,22 +22,25 @@ import { Botao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
-import { cargaTotal, perfilTributario } from '@/data/carga-tributaria';
-import { useCategorias } from '@/hooks/use-dados';
+import { localEfetivo, SeletorPais, type LocalEscolhido } from '@/components/seletor-pais';
+import { useCategorias, usePerfilFiscal } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
+import { localeAtual, type Chave } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import { perfilTributarioDaCategoria } from '@/services/categorias-service';
-import { estimarCompra, type ItemParaEstimar } from '@/services/impostometro-service';
+import type { ItemParaEstimar } from '@/services/impostometro-service';
+import { estimarImpostosDaCompra } from '@/services/impostos-consumo-ue-service';
 import { ErroValidacao } from '@/services/erros';
 import type { NovaTransacao, TipoTransacao, Transacao } from '@/types/financas';
 import { hoje, ontem } from '@/utils/datas';
-import { centavosParaTexto, formatarCentavos, lerValorEmCentavos } from '@/utils/moeda';
+import { centavosParaTexto, exemploValorVazio, formatarCentavos, lerValorEmCentavos } from '@/utils/moeda';
 import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
 
 type OpcaoData = 'hoje' | 'ontem' | 'outra';
 
 /** Dados que chegam já preenchidos (ex.: lidos do QR Code da nota fiscal). O usuário confere e salva. */
 export type SugestaoLancamento = Partial<
-  Pick<Transacao, 'valorCentavos' | 'tributosCentavos' | 'data' | 'descricao' | 'categoriaId' | 'chaveNota'>
+  Pick<Transacao, 'valorCentavos' | 'tributosCentavos' | 'data' | 'descricao' | 'categoriaId' | 'chaveNota' | 'paisConsumo' | 'regiaoConsumo'>
 > & {
   /** Página da nota na SEFAZ (.gov.br), para conferir */
   urlNota?: string | null;
@@ -84,6 +87,14 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
   );
   const chaveNota = inicial?.chaveNota ?? sugestao?.chaveNota ?? null;
   const [criandoCategoria, setCriandoCategoria] = useState(false);
+  const t = useT();
+  const fiscal = usePerfilFiscal();
+  const residencia = fiscal?.paisResidencia ?? 'PT';
+  const regiaoResidencia = fiscal?.regiaoResidencia ?? null;
+  const [local, setLocal] = useState<LocalEscolhido>({
+    pais: base?.paisConsumo ?? null,
+    regiao: base?.regiaoConsumo ?? null,
+  });
 
   const valorCentavos = lerValorEmCentavos(valorTexto);
   const categoria = categorias.find((c) => c.id === categoriaId) ?? null;
@@ -93,30 +104,38 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
   // Impostos: o valor da nota fiscal (opcional) ou a estimativa pelo tipo de consumo da categoria.
   const digitouTributos = tipo === 'despesa' && tributosTexto.trim() !== '';
   const tributosCentavos = digitouTributos ? lerValorEmCentavos(tributosTexto, true) : null;
-  // R$ 0,00 não é um valor real de tributos: o app estima como se o campo estivesse vazio.
+  // 0,00 não é um valor real de imposto: o app estima como se o campo estivesse vazio.
   const informouTributos = digitouTributos && tributosCentavos !== 0;
   let avisoTributos: string | null = null;
-  if (digitouTributos && tributosCentavos === null) avisoTributos = 'Valor dos tributos inválido.';
+  if (digitouTributos && tributosCentavos === null) avisoTributos = t('lanc.erro.tributos');
   else if (tributosCentavos !== null && valorCentavos !== null && tributosCentavos >= valorCentavos) {
-    avisoTributos = 'Os tributos precisam ser menores que o valor da compra.';
+    avisoTributos = t('lanc.erro.tributosMaior');
   }
-  const perfil = categoria ? perfilTributario(perfilTributarioDaCategoria(categoria)) : null;
-  const cargaEstimada = perfil ? cargaTotal(perfil) : null;
-  const itensNota = sugestao?.itensNota ?? [];
-  let dicaTributos = sugestao?.chaveNota
-    ? 'A nota não informou os tributos (ou veio R$ 0,00). '
-    : digitouTributos && tributosCentavos === 0
-      ? 'R$ 0,00 não conta como valor da nota. '
-      : 'Procure "Valor aprox. dos tributos" no fim do cupom fiscal. ';
-  if (informouTributos) dicaTributos = 'O seu Impostômetro vai usar o valor da nota.';
-  else if (perfil && valorCentavos !== null && itensNota.length > 0) {
-    const estimativa = estimarCompra(valorCentavos, perfil, itensNota);
-    dicaTributos += `Estimativa do EcoTrust pelos ${itensNota.length} produtos: cerca de ${formatarCentavos(estimativa.totalCentavos)} (${estimativa.percentual.toLocaleString('pt-BR')}%).`;
-  } else if (!perfil || cargaEstimada === null) dicaTributos += 'Sem ele, o EcoTrust estima pelo tipo da categoria.';
-  else if (cargaEstimada === 0) dicaTributos += 'Esta categoria está marcada como sem imposto sobre consumo.';
+  // Estimativa pelo país onde a compra aconteceu (IVA + impostos especiais).
+  const ondeFoi = localEfetivo(local, residencia, regiaoResidencia);
+  const nomePais = t(`pais.${ondeFoi.pais}` as Chave);
+  let dicaTributos: string;
+  if (informouTributos) dicaTributos = t('lanc.dica.identificado');
+  else if (!categoria) dicaTributos = `${t('lanc.dica.recibo')} ${t('lanc.dica.semCategoria')}`;
   else {
-    const estimativa = valorCentavos !== null ? `: ${formatarCentavos(Math.round((valorCentavos * cargaEstimada) / 100))}` : '';
-    dicaTributos += `Sem ele, estimamos cerca de ${cargaEstimada}% (${perfil.nome.toLocaleLowerCase('pt-BR')})${estimativa}.`;
+    const estimativa = estimarImpostosDaCompra(
+      valorCentavos ?? 10_000,
+      ondeFoi,
+      perfilTributarioDaCategoria(categoria),
+      data ?? hoje(),
+      { combustivel: fiscal?.combustivel },
+    );
+    const inicio = digitouTributos && tributosCentavos === 0 ? t('lanc.dica.zero') : t('lanc.dica.recibo');
+    if (!estimativa) dicaTributos = `${inicio} ${t('lanc.dica.semRegras', { pais: nomePais })}`;
+    else {
+      const percentual = estimativa.percentual.toLocaleString(localeAtual(), { maximumFractionDigits: 1 });
+      dicaTributos = `${inicio} ${t('lanc.dica.estimativa', {
+        valor: valorCentavos !== null ? formatarCentavos(Math.round(estimativa.totalCentavos)) : '—',
+        percentual,
+        pais: nomePais,
+      })}`;
+      if (estimativa.avisos.includes('especial-alcool-tabaco-nao-incluido')) dicaTributos += ` ${t('lanc.dica.especial')}`;
+    }
   }
 
   const podeSalvar =
@@ -143,6 +162,9 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
         recorrente: tipo === 'despesa' && recorrente,
         tributosCentavos: tipo === 'despesa' && informouTributos ? tributosCentavos : null,
         chaveNota: tipo === 'despesa' ? chaveNota : null,
+        paisConsumo: tipo === 'despesa' ? local.pais : null,
+        regiaoConsumo: tipo === 'despesa' ? local.regiao : null,
+        origemPais: tipo === 'despesa' && local.pais ? 'manual' : null,
       });
       vibrarSucesso();
       router.back();
@@ -298,15 +320,24 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
             </Secao>
 
             {tipo === 'despesa' && (
-              <Secao titulo="Impostos da nota fiscal (opcional)">
+              <Secao titulo={t('lanc.onde')}>
+                <SeletorPais residencia={residencia} regiaoResidencia={regiaoResidencia} valor={local} aoMudar={setLocal} />
+                <ThemedText type="small" themeColor="textSecondary">
+                  {t('lanc.onde.ajuda')}
+                </ThemedText>
+              </Secao>
+            )}
+
+            {tipo === 'despesa' && (
+              <Secao titulo={t('lanc.impostos.titulo')}>
                 <TextInput
                   style={estiloCampo}
                   value={tributosTexto}
                   onChangeText={setTributosTexto}
-                  placeholder="Ex.: 18,35"
+                  placeholder={exemploValorVazio()}
                   placeholderTextColor={theme.textSecondary}
                   keyboardType="decimal-pad"
-                  accessibilityLabel="Valor aproximado dos tributos na nota fiscal, em reais (opcional)"
+                  accessibilityLabel={t('lanc.impostos.rotulo')}
                   returnKeyType="done"
                 />
                 <ThemedText type="small" themeColor="textSecondary">

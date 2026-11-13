@@ -6,7 +6,7 @@ import { AppState, useColorScheme } from 'react-native';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { AvisoConquista } from '@/components/aviso-conquista';
 import { Colors } from '@/constants/theme';
-import { usePerfilFinanceiro } from '@/hooks/use-dados';
+import { usePerfilFinanceiro, usePerfilFiscal } from '@/hooks/use-dados';
 import { useSessao } from '@/hooks/use-sessao';
 import { iniciarSincronizacaoJornada } from '@/services/celebracao-service';
 import { BLOQUEIO_SEGUNDO_PLANO_MS, sair } from '@/services/conta-service';
@@ -73,9 +73,10 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { temConta, logado } = useSessao();
   const temPerfil = usePerfilFinanceiro() !== null;
+  const temPerfilFiscal = usePerfilFiscal() !== null;
   useBloqueioAutomatico();
   useTemaPreferido();
-  useJornadaAutomatica(logado && temPerfil);
+  useJornadaAutomatica(logado && temPerfil && temPerfilFiscal);
 
   return (
     <ThemeProvider value={temaNavegacao(colorScheme === 'light' ? 'light' : 'dark')}>
@@ -83,7 +84,8 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         {/*
           Fluxo de acesso (o Expo Router troca de tela sozinho quando a condição muda):
-          sem conta → cadastro · com conta, sem entrar → entrar · sem perfil → onboarding · pronto → app
+          sem conta → cadastro · com conta, sem entrar → entrar · sem perfil → onboarding ·
+          sem residência fiscal → configurar-fiscal · pronto → app
         */}
         <Stack.Protected guard={!temConta}>
           <Stack.Screen name="cadastro" />
@@ -94,8 +96,12 @@ export default function RootLayout() {
         <Stack.Protected guard={logado && !temPerfil}>
           <Stack.Screen name="onboarding" />
         </Stack.Protected>
-        <Stack.Protected guard={logado && temPerfil}>
+        <Stack.Protected guard={logado && temPerfil && !temPerfilFiscal}>
+          <Stack.Screen name="configurar-fiscal" />
+        </Stack.Protected>
+        <Stack.Protected guard={logado && temPerfil && temPerfilFiscal}>
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="editar-perfil-fiscal" options={{ presentation: 'modal' }} />
           <Stack.Screen name="editar-perfil" options={{ presentation: 'modal' }} />
           <Stack.Screen name="novo-lancamento" options={{ presentation: 'modal' }} />
           <Stack.Screen name="ler-nota" options={{ presentation: 'fullScreenModal' }} />

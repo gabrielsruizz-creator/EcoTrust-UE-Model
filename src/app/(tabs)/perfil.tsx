@@ -16,11 +16,14 @@ import {
   useUltimoBackup,
   useJornada,
   usePerfilFinanceiro,
+  usePerfilFiscal,
   usePerfilInvestidor,
   useSituacao,
 } from '@/hooks/use-dados';
+import { useT } from '@/hooks/use-idioma';
 import { useConta } from '@/hooks/use-sessao';
 import { useTheme } from '@/hooks/use-theme';
+import type { Chave } from '@/i18n';
 import { NOME_PLANO_PLUS } from '@/services/assinatura-service';
 import { apagarContaEDados, sair } from '@/services/conta-service';
 import { rotuloObjetivo } from '@/services/perfil-financeiro-service';
@@ -31,6 +34,8 @@ import { formatarCentavos } from '@/utils/moeda';
 
 export default function PerfilScreen() {
   const theme = useTheme();
+  const t = useT();
+  const fiscal = usePerfilFiscal();
   const degrade = useDegrade(90);
   const conta = useConta();
   const pessoal = useDadosPessoais();
@@ -101,6 +106,19 @@ export default function PerfilScreen() {
       {/* Sobre você */}
       <Grupo titulo="Sobre você">
         <LinhaLista
+          icone="impostos"
+          titulo={t('fiscal.titulo')}
+          subtitulo={
+            fiscal
+              ? [t(`pais.${fiscal.paisResidencia}` as Chave), fiscal.regiaoResidencia ? t(`regiao.${fiscal.regiaoResidencia}` as Chave) : null, t(`fiscal.situacao.${fiscal.situacao}`)]
+                  .filter(Boolean)
+                  .join(' · ')
+              : t('fiscal.resumo.vazio')
+          }
+          aoTocar={() => router.push('/editar-perfil-fiscal')}
+        />
+        <LinhaLista
+          separador
           icone="usuario"
           titulo="Meus dados"
           subtitulo={

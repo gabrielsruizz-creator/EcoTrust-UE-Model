@@ -8,11 +8,15 @@ import {
   buscarTransacao,
   buscarTransacaoPorChaveNota,
   criarTransacao,
+  definirPaisDaCompra,
   listarDiasComLancamentos,
   listarTransacoes,
   removerTransacao,
 } from '@/repositories/transacoes-repository';
+import { paisUE } from '@/data/paises';
+import { t } from '@/i18n';
 import { ErroValidacao } from '@/services/erros';
+import { regiaoValida } from '@/services/perfil-fiscal-service';
 import type { FiltroTransacoes, NovaTransacao, Transacao } from '@/types/financas';
 import { dataValida, formatarData, hoje } from '@/utils/datas';
 
@@ -75,8 +79,19 @@ function validarTransacao(dados: NovaTransacao, idAtual?: number): NovaTransacao
     }
   }
 
+  // País da compra (edição europeia): só despesas; null = país de residência.
+  const paisConsumo = dados.tipo === 'despesa' ? (dados.paisConsumo ?? null) : null;
+  if (paisConsumo !== null && !paisUE(paisConsumo)) throw new ErroValidacao(t('fiscal.erro.pais'));
+  const regiaoConsumo = paisConsumo !== null ? (dados.regiaoConsumo ?? null) : null;
+  if (regiaoConsumo !== null && paisConsumo !== null && !regiaoValida(paisConsumo, regiaoConsumo)) {
+    throw new ErroValidacao(t('fiscal.erro.regiao'));
+  }
+
   return {
     ...dados,
+    paisConsumo,
+    regiaoConsumo: paisConsumo !== null ? regiaoConsumo : null,
+    origemPais: paisConsumo !== null ? (dados.origemPais ?? 'manual') : null,
     descricao: dados.descricao.trim().slice(0, MAX_DESCRICAO),
     // Por enquanto só despesas podem ser recorrentes (ex.: aluguel, assinaturas).
     recorrente: dados.tipo === 'despesa' && dados.recorrente,
@@ -91,9 +106,14 @@ export function adicionarTransacao(nova: NovaTransacao): number {
 }
 
 export function editarTransacao(id: number, dados: NovaTransacao) {
-  const atualizou = atualizarTransacao(id, validarTransacao(dados, id));
+  const validos = validarTransacao(dados, id);
+  const atualizou = atualizarTransacao(id, validos);
   if (!atualizou) {
     throw new ErroValidacao('Este lançamento não existe mais.');
+  }
+  // O país só muda quando o formulário o enviou (assim, editar não apaga um país vindo do GPS ou do recibo).
+  if (dados.paisConsumo !== undefined) {
+    definirPaisDaCompra(id, validos.paisConsumo ?? null, validos.regiaoConsumo ?? null, validos.origemPais ?? null);
   }
 }
 

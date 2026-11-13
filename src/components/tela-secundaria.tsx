@@ -15,21 +15,27 @@ type Props = {
   rodape?: ReactNode;
   /** Texto do botão de voltar ("‹ Voltar" ou "Cancelar" em telas de edição) */
   textoVoltar?: string;
+  /** Sem botão de voltar (ex.: passo obrigatório do primeiro acesso) */
+  semVoltar?: boolean;
 };
 
 /** Tela aberta por cima das abas: cabeçalho com voltar, conteúdo rolável e rodapé opcional. */
-export function TelaSecundaria({ titulo, children, rodape, textoVoltar = '‹ Voltar' }: Props) {
+export function TelaSecundaria({ titulo, children, rodape, textoVoltar = '‹ Voltar', semVoltar }: Props) {
   return (
     <ThemedView style={styles.container}>
       <FundoDaTela />
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <View style={styles.topo}>
-            <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12} style={styles.lado}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
-                {textoVoltar}
-              </ThemedText>
-            </Pressable>
+            {semVoltar ? (
+              <View style={styles.lado} />
+            ) : (
+              <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12} style={styles.lado}>
+                <ThemedText type="smallBold" themeColor="textSecondary">
+                  {textoVoltar}
+                </ThemedText>
+              </Pressable>
+            )}
             <ThemedText type="smallBold" accessibilityRole="header" numberOfLines={1} style={styles.titulo}>
               {titulo}
             </ThemedText>
