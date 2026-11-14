@@ -1,0 +1,6 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "EcoTrust gebruikt de camera om de QR-code op bonnetjes en facturen te lezen en de aankoop en belastingen in te vullen.",
+    "NSFaceIDUsageDescription": "EcoTrust gebruikt Face ID zodat je veilig kunt inloggen in de app."
+  }
+}

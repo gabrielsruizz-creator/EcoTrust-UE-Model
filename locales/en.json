@@ -1,0 +1,6 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "EcoTrust uses the camera to read the QR code on your receipts and invoices and fill in the purchase and its taxes.",
+    "NSFaceIDUsageDescription": "EcoTrust uses Face ID so you can sign in to the app securely."
+  }
+}

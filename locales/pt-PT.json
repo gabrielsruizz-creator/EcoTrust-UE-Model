@@ -1,0 +1,6 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "O EcoTrust usa a câmara para ler o código QR das faturas e talões e preencher a compra e os respetivos impostos.",
+    "NSFaceIDUsageDescription": "O EcoTrust usa o Face ID para entrar na app com segurança."
+  }
+}

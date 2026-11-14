@@ -46,14 +46,14 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "O EcoTrust usa o Face ID para você entrar no app com segurança."
+          "faceIDPermission": "EcoTrust uses Face ID so you can sign in to the app securely."
         }
       ],
       "expo-notifications",
       [
         "expo-camera",
         {
-          "cameraPermission": "O EcoTrust usa a câmera para ler o QR Code das notas fiscais e calcular os impostos das suas compras.",
+          "cameraPermission": "EcoTrust uses the camera to read the QR code on your receipts and invoices and fill in the purchase and its taxes.",
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
@@ -83,6 +83,16 @@
       "eas": {
         "projectId": "f5f01efb-36d6-4c18-971c-9291d4e89b93"
       }
+    },
+    "locales": {
+      "en": "./locales/en.json",
+      "pt-PT": "./locales/pt-PT.json",
+      "es": "./locales/es.json",
+      "fr": "./locales/fr.json",
+      "de": "./locales/de.json",
+      "it": "./locales/it.json",
+      "nl": "./locales/nl.json",
+      "pl": "./locales/pl.json"
     }
   }
 }

@@ -1,0 +1,6 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "EcoTrust utilise l'appareil photo pour lire le code QR de vos tickets et factures et remplir l'achat et ses taxes.",
+    "NSFaceIDUsageDescription": "EcoTrust utilise Face ID pour vous connecter à l'app en toute sécurité."
+  }
+}

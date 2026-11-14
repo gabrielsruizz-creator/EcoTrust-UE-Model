@@ -1,0 +1,6 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "EcoTrust używa aparatu, aby odczytać kod QR z paragonów i faktur oraz uzupełnić zakup i podatki.",
+    "NSFaceIDUsageDescription": "EcoTrust używa Face ID, aby bezpiecznie logować Cię do aplikacji."
+  }
+}

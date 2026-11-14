@@ -1,0 +1,6 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "EcoTrust usa la fotocamera per leggere il codice QR di scontrini e fatture e compilare l'acquisto e le relative imposte.",
+    "NSFaceIDUsageDescription": "EcoTrust usa Face ID per farti accedere all'app in modo sicuro."
+  }
+}
