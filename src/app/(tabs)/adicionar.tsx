@@ -23,6 +23,12 @@ const OPCOES: { icone: NomeIcone; titulo: Chave; texto: Chave; destino: Href; pr
     principal: true,
   },
   {
+    icone: 'qrcode',
+    titulo: 'fatura.ler',
+    texto: 'fatura.ler.texto',
+    destino: '/ler-fatura',
+  },
+  {
     icone: 'entrada',
     titulo: 'lanc.receita',
     texto: 'adicionar.receita.texto',

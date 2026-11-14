@@ -15,6 +15,7 @@ import {
 } from '@/repositories/transacoes-repository';
 import { paisUE } from '@/data/paises';
 import { t } from '@/i18n';
+import { chaveFaturaValida } from '@/services/fatura-pt-service';
 import { ErroValidacao } from '@/services/erros';
 import { regiaoValida } from '@/services/perfil-fiscal-service';
 import type { FiltroTransacoes, NovaTransacao, Transacao } from '@/types/financas';
@@ -69,7 +70,8 @@ function validarTransacao(dados: NovaTransacao, idAtual?: number): NovaTransacao
   if (tributos !== null && tributos >= dados.valorCentavos) {
     throw new ErroValidacao(t('tx.e.tributosMaior'));
   }
-  const chaveNota = dados.tipo === 'despesa' && dados.chaveNota && /^\d{44}$/.test(dados.chaveNota) ? dados.chaveNota : null;
+  const chaveNota = dados.tipo === 'despesa' && dados.chaveNota ? dados.chaveNota.trim() : null;
+  if (chaveNota && !chaveFaturaValida(chaveNota)) throw new ErroValidacao(t('fatura.e.chave'));
   if (chaveNota) {
     const existente = buscarTransacaoPorChaveNota(chaveNota);
     if (existente && existente.id !== idAtual) {

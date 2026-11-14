@@ -2,12 +2,15 @@ import { useLocalSearchParams } from 'expo-router';
 
 import { FormularioLancamento, type SugestaoLancamento } from '@/components/formulario-lancamento';
 import { useT } from '@/hooks/use-idioma';
+import { despesaDaFatura, lerQrFaturaPT } from '@/services/fatura-pt-service';
 import { adicionarTransacao } from '@/services/transacoes-service';
 
 type Parametros = {
   tipo?: string;
   /** Categoria já escolhida (atalhos do Início) */
   categoria?: string;
+  /** Texto do código QR de uma fatura portuguesa (vem do ecrã ler-fatura) */
+  qr?: string;
 };
 
 function inteiro(texto?: string) {
@@ -19,7 +22,12 @@ export default function NovoLancamentoScreen() {
   const t = useT();
   const p = useLocalSearchParams<Parametros>();
   const categoriaId = inteiro(p.categoria);
-  const sugestao: SugestaoLancamento | undefined = categoriaId !== undefined ? { categoriaId } : undefined;
+  const fatura = p.qr ? lerQrFaturaPT(p.qr) : null;
+  const sugestao: SugestaoLancamento | undefined = fatura
+    ? { ...despesaDaFatura(fatura), numeroFatura: fatura.numero, ...(categoriaId !== undefined && { categoriaId }) }
+    : categoriaId !== undefined
+      ? { categoriaId }
+      : undefined;
 
   return (
     <FormularioLancamento

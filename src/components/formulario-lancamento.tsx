@@ -17,6 +17,7 @@ import { CampoData } from '@/components/calendario';
 import { CampoNovaCategoria } from '@/components/campo-nova-categoria';
 import { CampoValor } from '@/components/campo-valor';
 import { Chip } from '@/components/chip';
+import { Icone } from '@/components/icone';
 import { Botao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -39,7 +40,10 @@ type OpcaoData = 'hoje' | 'ontem' | 'outra';
 /** Dados que chegam já preenchidos (ex.: atalho de categoria, ou leitura de um recibo). O utilizador confere e guarda. */
 export type SugestaoLancamento = Partial<
   Pick<Transacao, 'valorCentavos' | 'tributosCentavos' | 'data' | 'descricao' | 'categoriaId' | 'chaveNota' | 'paisConsumo' | 'regiaoConsumo'>
->;
+> & {
+  /** N.º do documento quando os dados vieram do QR de uma fatura (mostrado como aviso) */
+  numeroFatura?: string;
+};
 
 type Props = {
   titulo: string;
@@ -155,7 +159,12 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
         chaveNota: tipo === 'despesa' ? chaveNota : null,
         paisConsumo: tipo === 'despesa' ? local.pais : null,
         regiaoConsumo: tipo === 'despesa' ? local.regiao : null,
-        origemPais: tipo === 'despesa' && local.pais ? 'manual' : null,
+        origemPais:
+          tipo === 'despesa' && local.pais
+            ? sugestao?.chaveNota && local.pais === sugestao.paisConsumo && local.regiao === (sugestao.regiaoConsumo ?? null)
+              ? 'recibo'
+              : 'manual'
+            : null,
       });
       vibrarSucesso();
       router.back();
@@ -189,7 +198,14 @@ export function FormularioLancamento({ titulo, inicial, aoSalvar, tipoInicial = 
             style={styles.flex}
             contentContainerStyle={styles.conteudo}
             keyboardShouldPersistTaps="handled">
-
+            {sugestao?.numeroFatura && (
+              <View style={[styles.avisoFatura, { backgroundColor: theme.accentSoft }]} accessibilityLiveRegion="polite">
+                <Icone nome="qrcode" cor={theme.accentText} tamanho={20} />
+                <ThemedText type="small" style={[styles.flex, { color: theme.accentText }]}>
+                  {t('fatura.lida', { numero: sugestao.numeroFatura })}
+                </ThemedText>
+              </View>
+            )}
 
             <View style={styles.linha} accessibilityRole="radiogroup">
               <Botao
@@ -356,6 +372,13 @@ function Secao({ titulo, children }: { titulo: string; children: ReactNode }) {
 }
 
 const styles = StyleSheet.create({
+  avisoFatura: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    padding: Spacing.three,
+    borderRadius: Spacing.three,
+  },
   container: {
     flex: 1,
     flexDirection: 'row',

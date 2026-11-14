@@ -104,6 +104,7 @@ export default function RootLayout() {
           <Stack.Screen name="editar-perfil-fiscal" options={{ presentation: 'modal' }} />
           <Stack.Screen name="editar-perfil" options={{ presentation: 'modal' }} />
           <Stack.Screen name="novo-lancamento" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="ler-fatura" options={{ presentation: 'fullScreenModal' }} />
           <Stack.Screen name="lancamento/[id]" />
           <Stack.Screen name="editar-lancamento/[id]" options={{ presentation: 'modal' }} />
           <Stack.Screen name="categorias" />
