@@ -59,7 +59,7 @@ documentação versionada antes de usar qualquer API do Expo (ver `AGENTS.md`).
   `fontes/` quando houver. Nunca inventar valores: país sem dados confirmados fica "sem regras" (não estima).
   Ao mudar valores, atualize os testes em `src/testes/`.
 - IVA pelo **país (e região) da compra**; imposto sobre o rendimento e contribuições pelo **país de residência**.
-  Imposto identificado (vem da fatura) e estimado ficam sempre separados. Impostos R$/€ 0,00 contam como "não informados".
+  Imposto identificado (vem da fatura) e estimado ficam sempre separados. Impostos de 0,00 contam como "não informados".
 - Os percentuais são **estimativas** (aguardando revisão de contador); a interface deve deixar isso claro.
 
 ## Segurança e privacidade
