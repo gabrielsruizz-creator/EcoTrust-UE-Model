@@ -8,6 +8,7 @@ import { Botao, Cartao } from '@/components/tela';
 import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useAssinatura, useForum } from '@/hooks/use-dados';
 import { useTheme } from '@/hooks/use-theme';
 import { temAcesso } from '@/services/assinatura-service';
@@ -17,6 +18,7 @@ import { tempoRelativo } from '@/utils/datas';
 
 /** Fórum da Trust Academy (protótipo local: os tópicos ficam neste aparelho). */
 export default function ForumScreen() {
+  const t = useT();
   const theme = useTheme();
   const [categoria, setCategoria] = useState<string | null>(null);
   const { topicos, categorias } = useForum(categoria);
@@ -24,7 +26,7 @@ export default function ForumScreen() {
 
   if (!plus) {
     return (
-      <TelaSecundaria titulo="Fórum">
+      <TelaSecundaria titulo={t('acad.forum')}>
         <BloqueioPremium recurso="academy" />
       </TelaSecundaria>
     );
@@ -32,21 +34,20 @@ export default function ForumScreen() {
 
   return (
     <TelaSecundaria
-      titulo="Fórum"
-      rodape={<Botao texto="+ Novo tópico" onPress={() => router.push('/forum/novo')} />}>
+      titulo={t('acad.forum')}
+      rodape={<Botao texto={t('forum.novoTopico')} onPress={() => router.push('/forum/novo')} />}>
       <View style={[styles.aviso, { backgroundColor: theme.accentSoft }]} accessible>
         <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-          Prévia do fórum
+          {t('forum.previa')}
         </ThemedText>
         <ThemedText type="small">
-          Por enquanto, o que você publica fica só neste aparelho. Os tópicos marcados como
-          &quot;Exemplo&quot; mostram como a comunidade vai funcionar.
+          {t('forum.previa.texto')}
         </ThemedText>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sangria}>
         <View style={styles.chips} accessibilityRole="radiogroup">
-          <Chip texto="Todos" ativo={categoria === null} aoTocar={() => setCategoria(null)} />
+          <Chip texto={t('forum.todos')} ativo={categoria === null} aoTocar={() => setCategoria(null)} />
           {categorias.map((c) => (
             <Chip key={c.id} texto={`${c.icone} ${c.nome}`} ativo={categoria === c.id} aoTocar={() => setCategoria(c.id)} />
           ))}
@@ -55,9 +56,9 @@ export default function ForumScreen() {
 
       {topicos.length === 0 ? (
         <Cartao>
-          <ThemedText type="smallBold">Nenhum tópico neste tema ainda</ThemedText>
+          <ThemedText type="smallBold">{t('forum.vazio')}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Que tal começar a conversa com uma dúvida ou uma experiência sua?
+            {t('forum.vazio.texto')}
           </ThemedText>
         </Cartao>
       ) : (
@@ -70,13 +71,17 @@ export default function ForumScreen() {
 }
 
 function CartaoTopico({ topico, categoria }: { topico: TopicoForum; categoria?: CategoriaAcademy }) {
+  const t = useT();
   const theme = useTheme();
-  const respostas = topico.respostas === 1 ? '1 resposta' : `${topico.respostas} respostas`;
+  const respostas = t('forum.respostas', { n: topico.respostas });
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/forum/[id]', params: { id: String(topico.id) } })}
       accessibilityRole="button"
-      accessibilityLabel={`${topico.titulo}. Por ${topico.autor}, ${tempoRelativo(topico.criadoEm)}. ${respostas}.${topico.exemplo ? ' Tópico de exemplo.' : ''}`}
+      accessibilityLabel={
+        t('forum.topicoRotulo', { titulo: topico.titulo, autor: topico.autor, quando: tempoRelativo(topico.criadoEm), respostas }) +
+        (topico.exemplo ? t('forum.exemploRotulo') : '')
+      }
       style={({ pressed }) => pressed && styles.pressionado}>
       <Cartao>
         <View style={styles.linha}>
@@ -90,14 +95,14 @@ function CartaoTopico({ topico, categoria }: { topico: TopicoForum; categoria?: 
           {topico.exemplo && (
             <View style={[styles.tag, { backgroundColor: theme.backgroundSelected }]}>
               <ThemedText type="small" themeColor="textSecondary" style={styles.tagFonte}>
-                Exemplo
+                {t('forum.exemplo')}
               </ThemedText>
             </View>
           )}
           {topico.meu && (
             <View style={[styles.tag, { backgroundColor: theme.accentSoft }]}>
               <ThemedText type="small" style={[styles.tagFonte, { color: theme.accentText }]}>
-                Seu tópico
+                {t('forum.seuTopico')}
               </ThemedText>
             </View>
           )}

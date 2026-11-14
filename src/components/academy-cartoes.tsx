@@ -10,6 +10,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { AnelProgresso } from '@/components/anel-progresso';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
+import { t as traduzirAgora } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import type { AulaRecente, ProgressoCurso, ResumoCategoria } from '@/services/academy-service';
 import { formatarDataCurta } from '@/utils/datas';
@@ -29,9 +31,9 @@ export function abrirAula(id: string) {
 }
 
 function textoAcao(p: ProgressoCurso) {
-  if (p.concluido) return 'Concluído ✓';
-  if (p.concluidas === 0) return 'Iniciar';
-  return 'Continuar';
+  if (p.concluido) return traduzirAgora('acad.acao.concluido');
+  if (p.concluidas === 0) return traduzirAgora('acad.acao.iniciar');
+  return traduzirAgora('comum.continuar');
 }
 
 /** Título de seção com uma ação opcional à direita (ex.: "Ver todos"). */
@@ -55,12 +57,16 @@ export function TituloSecao({ titulo, acao }: { titulo: string; acao?: { texto: 
 
 /** Cartão grande e colorido de um curso (usado em "Meus cursos" e nas sugestões). */
 export function CartaoCurso({ progresso, motivo }: { progresso: ProgressoCurso; motivo?: string }) {
+  const t = useT();
   const { curso, categoria } = progresso;
   return (
     <Pressable
       onPress={() => abrirCurso(curso.id)}
       accessibilityRole="button"
-      accessibilityLabel={`Curso ${curso.titulo}, ${categoria.nome}. ${progresso.concluidas} de ${progresso.total} aulas concluídas.${motivo ? ` Sugerido porque: ${motivo}` : ''}`}
+      accessibilityLabel={
+        t('acad.cartaoCurso', { titulo: curso.titulo, categoria: categoria.nome, n: progresso.concluidas, total: progresso.total }) +
+        (motivo ? t('acad.sugeridoPorque', { motivo }) : '')
+      }
       style={({ pressed }) => [styles.cursoCartao, { backgroundColor: categoria.cor }, pressed && styles.pressionado]}>
       <View style={styles.cursoTopo}>
         <ThemedText type="small" style={[styles.etiqueta, { color: BRANCO_SUAVE }]}>
@@ -89,7 +95,7 @@ export function CartaoCurso({ progresso, motivo }: { progresso: ProgressoCurso; 
             {textoAcao(progresso)}
           </ThemedText>
           <ThemedText type="small" style={{ color: BRANCO_SUAVE }}>
-            {progresso.concluidas} de {progresso.total} aulas
+            {t('acad.nDeAulas', { n: progresso.concluidas, total: progresso.total })}
           </ThemedText>
         </View>
       </View>
@@ -98,12 +104,16 @@ export function CartaoCurso({ progresso, motivo }: { progresso: ProgressoCurso; 
 }
 
 export function CartaoCategoria({ categoria }: { categoria: ResumoCategoria }) {
-  const plural = (n: number, s: string, p: string) => `${n} ${n === 1 ? s : p}`;
+  const t = useT();
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/academy/categoria/[id]', params: { id: categoria.id } })}
       accessibilityRole="button"
-      accessibilityLabel={`Categoria ${categoria.nome}: ${plural(categoria.cursos, 'curso', 'cursos')}, ${plural(categoria.aulas, 'aula', 'aulas')}`}
+      accessibilityLabel={t('acad.cartaoCategoria', {
+        nome: categoria.nome,
+        cursos: t('acad.cursos', { n: categoria.cursos }),
+        aulas: t('acad.aulas', { n: categoria.aulas }),
+      })}
       style={({ pressed }) => [styles.categoriaCartao, { backgroundColor: categoria.cor }, pressed && styles.pressionado]}>
       <ThemedText style={styles.categoriaIcone}>{categoria.icone}</ThemedText>
       <View>
@@ -111,7 +121,7 @@ export function CartaoCategoria({ categoria }: { categoria: ResumoCategoria }) {
           {categoria.nome}
         </ThemedText>
         <ThemedText type="small" style={{ color: BRANCO_SUAVE }}>
-          {plural(categoria.cursos, 'curso', 'cursos')} · {plural(categoria.aulas, 'aula', 'aulas')}
+          {t('acad.cursos', { n: categoria.cursos })} · {t('acad.aulas', { n: categoria.aulas })}
         </ThemedText>
       </View>
     </Pressable>
@@ -120,13 +130,17 @@ export function CartaoCategoria({ categoria }: { categoria: ResumoCategoria }) {
 
 /** Linha de uma aula recente: miniatura com a cor do tema, título, resumo e data. */
 export function ItemRecente({ recente }: { recente: AulaRecente }) {
+  const t = useT();
   const theme = useTheme();
   const { aula, curso, categoria, concluida } = recente;
   return (
     <Pressable
       onPress={() => abrirAula(aula.id)}
       accessibilityRole="button"
-      accessibilityLabel={`${aula.titulo}. ${aula.resumo}. Curso ${curso.titulo}, ${aula.minutos} minutos.${concluida ? ' Concluída.' : ''}`}
+      accessibilityLabel={
+        t('acad.recenteRotulo', { titulo: aula.titulo, resumo: aula.resumo, curso: curso.titulo, min: aula.minutos }) +
+        (concluida ? t('acad.concluidaPonto') : '')
+      }
       style={({ pressed }) => [
         styles.recente,
         { backgroundColor: theme.backgroundElement, borderColor: theme.border },
@@ -136,7 +150,7 @@ export function ItemRecente({ recente }: { recente: AulaRecente }) {
         <ThemedText style={styles.miniaturaIcone}>{categoria.icone}</ThemedText>
         <View style={styles.selo}>
           <ThemedText type="small" style={[styles.seloTexto, { color: BRANCO }]}>
-            {aula.minutos} min
+            {t('acad.min', { n: aula.minutos })}
           </ThemedText>
         </View>
       </View>
@@ -148,7 +162,7 @@ export function ItemRecente({ recente }: { recente: AulaRecente }) {
           {aula.resumo}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary" style={styles.etiqueta}>
-          {concluida ? '✓ Concluída · ' : ''}
+          {concluida ? t('acad.concluidaPrefixo') : ''}
           {formatarDataCurta(aula.publicadaEm)}
         </ThemedText>
       </View>

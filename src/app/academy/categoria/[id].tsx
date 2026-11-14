@@ -8,6 +8,7 @@ import { Botao, Cartao } from '@/components/tela';
 import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useAssinatura, useCursosDaCategoria } from '@/hooks/use-dados';
 import { useTheme } from '@/hooks/use-theme';
 import { temAcesso } from '@/services/assinatura-service';
@@ -15,6 +16,7 @@ import { temAcesso } from '@/services/assinatura-service';
 const BRANCO = '#FFFFFF';
 
 export default function CategoriaScreen() {
+  const t = useT();
   const theme = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const dados = useCursosDaCategoria(String(id));
@@ -22,7 +24,7 @@ export default function CategoriaScreen() {
 
   if (!plus) {
     return (
-      <TelaSecundaria titulo="Categoria">
+      <TelaSecundaria titulo={t('acad.categoria')}>
         <BloqueioPremium recurso="academy" />
       </TelaSecundaria>
     );
@@ -30,9 +32,9 @@ export default function CategoriaScreen() {
 
   if (!dados) {
     return (
-      <TelaSecundaria titulo="Categoria">
-        <ThemedText themeColor="textSecondary">Categoria não encontrada.</ThemedText>
-        <Botao texto="Voltar" onPress={() => router.back()} />
+      <TelaSecundaria titulo={t('acad.categoria')}>
+        <ThemedText themeColor="textSecondary">{t('acad.naoEncontradaCategoria')}</ThemedText>
+        <Botao texto={t('comum.voltar')} onPress={() => router.back()} />
       </TelaSecundaria>
     );
   }
@@ -52,14 +54,14 @@ export default function CategoriaScreen() {
       </View>
 
       <ThemedText type="smallBold" accessibilityRole="header">
-        {cursos.length === 1 ? '1 curso' : `${cursos.length} cursos`}
+        {t('acad.cursos', { n: cursos.length })}
       </ThemedText>
       {cursos.map((p) => (
         <Pressable
           key={p.curso.id}
           onPress={() => abrirCurso(p.curso.id)}
           accessibilityRole="button"
-          accessibilityLabel={`${p.curso.titulo}. ${p.curso.resumo}. ${p.concluidas} de ${p.total} aulas concluídas.`}
+          accessibilityLabel={t('acad.cursoRotulo', { titulo: p.curso.titulo, resumo: p.curso.resumo, n: p.concluidas, total: p.total })}
           style={({ pressed }) => pressed && styles.pressionado}>
           <Cartao>
             <View style={styles.linha}>
@@ -68,7 +70,7 @@ export default function CategoriaScreen() {
               </ThemedText>
               {p.noMeusCursos && (
                 <ThemedText type="small" style={{ color: theme.accentText }}>
-                  Meus cursos
+                  {t('acad.meusCursos')}
                 </ThemedText>
               )}
             </View>
@@ -77,8 +79,8 @@ export default function CategoriaScreen() {
             </ThemedText>
             <BarraProgresso percentual={p.percentual} cor={categoria.cor} altura={6} />
             <ThemedText type="small" themeColor="textSecondary">
-              {p.concluido ? '✓ Concluído' : `${p.concluidas} de ${p.total} aulas`} ·{' '}
-              {p.aulas.reduce((soma, a) => soma + a.minutos, 0)} min no total
+              {p.concluido ? t('acad.concluido') : t('acad.nDeAulas', { n: p.concluidas, total: p.total })} ·{' '}
+              {t('acad.minTotal', { n: p.aulas.reduce((soma, a) => soma + a.minutos, 0) })}
             </ThemedText>
           </Cartao>
         </Pressable>

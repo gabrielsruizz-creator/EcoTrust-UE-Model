@@ -8,6 +8,7 @@ import { Botao, Cartao } from '@/components/tela';
 import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useAssinatura, useCurso } from '@/hooks/use-dados';
 import { useTheme } from '@/hooks/use-theme';
 import { adicionarAosMeusCursos, removerDosMeusCursos } from '@/services/academy-service';
@@ -17,6 +18,7 @@ const BRANCO = '#FFFFFF';
 const BRANCO_SUAVE = 'rgba(255,255,255,0.85)';
 
 export default function CursoScreen() {
+  const t = useT();
   const theme = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const dados = useCurso(String(id));
@@ -24,7 +26,7 @@ export default function CursoScreen() {
 
   if (!plus) {
     return (
-      <TelaSecundaria titulo="Curso">
+      <TelaSecundaria titulo={t('acad.curso')}>
         <BloqueioPremium recurso="academy" />
       </TelaSecundaria>
     );
@@ -32,22 +34,22 @@ export default function CursoScreen() {
 
   if (!dados) {
     return (
-      <TelaSecundaria titulo="Curso">
-        <ThemedText themeColor="textSecondary">Curso não encontrado.</ThemedText>
-        <Botao texto="Voltar" onPress={() => router.back()} />
+      <TelaSecundaria titulo={t('acad.curso')}>
+        <ThemedText themeColor="textSecondary">{t('acad.e.curso')}</ThemedText>
+        <Botao texto={t('comum.voltar')} onPress={() => router.back()} />
       </TelaSecundaria>
     );
   }
 
   const { progresso: p, concluidas } = dados;
   const textoBotao = p.concluido
-    ? 'Revisar o curso'
+    ? t('acad.revisar')
     : p.concluidas === 0
-      ? 'Começar a primeira aula'
-      : `Continuar: aula ${p.aulas.indexOf(p.proximaAula) + 1}`;
+      ? t('acad.comecar')
+      : t('acad.continuarAula', { n: p.aulas.indexOf(p.proximaAula) + 1 });
 
   return (
-    <TelaSecundaria titulo="Curso">
+    <TelaSecundaria titulo={t('acad.curso')}>
       <View style={[styles.capa, { backgroundColor: p.categoria.cor }]}>
         <View style={styles.flex}>
           <ThemedText type="small" style={{ color: BRANCO_SUAVE }}>
@@ -67,19 +69,19 @@ export default function CursoScreen() {
           corTexto={BRANCO}
           tamanho={72}
           espessura={7}
-          rotuloAcessivel={`Progresso do curso: ${p.concluidas} de ${p.total} aulas`}
+          rotuloAcessivel={t('acad.progresso', { n: p.concluidas, total: p.total })}
         />
       </View>
 
       <Botao texto={textoBotao} onPress={() => abrirAula(p.proximaAula.id)} />
       {p.noMeusCursos ? (
-        <Botao texto="Remover dos meus cursos" variante="secundario" onPress={() => removerDosMeusCursos(p.curso.id)} />
+        <Botao texto={t('acad.remover')} variante="secundario" onPress={() => removerDosMeusCursos(p.curso.id)} />
       ) : (
-        <Botao texto="Adicionar aos meus cursos" variante="secundario" onPress={() => adicionarAosMeusCursos(p.curso.id)} />
+        <Botao texto={t('acad.adicionar')} variante="secundario" onPress={() => adicionarAosMeusCursos(p.curso.id)} />
       )}
 
       <ThemedText type="smallBold" accessibilityRole="header">
-        Aulas · {p.concluidas} de {p.total} concluídas
+        {t('acad.aulasConcluidas', { n: p.concluidas, total: p.total })}
       </ThemedText>
       <Cartao>
         {p.aulas.map((aula, i) => {
@@ -89,7 +91,9 @@ export default function CursoScreen() {
               key={aula.id}
               onPress={() => abrirAula(aula.id)}
               accessibilityRole="button"
-              accessibilityLabel={`Aula ${i + 1}: ${aula.titulo}, ${aula.minutos} minutos${feita ? ', concluída' : ''}`}
+              accessibilityLabel={
+                t('acad.aulaRotulo', { n: i + 1, titulo: aula.titulo, min: aula.minutos }) + (feita ? t('acad.concluidaRotulo') : '')
+              }
               style={({ pressed }) => [
                 styles.aula,
                 i > 0 && [styles.separador, { borderTopColor: theme.border }],
@@ -109,7 +113,8 @@ export default function CursoScreen() {
               <View style={styles.flex}>
                 <ThemedText type="smallBold">{aula.titulo}</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
-                  {aula.minutos} min{feita ? ' · concluída' : ''}
+                  {t('acad.min', { n: aula.minutos })}
+                  {feita ? ` · ${t('acad.concluidaCurta')}` : ''}
                 </ThemedText>
               </View>
               <ThemedText themeColor="textSecondary">›</ThemedText>

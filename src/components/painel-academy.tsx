@@ -11,6 +11,7 @@ import {
 import { Cartao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { BottomTabInset, Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useAcademy } from '@/hooks/use-dados';
 import { useTheme } from '@/hooks/use-theme';
 import { calcularProgressoCurso } from '@/services/academy-service';
@@ -19,13 +20,14 @@ const NENHUM = new Set<string>();
 
 /** Trust Academy: meus cursos, categorias, conteúdos recentes e fórum. (Só para assinantes Plus.) */
 export function PainelAcademy() {
+  const t = useT();
   const theme = useTheme();
   const academy = useAcademy();
 
   return (
     <ScrollView contentContainerStyle={styles.conteudo}>
       {/* 1. Meus cursos */}
-      <TituloSecao titulo="Meus cursos" />
+      <TituloSecao titulo={t('acad.meusCursos')} />
       {academy.meusCursos.length > 0 ? (
         <ScrollView
           horizontal
@@ -39,10 +41,9 @@ export function PainelAcademy() {
       ) : (
         <>
           <Cartao>
-            <ThemedText type="smallBold">Escolha seu primeiro curso</ThemedText>
+            <ThemedText type="smallBold">{t('acad.escolhaPrimeiro')}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              Cursos curtos, com aulas de cerca de 3 minutos e uma pergunta no fim. Comece por uma
-              sugestão ou explore as categorias abaixo.
+              {t('acad.escolhaPrimeiro.texto')}
             </ThemedText>
           </Cartao>
           {academy.recomendados.length > 0 && (
@@ -64,7 +65,7 @@ export function PainelAcademy() {
       )}
 
       {/* 2. Categorias */}
-      <TituloSecao titulo="Categorias" />
+      <TituloSecao titulo={t('acad.categorias')} />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -76,7 +77,7 @@ export function PainelAcademy() {
       </ScrollView>
 
       {/* 3. Recentes */}
-      <TituloSecao titulo="Recentes" />
+      <TituloSecao titulo={t('acad.recentes')} />
       <View style={styles.lista}>
         {academy.recentes.map((r) => (
           <ItemRecente key={r.aula.id} recente={r} />
@@ -84,31 +85,31 @@ export function PainelAcademy() {
       </View>
 
       {/* 4. Comunidade */}
-      <TituloSecao titulo="Comunidade" />
+      <TituloSecao titulo={t('acad.comunidade')} />
       <CartaoAtalho
         icone="💬"
-        titulo="Fórum"
-        subtitulo={`${academy.totalTopicos} ${academy.totalTopicos === 1 ? 'tópico' : 'tópicos'} · dúvidas e experiências`}
+        titulo={t('acad.forum')}
+        subtitulo={t('acad.topicos', { n: academy.totalTopicos })}
         aoTocar={() => router.push('/forum')}
       />
 
       <View style={[styles.dica, { backgroundColor: theme.accentSoft }]} accessible>
         <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-          Dica do dia
+          {t('acad.dicaDia')}
         </ThemedText>
         <ThemedText>{academy.dica}</ThemedText>
       </View>
 
       <CartaoAtalho
         icone="📖"
-        titulo="Glossário"
-        subtitulo={`${academy.totalConceitos} termos explicados de forma simples`}
+        titulo={t('acad.glossario')}
+        subtitulo={t('acad.termos', { n: academy.totalConceitos })}
         aoTocar={() => router.push('/academy/glossario')}
         cor={theme.backgroundSelected}
       />
 
       <ThemedText type="small" themeColor="textSecondary" style={styles.rodape}>
-        Conteúdo educativo. Não é recomendação de investimento.
+        {t('ia.educativo')}
       </ThemedText>
     </ScrollView>
   );

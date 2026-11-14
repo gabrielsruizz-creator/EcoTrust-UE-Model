@@ -5,6 +5,7 @@
  */
 
 import { CATEGORIAS_ACADEMY } from '@/data/academy-conteudo';
+import { t, type Chave } from '@/i18n';
 import {
   apagarRespostaMinha,
   apagarTopicoMeu,
@@ -13,6 +14,8 @@ import {
   inserirTopico,
   listarRespostas,
   listarTopicos,
+  type RespostaForum,
+  type TopicoForum,
 } from '@/repositories/forum-repository';
 import { obterConta } from '@/services/conta-service';
 import { ErroValidacao } from '@/services/erros';
@@ -23,12 +26,40 @@ export const LIMITES_FORUM = {
   resposta: { min: 2, max: 1000 },
 } as const;
 
-export const REGRAS_FORUM = [
-  'Seja gentil: todo mundo está aprendendo.',
-  'Não publique CPF, número de cartão, conta, telefone ou e-mail.',
-  'Compartilhe experiências, não recomendações de investimento.',
-  'Nunca envie senhas ou códigos para ninguém, nem para "suporte".',
-];
+/** Regras do fórum no idioma atual. */
+export function regrasForum() {
+  return [t('forum.regra1'), t('forum.regra2'), t('forum.regra3'), t('forum.regra4')];
+}
+
+/**
+ * Os tópicos de exemplo foram gravados pela migração v10 (em português do Brasil). Há um por
+ * categoria, por isso são reconhecidos pela categoria; as respostas, pela ordem. O texto mostrado
+ * vem sempre do idioma atual. O que a pessoa publica não muda.
+ */
+function exemploTraduzido(categoriaId: string, campo: string): string | null {
+  const chave = `forum.ex.${categoriaId}.${campo}` as Chave;
+  const texto = t(chave);
+  return texto === chave ? null : texto;
+}
+
+function traduzirTopico(topico: TopicoForum): TopicoForum {
+  if (!topico.exemplo) return topico;
+  return {
+    ...topico,
+    titulo: exemploTraduzido(topico.categoriaId, 'titulo') ?? topico.titulo,
+    texto: exemploTraduzido(topico.categoriaId, 'texto') ?? topico.texto,
+  };
+}
+
+function traduzirRespostas(topico: TopicoForum, respostas: RespostaForum[]): RespostaForum[] {
+  if (!topico.exemplo) return respostas;
+  let indice = 0;
+  return respostas.map((r) => {
+    if (!r.exemplo) return r;
+    const texto = exemploTraduzido(topico.categoriaId, `r${indice++}`);
+    return texto ? { ...r, texto } : r;
+  });
+}
 
 /**
  * Bloqueia dados pessoais que costumam aparecer por engano: e-mails e sequências longas
@@ -42,50 +73,50 @@ export function contemDadosPessoais(texto: string): boolean {
 
 function validarTexto(valor: string, campo: string, limites: { min: number; max: number }) {
   const limpo = valor.trim().replace(/\n{3,}/g, '\n\n');
-  if (limpo.length < limites.min) throw new ErroValidacao(`${campo} precisa ter pelo menos ${limites.min} caracteres.`);
-  if (limpo.length > limites.max) throw new ErroValidacao(`${campo} pode ter no máximo ${limites.max} caracteres.`);
+  if (limpo.length < limites.min) throw new ErroValidacao(t('forum.e.min', { campo, min: limites.min }));
+  if (limpo.length > limites.max) throw new ErroValidacao(t('forum.e.max', { campo, max: limites.max }));
   if (contemDadosPessoais(limpo)) {
-    throw new ErroValidacao('Para sua segurança, não publique e-mails nem números de documentos, cartões, contas ou telefones.');
+    throw new ErroValidacao(t('forum.e.dados'));
   }
   return limpo;
 }
 
 /** Nome mostrado nas publicações: só o primeiro nome da conta. */
 function nomeDoAutor() {
-  return obterConta()?.nome.trim().split(/\s+/)[0] || 'Você';
+  return obterConta()?.nome.trim().split(/\s+/)[0] || t('forum.voce');
 }
 
 export function obterForum(categoriaId: string | null) {
-  return { topicos: listarTopicos(categoriaId), categorias: CATEGORIAS_ACADEMY };
+  return { topicos: listarTopicos(categoriaId).map(traduzirTopico), categorias: CATEGORIAS_ACADEMY };
 }
 
 export function obterTopico(id: number) {
   const topico = buscarTopico(id);
   if (!topico) return null;
   return {
-    topico,
+    topico: traduzirTopico(topico),
     categoria: CATEGORIAS_ACADEMY.find((c) => c.id === topico.categoriaId) ?? null,
-    respostas: listarRespostas(id),
+    respostas: traduzirRespostas(topico, listarRespostas(id)),
   };
 }
 
 export function criarTopico(dados: { categoriaId: string; titulo: string; texto: string }): number {
-  if (!CATEGORIAS_ACADEMY.some((c) => c.id === dados.categoriaId)) throw new ErroValidacao('Escolha um tema.');
-  const titulo = validarTexto(dados.titulo, 'O título', LIMITES_FORUM.titulo);
-  const texto = validarTexto(dados.texto, 'A mensagem', LIMITES_FORUM.texto);
+  if (!CATEGORIAS_ACADEMY.some((c) => c.id === dados.categoriaId)) throw new ErroValidacao(t('forum.e.tema'));
+  const titulo = validarTexto(dados.titulo, t('forum.campo.titulo'), LIMITES_FORUM.titulo);
+  const texto = validarTexto(dados.texto, t('forum.campo.mensagem'), LIMITES_FORUM.texto);
   return inserirTopico({ categoriaId: dados.categoriaId, titulo, texto, autor: nomeDoAutor() });
 }
 
 export function responderTopico(topicoId: number, texto: string): number {
-  if (!buscarTopico(topicoId)) throw new ErroValidacao('Este tópico não existe mais.');
-  const limpo = validarTexto(texto, 'A resposta', LIMITES_FORUM.resposta);
+  if (!buscarTopico(topicoId)) throw new ErroValidacao(t('forum.e.naoExiste'));
+  const limpo = validarTexto(texto, t('forum.campo.resposta'), LIMITES_FORUM.resposta);
   return inserirResposta({ topicoId, texto: limpo, autor: nomeDoAutor() });
 }
 
 export function excluirTopico(id: number) {
-  if (!apagarTopicoMeu(id)) throw new ErroValidacao('Você só pode excluir os seus próprios tópicos.');
+  if (!apagarTopicoMeu(id)) throw new ErroValidacao(t('forum.e.soTopicosMeus'));
 }
 
 export function excluirResposta(id: number) {
-  if (!apagarRespostaMinha(id)) throw new ErroValidacao('Você só pode excluir as suas próprias respostas.');
+  if (!apagarRespostaMinha(id)) throw new ErroValidacao(t('forum.e.soRespostasMinhas'));
 }

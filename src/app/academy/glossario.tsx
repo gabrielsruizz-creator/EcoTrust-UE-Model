@@ -5,19 +5,22 @@ import { Cartao } from '@/components/tela';
 import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
-import { CONCEITOS } from '@/data/academy-conteudo';
+import { conceitosAcademy } from '@/data/academy-conteudo';
+import { localeAtual } from '@/i18n';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 
 /** Glossário da Trust Academy: toque num termo para ver a explicação. */
 export default function GlossarioScreen() {
+  const t = useT();
   const theme = useTheme();
   const [aberto, setAberto] = useState<string | null>(null);
-  const conceitos = [...CONCEITOS].sort((a, b) => a.termo.localeCompare(b.termo, 'pt-BR'));
+  const conceitos = [...conceitosAcademy()].sort((a, b) => a.termo.localeCompare(b.termo, localeAtual()));
 
   return (
-    <TelaSecundaria titulo="Glossário">
+    <TelaSecundaria titulo={t('acad.glossario')}>
       <ThemedText type="small" themeColor="textSecondary">
-        Toque num termo para ver o que ele significa.
+        {t('acad.glossario.dica')}
       </ThemedText>
       <Cartao>
         {conceitos.map((c, i) => {

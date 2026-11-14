@@ -7,6 +7,7 @@ import { Botao, Cartao } from '@/components/tela';
 import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useAssinatura, useTopico } from '@/hooks/use-dados';
 import { useTheme } from '@/hooks/use-theme';
 import { temAcesso } from '@/services/assinatura-service';
@@ -16,6 +17,7 @@ import { tempoRelativo } from '@/utils/datas';
 import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
 
 export default function TopicoScreen() {
+  const t = useT();
   const theme = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const dados = useTopico(Number(id));
@@ -24,7 +26,7 @@ export default function TopicoScreen() {
 
   if (!plus) {
     return (
-      <TelaSecundaria titulo="Tópico">
+      <TelaSecundaria titulo={t('forum.topico')}>
         <BloqueioPremium recurso="academy" />
       </TelaSecundaria>
     );
@@ -32,9 +34,9 @@ export default function TopicoScreen() {
 
   if (!dados) {
     return (
-      <TelaSecundaria titulo="Tópico">
-        <ThemedText themeColor="textSecondary">Este tópico não existe mais.</ThemedText>
-        <Botao texto="Voltar" onPress={() => router.back()} />
+      <TelaSecundaria titulo={t('forum.topico')}>
+        <ThemedText themeColor="textSecondary">{t('forum.e.naoExiste')}</ThemedText>
+        <Botao texto={t('comum.voltar')} onPress={() => router.back()} />
       </TelaSecundaria>
     );
   }
@@ -48,18 +50,18 @@ export default function TopicoScreen() {
       vibrarSucesso();
     } catch (erro) {
       vibrarErro();
-      Alert.alert('Não foi possível responder', erro instanceof ErroValidacao ? erro.message : 'Tente novamente.');
+      Alert.alert(t('forum.erroResponder'), erro instanceof ErroValidacao ? erro.message : t('comum.tenteNovamente'));
     }
   }
 
   function confirmarExclusao(tipo: 'topico' | 'resposta', idItem: number) {
     Alert.alert(
-      tipo === 'topico' ? 'Excluir tópico' : 'Excluir resposta',
-      tipo === 'topico' ? 'O tópico e todas as respostas serão apagados.' : 'Sua resposta será apagada.',
+      tipo === 'topico' ? t('forum.eliminarTopico') : t('forum.eliminarResposta'),
+      tipo === 'topico' ? t('forum.eliminarTopico.texto') : t('forum.eliminarResposta.texto'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('comum.cancelar'), style: 'cancel' },
         {
-          text: 'Excluir',
+          text: t('comum.eliminar'),
           style: 'destructive',
           onPress: () => {
             if (tipo === 'topico') {
@@ -78,26 +80,26 @@ export default function TopicoScreen() {
 
   return (
     <TelaSecundaria
-      titulo={categoria?.nome ?? 'Tópico'}
+      titulo={categoria?.nome ?? t('forum.topico')}
       rodape={
         <View style={styles.composicao}>
           <TextInput
             value={resposta}
             onChangeText={setResposta}
-            placeholder="Escreva uma resposta..."
+            placeholder={t('forum.escrevaResposta')}
             placeholderTextColor={theme.textSecondary}
             multiline
             maxLength={LIMITES_FORUM.resposta.max}
-            accessibilityLabel="Sua resposta"
+            accessibilityLabel={t('forum.suaResposta')}
             style={[styles.campo, { color: theme.text, backgroundColor: theme.backgroundElement, borderColor: theme.border }]}
           />
-          <Botao texto="Enviar" onPress={enviar} disabled={!podeEnviar} style={styles.enviar} />
+          <Botao texto={t('chat.ui.enviar')} onPress={enviar} disabled={!podeEnviar} style={styles.enviar} />
         </View>
       }>
       <Cartao>
         {topico.exemplo && (
           <ThemedText type="small" themeColor="textSecondary">
-            Tópico de exemplo
+            {t('forum.topicoExemplo')}
           </ThemedText>
         )}
         <ThemedText style={styles.titulo} accessibilityRole="header">
@@ -114,18 +116,14 @@ export default function TopicoScreen() {
             hitSlop={12}
             style={styles.excluir}>
             <ThemedText type="smallBold" style={{ color: theme.negative }}>
-              Excluir tópico
+              {t('forum.eliminarTopico')}
             </ThemedText>
           </Pressable>
         )}
       </Cartao>
 
       <ThemedText type="smallBold" accessibilityRole="header">
-        {respostas.length === 0
-          ? 'Nenhuma resposta ainda'
-          : respostas.length === 1
-            ? '1 resposta'
-            : `${respostas.length} respostas`}
+        {respostas.length === 0 ? t('forum.semRespostas') : t('forum.respostas', { n: respostas.length })}
       </ThemedText>
 
       {respostas.map((r) => (
@@ -136,7 +134,7 @@ export default function TopicoScreen() {
             { backgroundColor: r.meu ? theme.accentSoft : theme.backgroundElement, borderColor: theme.border },
           ]}>
           <ThemedText type="smallBold">
-            {r.meu ? 'Você' : r.autor}
+            {r.meu ? t('forum.voce') : r.autor}
             <ThemedText type="small" themeColor="textSecondary">
               {' '}
               · {tempoRelativo(r.criadoEm)}
@@ -147,11 +145,11 @@ export default function TopicoScreen() {
             <Pressable
               onPress={() => confirmarExclusao('resposta', r.id)}
               accessibilityRole="button"
-              accessibilityLabel="Excluir sua resposta"
+              accessibilityLabel={t('forum.eliminarSua')}
               hitSlop={12}
               style={styles.excluir}>
               <ThemedText type="small" style={{ color: theme.negative }}>
-                Excluir
+                {t('comum.eliminar')}
               </ThemedText>
             </Pressable>
           )}

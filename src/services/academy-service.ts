@@ -6,13 +6,15 @@
 import {
   AULAS,
   CATEGORIAS_ACADEMY,
-  CONCEITOS,
+  conceitosAcademy,
   CURSOS,
-  DICAS,
+  dicasAcademy,
   type Aula,
   type CategoriaAcademy,
   type Curso,
 } from '@/data/academy-conteudo';
+import { t } from '@/i18n';
+import { ehMetaDeReserva } from '@/i18n/categorias';
 import {
   adicionarMeuCurso,
   listarAulasConcluidas,
@@ -124,19 +126,19 @@ export function recomendarCursos({ fatores, perfil, metas }: EntradaRecomendacao
   const regras: [string, boolean, string][] = [
     [
       'sair-das-dividas',
-      perfil?.objetivo === 'dividas' || fator('poupanca')?.resumo === 'Gastando mais do que ganha',
-      perfil?.objetivo === 'dividas' ? 'Seu objetivo é sair das dívidas.' : 'Você está gastando mais do que ganha.',
+      perfil?.objetivo === 'dividas' || fator('poupanca')?.resumo === t('saude.poupanca.negativa'),
+      perfil?.objetivo === 'dividas' ? t('acad.mot.dividas') : t('acad.mot.gastaMais'),
     ],
     [
       'reserva-emergencia',
-      !metas.some((m) => m.nome.toLocaleLowerCase('pt-BR').includes('reserva') && m.concluida),
-      'Você ainda não tem uma reserva de emergência completa.',
+      !metas.some((m) => ehMetaDeReserva(m.nome) && m.concluida),
+      t('acad.mot.reserva'),
     ],
-    ['gastos-superfluos', fator('nao-essenciais')?.situacao !== undefined && fator('nao-essenciais')?.situacao !== 'bom', 'Seus gastos não essenciais estão altos.'],
-    ['gastos-recorrentes', fator('fixas')?.situacao !== undefined && fator('fixas')?.situacao !== 'bom', 'Suas despesas fixas pesam na renda.'],
-    ['regra-50-30-20', fator('orcamento')?.resumo === 'Sem orçamento definido', 'Um bom ponto de partida para o seu primeiro orçamento.'],
-    ['metas-financeiras', metas.length === 0, 'Você ainda não tem metas.'],
-    ['primeiros-investimentos', perfil?.objetivo === 'investir', 'Seu objetivo é começar a investir.'],
+    ['gastos-superfluos', fator('nao-essenciais')?.situacao !== undefined && fator('nao-essenciais')?.situacao !== 'bom', t('acad.mot.naoEssenciais')],
+    ['gastos-recorrentes', fator('fixas')?.situacao !== undefined && fator('fixas')?.situacao !== 'bom', t('acad.mot.fixas')],
+    ['regra-50-30-20', fator('orcamento')?.resumo === t('saude.orcamento.sem'), t('acad.mot.orcamento')],
+    ['metas-financeiras', metas.length === 0, t('acad.mot.metas')],
+    ['primeiros-investimentos', perfil?.objetivo === 'investir', t('acad.mot.investir')],
   ];
 
   const recomendados: Recomendacao[] = [];
@@ -155,7 +157,8 @@ export function recomendarCursos({ fatores, perfil, metas }: EntradaRecomendacao
 /** Uma dica diferente a cada dia (a mesma durante o dia todo). */
 export function dicaDoDia(data = hoje()) {
   const diaDoAno = diasEntre(`${data.slice(0, 4)}-01-01`, data);
-  return DICAS[diaDoAno % DICAS.length];
+  const dicas = dicasAcademy();
+  return dicas[diaDoAno % dicas.length];
 }
 
 function lerProgresso() {
@@ -188,7 +191,7 @@ export function obterAcademy() {
     }).filter((r) => !meusIds.has(r.curso.id)),
     dica: dicaDoDia(),
     totalTopicos: contarTopicos(),
-    totalConceitos: CONCEITOS.length,
+    totalConceitos: conceitosAcademy().length,
   };
 }
 
@@ -245,7 +248,7 @@ export function obterAula(id: string): DadosAula | null {
 }
 
 export function adicionarAosMeusCursos(cursoId: string) {
-  if (!buscarCurso(cursoId)) throw new ErroValidacao('Curso não encontrado.');
+  if (!buscarCurso(cursoId)) throw new ErroValidacao(t('acad.e.curso'));
   adicionarMeuCurso(cursoId);
 }
 
@@ -260,9 +263,9 @@ export function removerDosMeusCursos(cursoId: string) {
 export function concluirAula(aulaId: string, respostaEscolhida: number): boolean {
   const aula = buscarAula(aulaId);
   const curso = cursoDaAula(aulaId);
-  if (!aula || !curso) throw new ErroValidacao('Aula não encontrada.');
+  if (!aula || !curso) throw new ErroValidacao(t('acad.e.aula'));
   if (!Number.isInteger(respostaEscolhida) || respostaEscolhida < 0 || respostaEscolhida >= aula.quiz.opcoes.length) {
-    throw new ErroValidacao('Escolha uma resposta para concluir a aula.');
+    throw new ErroValidacao(t('acad.e.resposta'));
   }
   const acertou = respostaEscolhida === aula.quiz.correta;
   adicionarMeuCurso(curso.id);

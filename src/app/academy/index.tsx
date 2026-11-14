@@ -8,11 +8,13 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { AULAS, CURSOS } from '@/data/academy-conteudo';
+import { useT } from '@/hooks/use-idioma';
 import { useAssinatura } from '@/hooks/use-dados';
 import { temAcesso } from '@/services/assinatura-service';
 
 /** EcoTrust Academy (aberta pelo Início e pelo Perfil) (recurso do Plus; quem é Gratuito vê uma prévia). */
 export default function AcademyScreen() {
+  const t = useT();
   const plus = temAcesso('academy', useAssinatura());
 
   return (
@@ -28,7 +30,7 @@ export default function AcademyScreen() {
             EcoTrust Academy
           </ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Aprenda hoje, construa o seu amanhã.
+            {t('acad.lema')}
           </ThemedText>
         </View>
         {plus ? (
@@ -45,7 +47,7 @@ export default function AcademyScreen() {
                     </ThemedText>
                   ))}
                   <ThemedText type="small" themeColor="textSecondary">
-                    {AULAS.length} aulas com quiz, glossário e o fórum da comunidade.
+                    {t('acad.previa', { n: AULAS.length })}
                   </ThemedText>
                 </View>
               }

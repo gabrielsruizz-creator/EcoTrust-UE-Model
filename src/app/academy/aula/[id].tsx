@@ -7,6 +7,7 @@ import { Botao, Cartao } from '@/components/tela';
 import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useAssinatura, useAula } from '@/hooks/use-dados';
 import { useTheme } from '@/hooks/use-theme';
 import { concluirAula, type DadosAula } from '@/services/academy-service';
@@ -17,13 +18,14 @@ import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
 const BRANCO = '#FFFFFF';
 
 export default function AulaScreen() {
+  const t = useT();
   const { id } = useLocalSearchParams<{ id: string }>();
   const dados = useAula(String(id));
   const plus = temAcesso('academy', useAssinatura());
 
   if (!plus) {
     return (
-      <TelaSecundaria titulo="Aula">
+      <TelaSecundaria titulo={t('acad.aula')}>
         <BloqueioPremium
           recurso="academy"
           previa={dados ? <ThemedText type="smallBold">{dados.aula.titulo}</ThemedText> : undefined}
@@ -34,9 +36,9 @@ export default function AulaScreen() {
 
   if (!dados) {
     return (
-      <TelaSecundaria titulo="Aula">
-        <ThemedText themeColor="textSecondary">Aula não encontrada.</ThemedText>
-        <Botao texto="Voltar" onPress={() => router.back()} />
+      <TelaSecundaria titulo={t('acad.aula')}>
+        <ThemedText themeColor="textSecondary">{t('acad.e.aula')}</ThemedText>
+        <Botao texto={t('comum.voltar')} onPress={() => router.back()} />
       </TelaSecundaria>
     );
   }
@@ -46,6 +48,7 @@ export default function AulaScreen() {
 }
 
 function ConteudoAula({ dados }: { dados: DadosAula }) {
+  const t = useT();
   const theme = useTheme();
   const { aula, curso, categoria, numero, total, proxima, registro } = dados;
   const [escolhida, setEscolhida] = useState<number | null>(null);
@@ -67,38 +70,38 @@ function ConteudoAula({ dados }: { dados: DadosAula }) {
       else setCursoTerminado(true);
     } catch (erro) {
       vibrarErro();
-      Alert.alert('Não foi possível concluir', erro instanceof ErroValidacao ? erro.message : 'Tente novamente.');
+      Alert.alert(t('acad.erroConcluir'), erro instanceof ErroValidacao ? erro.message : t('comum.tenteNovamente'));
     }
   }
 
   let rodape;
   if (cursoTerminado) {
-    rodape = <Botao texto="Voltar ao curso" onPress={() => router.back()} />;
+    rodape = <Botao texto={t('acad.voltarCurso')} onPress={() => router.back()} />;
   } else if (respondeu) {
-    rodape = <Botao texto={proxima ? 'Concluir e ir para a próxima' : 'Concluir o curso'} onPress={concluir} />;
+    rodape = <Botao texto={proxima ? t('acad.concluirProxima') : t('acad.concluirCurso')} onPress={concluir} />;
   } else if (registro) {
     rodape = (
-      <Botao texto={proxima ? 'Próxima aula' : 'Voltar ao curso'} variante="secundario" onPress={irParaProxima} />
+      <Botao texto={proxima ? t('acad.proximaAula') : t('acad.voltarCurso')} variante="secundario" onPress={irParaProxima} />
     );
   } else {
     rodape = (
       <ThemedText type="small" themeColor="textSecondary" style={styles.centro}>
-        Responda a pergunta no fim da aula para concluir.
+        {t('acad.respondaFim')}
       </ThemedText>
     );
   }
 
   return (
-    <TelaSecundaria titulo={`Aula ${numero} de ${total}`} rodape={rodape}>
+    <TelaSecundaria titulo={t('acad.aulaDe', { n: numero, total })} rodape={rodape}>
       <ThemedText type="small" themeColor="textSecondary" style={styles.etiqueta}>
-        {categoria.icone} {curso.titulo} · {aula.minutos} min de leitura
+        {categoria.icone} {curso.titulo} · {t('acad.minLeitura', { n: aula.minutos })}
       </ThemedText>
       <ThemedText style={styles.titulo} accessibilityRole="header">
         {aula.titulo}
       </ThemedText>
       {registro && (
         <ThemedText type="small" style={{ color: theme.positive }}>
-          ✓ Você já concluiu esta aula
+          {t('acad.jaConcluiu')}
         </ThemedText>
       )}
 
@@ -110,7 +113,7 @@ function ConteudoAula({ dados }: { dados: DadosAula }) {
 
       <View style={[styles.pontos, { backgroundColor: theme.accentSoft }]}>
         <ThemedText type="smallBold" style={{ color: theme.accentText }}>
-          Pontos-chave
+          {t('acad.pontosChave')}
         </ThemedText>
         {aula.pontosChave.map((p) => (
           <ThemedText key={p} type="small">
@@ -121,7 +124,7 @@ function ConteudoAula({ dados }: { dados: DadosAula }) {
 
       <Cartao>
         <ThemedText type="small" themeColor="textSecondary" style={styles.etiqueta}>
-          Pergunta de fixação
+          {t('acad.perguntaFixacao')}
         </ThemedText>
         <ThemedText type="smallBold" accessibilityRole="header">
           {aula.quiz.pergunta}
@@ -140,7 +143,7 @@ function ConteudoAula({ dados }: { dados: DadosAula }) {
                 disabled={respondeu}
                 accessibilityRole="radio"
                 accessibilityState={{ checked: marcada, disabled: respondeu }}
-                accessibilityLabel={`${opcao}${certa ? ', resposta certa' : ''}${errada ? ', sua resposta, incorreta' : ''}`}
+                accessibilityLabel={certa ? t('acad.certa', { opcao }) : errada ? t('acad.errada', { opcao }) : opcao}
                 style={[styles.opcao, { borderColor: borda, backgroundColor: fundo }]}>
                 <ThemedText
                   style={[styles.marcador, { color: certa ? theme.positive : errada ? theme.negative : theme.textSecondary }]}>
@@ -156,7 +159,7 @@ function ConteudoAula({ dados }: { dados: DadosAula }) {
         {respondeu && (
           <View accessibilityLiveRegion="polite" style={styles.feedback}>
             <ThemedText type="smallBold" style={{ color: acertou ? theme.positive : theme.negative }}>
-              {acertou ? '✓ Isso mesmo!' : '✕ Não foi dessa vez'}
+              {acertou ? t('acad.acertou') : t('acad.errou')}
             </ThemedText>
             <ThemedText type="small">{aula.quiz.explicacao}</ThemedText>
           </View>
@@ -166,9 +169,9 @@ function ConteudoAula({ dados }: { dados: DadosAula }) {
       {cursoTerminado && (
         <View style={[styles.parabens, { backgroundColor: categoria.cor }]} accessibilityLiveRegion="polite">
           <ThemedText style={styles.parabensIcone}>🎓</ThemedText>
-          <ThemedText style={[styles.parabensTitulo, { color: BRANCO }]}>Curso concluído!</ThemedText>
+          <ThemedText style={[styles.parabensTitulo, { color: BRANCO }]}>{t('acad.cursoConcluido')}</ThemedText>
           <ThemedText type="small" style={[styles.centro, { color: BRANCO }]}>
-            Você terminou “{curso.titulo}”. Que tal colocar em prática no app hoje?
+            {t('acad.terminou', { curso: curso.titulo })}
           </ThemedText>
         </View>
       )}

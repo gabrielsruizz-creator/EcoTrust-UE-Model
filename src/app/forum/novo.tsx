@@ -9,14 +9,16 @@ import { TelaSecundaria } from '@/components/tela-secundaria';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { CATEGORIAS_ACADEMY } from '@/data/academy-conteudo';
+import { useT } from '@/hooks/use-idioma';
 import { useAssinatura } from '@/hooks/use-dados';
 import { useTheme } from '@/hooks/use-theme';
 import { temAcesso } from '@/services/assinatura-service';
 import { ErroValidacao } from '@/services/erros';
-import { criarTopico, LIMITES_FORUM, REGRAS_FORUM } from '@/services/forum-service';
+import { criarTopico, LIMITES_FORUM, regrasForum } from '@/services/forum-service';
 import { vibrarErro, vibrarSucesso } from '@/utils/vibracao';
 
 export default function NovoTopicoScreen() {
+  const t = useT();
   const theme = useTheme();
   const plus = temAcesso('academy', useAssinatura());
   const [categoria, setCategoria] = useState<string | null>(null);
@@ -25,7 +27,7 @@ export default function NovoTopicoScreen() {
 
   if (!plus) {
     return (
-      <TelaSecundaria titulo="Novo tópico" textoVoltar="Cancelar">
+      <TelaSecundaria titulo={t('forum.novoTitulo')} textoVoltar={t('comum.cancelar')}>
         <BloqueioPremium recurso="academy" />
       </TelaSecundaria>
     );
@@ -44,7 +46,7 @@ export default function NovoTopicoScreen() {
       router.replace({ pathname: '/forum/[id]', params: { id: String(id) } });
     } catch (erro) {
       vibrarErro();
-      Alert.alert('Não foi possível publicar', erro instanceof ErroValidacao ? erro.message : 'Tente novamente.');
+      Alert.alert(t('forum.erroPublicar'), erro instanceof ErroValidacao ? erro.message : t('comum.tenteNovamente'));
     }
   }
 
@@ -52,36 +54,36 @@ export default function NovoTopicoScreen() {
 
   return (
     <TelaSecundaria
-      titulo="Novo tópico"
-      textoVoltar="Cancelar"
-      rodape={<Botao texto="Publicar" onPress={publicar} disabled={!podePublicar} />}>
-      <ThemedText type="smallBold">Tema</ThemedText>
+      titulo={t('forum.novoTitulo')}
+      textoVoltar={t('comum.cancelar')}
+      rodape={<Botao texto={t('forum.publicar')} onPress={publicar} disabled={!podePublicar} />}>
+      <ThemedText type="smallBold">{t('forum.tema')}</ThemedText>
       <View style={styles.chips} accessibilityRole="radiogroup">
         {CATEGORIAS_ACADEMY.map((c) => (
           <Chip key={c.id} texto={`${c.icone} ${c.nome}`} ativo={categoria === c.id} aoTocar={() => setCategoria(c.id)} />
         ))}
       </View>
 
-      <ThemedText type="smallBold">Título</ThemedText>
+      <ThemedText type="smallBold">{t('forum.campo.titulo')}</ThemedText>
       <TextInput
         value={titulo}
         onChangeText={setTitulo}
-        placeholder="Ex.: Como vocês organizam as contas fixas?"
+        placeholder={t('forum.titulo.ex')}
         placeholderTextColor={theme.textSecondary}
         maxLength={LIMITES_FORUM.titulo.max}
-        accessibilityLabel="Título do tópico"
+        accessibilityLabel={t('forum.titulo.rotulo')}
         style={estiloCampo}
       />
 
-      <ThemedText type="smallBold">Mensagem</ThemedText>
+      <ThemedText type="smallBold">{t('forum.campo.mensagem')}</ThemedText>
       <TextInput
         value={texto}
         onChangeText={setTexto}
-        placeholder="Conte sua dúvida ou experiência..."
+        placeholder={t('forum.mensagem.ex')}
         placeholderTextColor={theme.textSecondary}
         multiline
         maxLength={LIMITES_FORUM.texto.max}
-        accessibilityLabel="Mensagem do tópico"
+        accessibilityLabel={t('forum.mensagem.rotulo')}
         style={[estiloCampo, styles.mensagem]}
         textAlignVertical="top"
       />
@@ -90,8 +92,8 @@ export default function NovoTopicoScreen() {
       </ThemedText>
 
       <Cartao>
-        <ThemedText type="smallBold">Antes de publicar</ThemedText>
-        {REGRAS_FORUM.map((r) => (
+        <ThemedText type="smallBold">{t('forum.antes')}</ThemedText>
+        {regrasForum().map((r) => (
           <ThemedText key={r} type="small" themeColor="textSecondary">
             • {r}
           </ThemedText>
