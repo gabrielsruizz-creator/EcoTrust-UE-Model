@@ -5,7 +5,7 @@
  *   e guarda o resultado para não pedir de novo sem necessidade.
  */
 
-import { t } from '@/i18n';
+import { idiomaAtual, t } from '@/i18n';
 import { lerConfiguracao, salvarConfiguracao } from '@/repositories/configuracoes-repository';
 import { listarHistoricoSaude, type PontoHistoricoSaude } from '@/repositories/jornada-repository';
 import { montarContextoIA } from '@/services/contexto-ia-service';
@@ -151,6 +151,7 @@ export async function pedirAnaliseDaEvolucao(evolucao: Evolucao): Promise<Analis
       body: JSON.stringify({
         mensagens: [{ role: 'user', content: montarPedidoAnalise(evolucao) }],
         contexto: montarContextoIA(),
+        idioma: idiomaAtual(),
       }),
     });
     dados = (await resposta.json()) as { resposta?: string; erro?: string };

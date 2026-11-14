@@ -1332,4 +1332,15 @@ export const fr: Catalogo = {
   'forum.mensagem.ex': 'Racontez votre question ou expérience...',
   'forum.mensagem.rotulo': 'Message du sujet',
   'forum.antes': 'Avant de publier',
+
+  // Servidor do assistente (/api/chat)
+  'api.invalida': 'Requête invalide.',
+  'api.mensagensInvalidas': 'Messages invalides.',
+  'api.semChave': "L'assistant n'est pas encore configuré sur ce serveur.",
+  'api.recusa': 'Je ne peux pas vous aider avec cette demande. Et si vous posiez une question sur vos dépenses ou sur comment commencer à épargner ?',
+  'api.semTexto': "Je n'ai pas pu générer de réponse. Essayez de reformuler.",
+  'api.chaveInvalida': "La configuration de l'assistant sur ce serveur est invalide.",
+  'api.limite': "Trop de questions d'affilée. Patientez quelques secondes et réessayez.",
+  'api.indisponivel': "L'assistant est indisponible pour le moment. Réessayez dans un instant.",
+  'api.inesperado': 'Erreur inattendue du serveur.',
 };

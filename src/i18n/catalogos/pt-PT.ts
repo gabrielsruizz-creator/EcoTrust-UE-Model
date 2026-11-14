@@ -1339,4 +1339,15 @@ export const ptPT = {
   'forum.mensagem.ex': 'Conte a sua dúvida ou experiência...',
   'forum.mensagem.rotulo': 'Mensagem do tópico',
   'forum.antes': 'Antes de publicar',
+
+  // Servidor do assistente (/api/chat)
+  'api.invalida': 'Pedido inválido.',
+  'api.mensagensInvalidas': 'Mensagens inválidas.',
+  'api.semChave': 'O assistente ainda não está configurado neste servidor.',
+  'api.recusa': 'Não posso ajudar com esse pedido. Que tal perguntar sobre os seus gastos ou sobre como começar a poupar?',
+  'api.semTexto': 'Não consegui gerar uma resposta. Tente perguntar de outra forma.',
+  'api.chaveInvalida': 'A configuração do assistente neste servidor é inválida.',
+  'api.limite': 'Demasiadas perguntas seguidas. Espere alguns segundos e tente de novo.',
+  'api.indisponivel': 'O assistente está indisponível de momento. Tente de novo dentro de instantes.',
+  'api.inesperado': 'Erro inesperado no servidor.',
 } as const;

@@ -17,6 +17,7 @@ import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useT } from '@/hooks/use-idioma';
+import { idiomaAtual } from '@/i18n';
 import { usePerfilInvestidor } from '@/hooks/use-dados';
 import { montarContextoIA } from '@/services/contexto-ia-service';
 
@@ -50,6 +51,7 @@ export function PainelChat() {
         body: JSON.stringify({
           mensagens: historico,
           contexto: montarContextoIA(),
+          idioma: idiomaAtual(),
         }),
       });
       const dados = (await resposta.json()) as { resposta?: string; erro?: string };

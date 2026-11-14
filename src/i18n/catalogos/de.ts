@@ -1332,4 +1332,15 @@ export const de: Catalogo = {
   'forum.mensagem.ex': 'Erzählen Sie von Ihrer Frage oder Erfahrung...',
   'forum.mensagem.rotulo': 'Nachricht des Themas',
   'forum.antes': 'Vor dem Veröffentlichen',
+
+  // Servidor do assistente (/api/chat)
+  'api.invalida': 'Ungültige Anfrage.',
+  'api.mensagensInvalidas': 'Ungültige Nachrichten.',
+  'api.semChave': 'Der Assistent ist auf diesem Server noch nicht eingerichtet.',
+  'api.recusa': 'Bei dieser Anfrage kann ich nicht helfen. Fragen Sie doch nach Ihren Ausgaben oder wie Sie mit dem Sparen beginnen.',
+  'api.semTexto': 'Ich konnte keine Antwort erzeugen. Versuchen Sie es anders formuliert.',
+  'api.chaveInvalida': 'Die Einrichtung des Assistenten auf diesem Server ist ungültig.',
+  'api.limite': 'Zu viele Fragen hintereinander. Warten Sie ein paar Sekunden und versuchen Sie es erneut.',
+  'api.indisponivel': 'Der Assistent ist gerade nicht verfügbar. Versuchen Sie es gleich noch einmal.',
+  'api.inesperado': 'Unerwarteter Serverfehler.',
 };

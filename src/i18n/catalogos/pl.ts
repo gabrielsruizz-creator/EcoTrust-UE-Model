@@ -1331,4 +1331,15 @@ export const pl: Catalogo = {
   'forum.mensagem.ex': 'Opisz swoje pytanie lub doświadczenie...',
   'forum.mensagem.rotulo': 'Treść wątku',
   'forum.antes': 'Zanim opublikujesz',
+
+  // Servidor do assistente (/api/chat)
+  'api.invalida': 'Nieprawidłowe żądanie.',
+  'api.mensagensInvalidas': 'Nieprawidłowe wiadomości.',
+  'api.semChave': 'Asystent nie jest jeszcze skonfigurowany na tym serwerze.',
+  'api.recusa': 'Nie mogę pomóc w tej sprawie. Może zapytasz o swoje wydatki albo o to, jak zacząć oszczędzać?',
+  'api.semTexto': 'Nie udało się wygenerować odpowiedzi. Spróbuj zapytać inaczej.',
+  'api.chaveInvalida': 'Konfiguracja asystenta na tym serwerze jest nieprawidłowa.',
+  'api.limite': 'Zbyt wiele pytań z rzędu. Odczekaj kilka sekund i spróbuj ponownie.',
+  'api.indisponivel': 'Asystent jest teraz niedostępny. Spróbuj za chwilę.',
+  'api.inesperado': 'Nieoczekiwany błąd serwera.',
 };

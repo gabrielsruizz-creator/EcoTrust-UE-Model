@@ -1332,4 +1332,15 @@ export const it: Catalogo = {
   'forum.mensagem.ex': 'Racconta il tuo dubbio o la tua esperienza...',
   'forum.mensagem.rotulo': 'Messaggio della discussione',
   'forum.antes': 'Prima di pubblicare',
+
+  // Servidor do assistente (/api/chat)
+  'api.invalida': 'Richiesta non valida.',
+  'api.mensagensInvalidas': 'Messaggi non validi.',
+  'api.semChave': "L'assistente non è ancora configurato su questo server.",
+  'api.recusa': 'Non posso aiutarti con questa richiesta. Che ne dici di chiedere delle tue spese o di come iniziare a risparmiare?',
+  'api.semTexto': 'Non sono riuscito a generare una risposta. Prova a chiederlo in un altro modo.',
+  'api.chaveInvalida': "La configurazione dell'assistente su questo server non è valida.",
+  'api.limite': 'Troppe domande di fila. Attendi qualche secondo e riprova.',
+  'api.indisponivel': "L'assistente non è disponibile al momento. Riprova tra poco.",
+  'api.inesperado': 'Errore imprevisto del server.',
 };

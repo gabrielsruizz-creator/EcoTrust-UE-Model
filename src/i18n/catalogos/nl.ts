@@ -1331,4 +1331,15 @@ export const nl: Catalogo = {
   'forum.mensagem.ex': 'Vertel over je vraag of ervaring...',
   'forum.mensagem.rotulo': 'Bericht van het onderwerp',
   'forum.antes': 'Voordat je plaatst',
+
+  // Servidor do assistente (/api/chat)
+  'api.invalida': 'Ongeldig verzoek.',
+  'api.mensagensInvalidas': 'Ongeldige berichten.',
+  'api.semChave': 'De assistent is nog niet ingesteld op deze server.',
+  'api.recusa': 'Daar kan ik niet mee helpen. Vraag gerust naar je uitgaven of hoe je begint met sparen.',
+  'api.semTexto': 'Ik kon geen antwoord maken. Probeer het anders te vragen.',
+  'api.chaveInvalida': 'De instelling van de assistent op deze server is ongeldig.',
+  'api.limite': 'Te veel vragen achter elkaar. Wacht een paar seconden en probeer het opnieuw.',
+  'api.indisponivel': 'De assistent is nu niet beschikbaar. Probeer het zo opnieuw.',
+  'api.inesperado': 'Onverwachte serverfout.',
 };
