@@ -7,13 +7,19 @@ mudar arquitetura, banco, design ou navegação). Guia de publicação nas lojas
 
 ## Projeto
 
-App Expo/React Native (Android e iOS) de finanças pessoais **offline-first** com **Impostômetro pessoal**
-(quanto do dinheiro gasto vira imposto). Expo SDK **58** — confira sempre a versão em `package.json` e a
+**Edição europeia** (27 países da UE) do app Expo/React Native (Android e iOS) de finanças pessoais
+**offline-first** com **Impostómetro pessoal** (quanto do dinheiro gasto e ganho vira imposto). A edição
+brasileira fica no repositório antigo `Eco-Trust`; aqui não entra código só do Brasil. Expo SDK **58** — confira sempre a versão em `package.json` e a
 documentação versionada antes de usar qualquer API do Expo (ver `AGENTS.md`).
 
 ## Idioma
 
-- App, código (funções, variáveis, arquivos), comentários, commits e PRs em **português do Brasil**.
+- Código (funções, variáveis, arquivos), comentários, commits e PRs em **português**.
+- O **app** é multilíngue (en, pt-PT, es, fr, de, it, nl, pl): nenhum texto visível fica no código. Use
+  `t('chave')` (`@/i18n`) em services e `useT()` (`@/hooks/use-idioma`) em componentes. O catálogo pt-PT
+  (`src/i18n/catalogos/pt-PT.ts`) é a referência; o TypeScript obriga os outros 7 idiomas a terem as mesmas
+  chaves. Em pt-PT: português de Portugal ("telemóvel", "registar", "palavra-passe", sem "você").
+- Conteúdo longo da Academy: `src/data/academy/textos/<idioma>.ts` (estrutura em `src/data/academy/estrutura.ts`).
 - Fale com o usuário em português simples; ele usa Windows + PowerShell — dê comandos que funcionem lá.
 
 ## Comandos
@@ -29,7 +35,8 @@ documentação versionada antes de usar qualquer API do Expo (ver `AGENTS.md`).
 - Toda escrita no banco chama `notificarMudanca()` (é o que atualiza as telas via `use-dados.ts`).
 - Services: lógica pura em `calcularX`/`gerarX` (testável) e leitura do banco em `obterX`.
 - Erros para o usuário: `throw new ErroValidacao('mensagem em PT-BR')`.
-- Dinheiro sempre em **centavos inteiros**; datas `AAAA-MM-DD` / meses `AAAA-MM` no fuso local (`src/utils/datas.ts`).
+- Dinheiro sempre em **unidades menores inteiras** (cêntimos); formatar com `src/utils/moeda.ts` (nunca assumir o
+  euro: há 6 moedas próprias na UE). Datas `AAAA-MM-DD` / meses `AAAA-MM` no fuso local (`src/utils/datas.ts`).
 - Alias de import `@/` → `src/`.
 
 ## Banco de dados
@@ -43,30 +50,33 @@ documentação versionada antes de usar qualquer API do Expo (ver `AGENTS.md`).
 
 - Expo Router. Toda tela nova deve ser registrada em `src/app/_layout.tsx` no `Stack.Protected` correto.
 - Abas (`src/components/app-tabs.tsx`): Início · Transações · Adicionar (+) · Metas · Perfil.
-  **Máximo de 5 abas** (limite do Android); outras áreas (Impostômetro, Academy) são telas empilhadas.
+  **Máximo de 5 abas** (limite do Android); outras áreas (Impostómetro, Academy) são telas empilhadas.
 
 ## Impostos e dados fiscais
 
-- Tabelas e premissas ficam só em `src/data/` (`carga-tributaria.ts`, `tributos-renda.ts`,
-  `reforma-tributaria.ts`, `programas-estaduais.ts`), com a fonte no comentário. Ao mudar valores, atualize
-  os testes em `src/testes/`.
-- Ordem do imposto de uma despesa: tributos da nota → estimativa por item da nota → estimativa pela categoria.
-  Tributos R$ 0,00 contam como "não informados".
+- Dados fiscais por país em `src/data/paises/` (IVA com histórico, impostos especiais) e `src/data/renda/`
+  (imposto sobre o rendimento e contribuições), sempre com a **fonte oficial** no comentário e um snapshot em
+  `fontes/` quando houver. Nunca inventar valores: país sem dados confirmados fica "sem regras" (não estima).
+  Ao mudar valores, atualize os testes em `src/testes/`.
+- IVA pelo **país (e região) da compra**; imposto sobre o rendimento e contribuições pelo **país de residência**.
+  Imposto identificado (vem da fatura) e estimado ficam sempre separados. Impostos R$/€ 0,00 contam como "não informados".
 - Os percentuais são **estimativas** (aguardando revisão de contador); a interface deve deixar isso claro.
-- Programas estaduais: só incluir os **confirmados**, sempre mandando conferir no site oficial.
 
 ## Segurança e privacidade
 
 - Nada de credenciais no código ou em docs. `ANTHROPIC_API_KEY` só em `.env.local` (dev) ou segredo do EAS (produção).
 - A chave da API fica só no servidor (`src/app/api/chat+api.ts`); o app envia à IA **apenas totais**, nunca a
   lista de lançamentos.
-- Leitura de nota fiscal: buscar/abrir **somente** endereços `.gov.br`.
+- Leitura de faturas: só dados do próprio código QR/documento; se um dia for preciso consultar um site, apenas
+  portais oficiais do Estado (ex.: Portal das Finanças) - nunca sites de terceiros.
+- RGPD: dados ficam no aparelho; nada de nome ou movimentos em pedidos externos.
 - Senha nunca é guardada: só sal + hash no `expo-secure-store`. Backup não leva senha nem plano.
 
 ## IA (chat)
 
-- Papel educativo e regras da CVM: não recomendar ativos/produtos específicos, não prometer rentabilidade.
-- Respostas curtas e **sem Markdown** (o app mostra texto puro). Não incentivar compras sem nota.
+- Papel educativo e regras da UE (MiFID II / ESMA): não recomendar ativos/produtos específicos, não prometer
+  rentabilidade. Responde no idioma escolhido no app (o app envia `idioma` ao `/api/chat`).
+- Respostas curtas e **sem Markdown** (o app mostra texto puro). Não incentivar compras sem fatura.
 
 ## Design
 
