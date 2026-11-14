@@ -18,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import type { EstagioPet, HumorPet } from '@/services/pet-service';
 import { vibrarLeve } from '@/utils/vibracao';
@@ -42,6 +43,7 @@ type Props = {
 };
 
 export function PetEco({ humor, estagio, tamanho = 150, aoTocar, rotuloAcessivel, corTinta, corFundo }: Props) {
+  const t = useT();
   const theme = useTheme();
   const [piscando, setPiscando] = useState(false);
   const flutuar = useSharedValue(0);
@@ -90,7 +92,7 @@ export function PetEco({ humor, estagio, tamanho = 150, aoTocar, rotuloAcessivel
       onPress={tocar}
       accessibilityRole="button"
       accessibilityLabel={rotuloAcessivel}
-      accessibilityHint="Toque para ouvir outra frase">
+      accessibilityHint={t('pet.proxima')}>
       <Animated.View style={[{ width: tamanho, height: tamanho }, estilo]}>
         <Svg width={tamanho} height={tamanho} viewBox="0 0 120 120">
           {/* Sombra no chão */}

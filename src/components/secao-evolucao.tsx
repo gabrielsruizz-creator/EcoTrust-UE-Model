@@ -42,18 +42,17 @@ export function SecaoEvolucao() {
     <>
       {/* Primeiro, em destaque: a análise do EcoTrust (Claude) */}
       <Cartao>
-        <ThemedText type="smallBold">✨ Análise do EcoTrust</ThemedText>
+        <ThemedText type="smallBold">{t('evo.analise')}</ThemedText>
         {analise ? (
           <>
             <ThemedText>{analise.texto}</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">
-              Gerada em {formatarData(paraDataLocal(new Date(analise.geradoEm)))}.
+              {t('evo.geradaEm', { data: formatarData(paraDataLocal(new Date(analise.geradoEm))) })}
             </ThemedText>
           </>
         ) : (
           <ThemedText type="small" themeColor="textSecondary">
-            Peça ao EcoTrust um comentário completo sobre a sua evolução e o que priorizar no próximo
-            mês.
+            {t('evo.peca')}
           </ThemedText>
         )}
         {erro && (
@@ -65,7 +64,7 @@ export function SecaoEvolucao() {
           <View style={styles.linha}>
             <ActivityIndicator color={theme.accent} />
             <ThemedText type="small" themeColor="textSecondary">
-              O EcoTrust está analisando sua evolução...
+              {t('evo.analisando')}
             </ThemedText>
           </View>
         ) : (

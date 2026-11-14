@@ -97,7 +97,7 @@ export const INVESTIMENTOS: Opcao<SituacaoInvestimentos>[] = [
 ];
 
 export function rotulo<T extends string>(opcoes: Opcao<T>[], valor: T | null | undefined) {
-  return opcoes.find((o) => o.valor === valor)?.rotulo ?? 'Não informado';
+  return opcoes.find((o) => o.valor === valor)?.rotulo ?? t('dp.naoInformado');
 }
 
 export const PERFIL_PESSOAL_VAZIO: PerfilPessoal = {

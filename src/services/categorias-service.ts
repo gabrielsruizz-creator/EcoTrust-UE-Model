@@ -48,7 +48,7 @@ function validarNome(nome: string, tipo: TipoTransacao, ignorarId?: number) {
 function buscarCategoriaDoUsuario(id: number) {
   const categoria = buscarCategoria(id);
   if (!categoria) throw new ErroValidacao(t('catg.e.naoExiste'));
-  if (categoria.padrao) throw new ErroValidacao('As categorias padrão do EcoTrust não podem ser alteradas.');
+  if (categoria.padrao) throw new ErroValidacao(t('catg.e.padrao'));
   return categoria;
 }
 

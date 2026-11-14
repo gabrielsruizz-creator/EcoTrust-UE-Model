@@ -6,10 +6,12 @@ import { LogoEcoTrust } from '@/components/logo-ecotrust';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 
 /** Layout das telas de acesso (cadastro e entrar): marca no topo e formulário rolável. */
 export function TelaAcesso({ titulo, subtitulo, children }: { titulo: string; subtitulo: string; children: ReactNode }) {
+  const t = useT();
   const theme = useTheme();
   return (
     <ThemedView style={styles.container}>
@@ -24,7 +26,7 @@ export function TelaAcesso({ titulo, subtitulo, children }: { titulo: string; su
                 EcoTrust
               </ThemedText>
               <ThemedText themeColor="textSecondary" style={styles.lema}>
-                Mais controle. Melhores decisões.{'\n'}Seu futuro financeiro.
+                {t('acesso.lema')}
               </ThemedText>
             </View>
             <View style={styles.cabecalho}>

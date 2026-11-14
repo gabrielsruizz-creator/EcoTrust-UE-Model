@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SeloNivel } from '@/components/selo-nivel';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import { assinarCelebracoes } from '@/services/celebracao-service';
 import type { DefinicaoConquista } from '@/services/gamificacao-service';
@@ -15,6 +16,7 @@ const DURACAO_MS = 3500;
 
 /** Aviso no topo da tela quando uma conquista nova é alcançada (fila, uma de cada vez). */
 export function AvisoConquista() {
+  const t = useT();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [fila, setFila] = useState<DefinicaoConquista[]>([]);
@@ -42,14 +44,14 @@ export function AvisoConquista() {
           { backgroundColor: theme.backgroundElement, borderColor: theme.border, boxShadow: `0 10px 30px ${theme.brilho}` },
         ]}
         accessibilityLiveRegion="polite"
-        accessibilityLabel={`Nova conquista: ${atual.nome}. ${atual.descricao}`}>
+        accessibilityLabel={t('conq.novaRotulo', { nome: atual.nome, descricao: atual.descricao })}>
         <View>
           <SeloNivel tamanho={52} icone="trofeu" />
           <ThemedText style={styles.icone}>{atual.icone}</ThemedText>
         </View>
         <View style={styles.flex}>
           <ThemedText type="small" style={{ color: theme.accentText }}>
-            Parabéns! Nova conquista
+            {t('conq.nova')}
           </ThemedText>
           <ThemedText type="smallBold">{atual.nome}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">

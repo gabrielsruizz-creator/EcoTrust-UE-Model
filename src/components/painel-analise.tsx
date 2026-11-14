@@ -71,8 +71,7 @@ export function PainelAnalise() {
       ))}
 
       <ThemedText type="small" themeColor="textSecondary" style={styles.rodape}>
-        Esta análise usa regras sobre os seus próprios dados e é atualizada a cada lançamento. Para
-        conversar sobre ela, use &quot;Perguntar&quot;.
+        {t('ia.rodapeAnalise')}
       </ThemedText>
     </ScrollView>
   );

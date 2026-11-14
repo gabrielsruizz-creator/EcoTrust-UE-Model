@@ -11,13 +11,14 @@ import Svg, { Circle, Line, Path, Text as SvgText } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
+import { localeAtual } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import type { PontoEvolucao } from '@/services/evolucao-service';
 
 const ALTURA = 190;
 const MARGEM = { esquerda: 30, direita: 16, topo: 22, base: 26 };
 const REFERENCIAS = [40, 60, 80];
-const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
 type Props = {
   pontos: PontoEvolucao[];
@@ -26,6 +27,7 @@ type Props = {
 };
 
 export function GraficoEvolucao({ pontos, selecionado, aoSelecionar }: Props) {
+  const t = useT();
   const theme = useTheme();
   const [largura, setLargura] = useState(0);
 
@@ -41,7 +43,8 @@ export function GraficoEvolucao({ pontos, selecionado, aoSelecionar }: Props) {
       ? `${linha} L ${x(pontos.length - 1)} ${y(0)} L ${x(0)} ${y(0)} Z`
       : '';
   const temEstimado = pontos.some((p) => p.estimado);
-  const mesNome = (mes: string) => MESES[Number(mes.slice(5, 7)) - 1];
+  const mesNome = (mes: string) =>
+    new Date(Number(mes.slice(0, 4)), Number(mes.slice(5, 7)) - 1, 1).toLocaleDateString(localeAtual(), { month: 'short' });
 
   return (
     <View>
@@ -49,9 +52,9 @@ export function GraficoEvolucao({ pontos, selecionado, aoSelecionar }: Props) {
         style={{ height: ALTURA }}
         onLayout={(e) => setLargura(e.nativeEvent.layout.width)}
         accessible
-        accessibilityLabel={`Gráfico da nota de saúde por mês: ${pontos
-          .map((p) => `${mesNome(p.mes)} ${p.nota}${p.estimado ? ' estimado' : ''}`)
-          .join(', ')}`}>
+        accessibilityLabel={t('evo.graf.rotulo', {
+          lista: pontos.map((p) => `${mesNome(p.mes)} ${p.nota}${p.estimado ? ` ${t('evo.graf.estimado')}` : ''}`).join(', '),
+        })}>
         {largura > 0 && (
           <Svg width={largura} height={ALTURA}>
             {/* Referências das faixas */}
@@ -154,7 +157,7 @@ export function GraficoEvolucao({ pontos, selecionado, aoSelecionar }: Props) {
                   onPress={() => aoSelecionar(i)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: i === selecionado }}
-                  accessibilityLabel={`${mesNome(p.mes)}: nota ${p.nota}${p.estimado ? ', estimada' : ''}`}
+                  accessibilityLabel={t(p.estimado ? 'evo.graf.mesEstimado' : 'evo.graf.mes', { mes: mesNome(p.mes), nota: p.nota })}
                   style={{ position: 'absolute', left: x(i) - largCol / 2, width: largCol, top: 0, bottom: 0 }}
                 />
               );
@@ -168,13 +171,13 @@ export function GraficoEvolucao({ pontos, selecionado, aoSelecionar }: Props) {
           <View style={styles.itemLegenda}>
             <View style={[styles.marcador, { backgroundColor: theme.accent, borderColor: theme.accent }]} />
             <ThemedText type="small" themeColor="textSecondary">
-              Registrado
+              {t('evo.graf.registado')}
             </ThemedText>
           </View>
           <View style={styles.itemLegenda}>
             <View style={[styles.marcador, { borderColor: theme.accent }]} />
             <ThemedText type="small" themeColor="textSecondary">
-              Estimado pelos lançamentos
+              {t('evo.graf.estimadoMov')}
             </ThemedText>
           </View>
         </View>

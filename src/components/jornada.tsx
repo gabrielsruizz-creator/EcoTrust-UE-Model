@@ -5,12 +5,14 @@ import { SeloNivel } from '@/components/selo-nivel';
 import { Cartao } from '@/components/tela';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useT } from '@/hooks/use-idioma';
 import { useTheme } from '@/hooks/use-theme';
 import type { ConquistaJornada, Jornada } from '@/services/gamificacao-service';
 import { formatarData, paraDataLocal } from '@/utils/datas';
 
 /** Nível, XP, sequência e números da jornada. */
 export function CartaoJornada({ jornada }: { jornada: Jornada }) {
+  const t = useT();
   const theme = useTheme();
   const percentual = jornada.xpParaProximo ? (jornada.xpNoNivel / jornada.xpParaProximo) * 100 : 100;
 
@@ -19,12 +21,12 @@ export function CartaoJornada({ jornada }: { jornada: Jornada }) {
       <View style={styles.linha}>
         <SeloNivel tamanho={72} numero={jornada.nivel} />
         <View style={styles.flex}>
-          <ThemedText style={styles.tituloNivel}>Nível {jornada.nivel}</ThemedText>
+          <ThemedText style={styles.tituloNivel}>{t('pf.nivel', { n: jornada.nivel })}</ThemedText>
           <ThemedText type="small" style={{ color: theme.accentText }}>
             {jornada.nomeNivel} · {jornada.xp} XP
           </ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            Você está evoluindo!
+            {t('jor.evoluindo')}
           </ThemedText>
         </View>
       </View>
@@ -33,29 +35,29 @@ export function CartaoJornada({ jornada }: { jornada: Jornada }) {
         altura={10}
         rotuloAcessivel={
           jornada.xpParaProximo
-            ? `Progresso para o nível ${jornada.nivel + 1}: ${jornada.xpNoNivel} de ${jornada.xpParaProximo} XP`
-            : 'Nível máximo alcançado'
+            ? t('jor.progresso', { nivel: jornada.nivel + 1, xp: jornada.xpNoNivel, total: jornada.xpParaProximo })
+            : t('jor.maximo')
         }
       />
       <ThemedText type="small" themeColor="textSecondary">
         {jornada.xpParaProximo
-          ? `Faltam ${jornada.xpParaProximo - jornada.xpNoNivel} XP para o próximo nível.`
-          : 'Você chegou ao nível máximo. Parabéns!'}
+          ? t('jor.faltam', { n: jornada.xpParaProximo - jornada.xpNoNivel })
+          : t('jor.chegouMaximo')}
       </ThemedText>
 
       <View style={styles.numeros}>
-        <Numero valor={`🔥 ${jornada.sequenciaAtual}`} rotulo={jornada.sequenciaAtual === 1 ? 'dia seguido' : 'dias seguidos'} />
-        <Numero valor={String(jornada.totalLancamentos)} rotulo="lançamentos" />
-        <Numero valor={String(jornada.metasConcluidas)} rotulo="metas concluídas" />
-        <Numero valor={String(jornada.diasDeUso)} rotulo={jornada.diasDeUso === 1 ? 'dia de EcoTrust' : 'dias de EcoTrust'} />
+        <Numero valor={`🔥 ${jornada.sequenciaAtual}`} rotulo={t('jor.diasSeguidos', { n: jornada.sequenciaAtual })} />
+        <Numero valor={String(jornada.totalLancamentos)} rotulo={t('jor.lancamentos')} />
+        <Numero valor={String(jornada.metasConcluidas)} rotulo={t('jor.metasConcluidas')} />
+        <Numero valor={String(jornada.diasDeUso)} rotulo={t('jor.diasEcoTrust', { n: jornada.diasDeUso })} />
       </View>
       {jornada.melhorSequencia > jornada.sequenciaAtual && (
         <ThemedText type="small" themeColor="textSecondary">
-          Sua melhor sequência: {jornada.melhorSequencia} dias.
+          {t('jor.melhor', { n: jornada.melhorSequencia })}
         </ThemedText>
       )}
       <ThemedText type="small" themeColor="textSecondary">
-        Ganhe XP registrando seus gastos, guardando nas metas e mantendo o orçamento em dia.
+        {t('jor.ganhe')}
       </ThemedText>
     </Cartao>
   );
@@ -74,6 +76,7 @@ function Numero({ valor, rotulo }: { valor: string; rotulo: string }) {
 
 /** Grade de medalhas. Alcançadas aparecem coloridas; as outras, apagadas com o progresso. */
 export function GradeConquistas({ conquistas }: { conquistas: ConquistaJornada[] }) {
+  const t = useT();
   const theme = useTheme();
   return (
     <View style={styles.grade}>
@@ -86,14 +89,19 @@ export function GradeConquistas({ conquistas }: { conquistas: ConquistaJornada[]
               `${c.descricao}\n\n${
                 c.alcancada
                   ? c.alcancadaEm
-                    ? `Alcançada em ${formatarData(paraDataLocal(new Date(c.alcancadaEm)))}.`
-                    : 'Alcançada!'
-                  : `Ainda não alcançada${c.progresso ? ` (${c.progresso})` : ''}.`
+                    ? t('jor.alcancadaEm', { data: formatarData(paraDataLocal(new Date(c.alcancadaEm))) })
+                    : t('jor.alcancada')
+                  : c.progresso
+                    ? t('jor.naoAlcancadaProg', { progresso: c.progresso })
+                    : t('jor.naoAlcancada')
               }`,
             )
           }
           accessibilityRole="button"
-          accessibilityLabel={`${c.nome}: ${c.alcancada ? 'alcançada' : 'bloqueada'}. ${c.descricao}${!c.alcancada && c.progresso ? ` Progresso: ${c.progresso}` : ''}`}
+          accessibilityLabel={
+            t(c.alcancada ? 'jor.medalhaAlcancada' : 'jor.medalhaBloqueada', { nome: c.nome, descricao: c.descricao }) +
+            (!c.alcancada && c.progresso ? t('jor.progressoRotulo', { progresso: c.progresso }) : '')
+          }
           style={({ pressed }) => [styles.medalha, pressed && styles.pressionado]}>
           <View
             style={[
